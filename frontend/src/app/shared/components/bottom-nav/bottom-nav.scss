@@ -1,0 +1,92 @@
+@use 'styles/variables' as *;
+
+.bottom-nav {
+  position: fixed;
+  bottom: 16px;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  padding: 0 16px;
+  pointer-events: none; // Permite clicks fuera del pill
+
+  // En pantallas de escritorio ocultamos el Bottom Nav (se usará el header superior)
+  @media (min-width: 768px) {
+    display: none;
+  }
+}
+
+.nav-pill {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 420px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: $radius-pill;
+  border: $border-subtle;
+  box-shadow: $shadow-floating;
+  padding: 4px 8px;
+}
+
+.nav-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  height: 100%;
+  color: $text-secondary;
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+  border-radius: $radius-pill;
+
+  .icon-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    transition: transform 0.2s ease;
+
+    svg {
+      width: 20px;
+      height: 20px;
+      stroke-width: 1.8;
+      transition: stroke 0.2s ease;
+    }
+  }
+
+  .label {
+    font-size: 10px;
+    font-weight: 500;
+    margin-top: 3px;
+    letter-spacing: 0.01em;
+  }
+
+  // Estado Activo
+  &.active {
+    color: $gold-dark;
+
+    .icon-wrapper {
+      transform: translateY(-2px);
+
+      svg {
+        stroke: $gold-dark;
+        stroke-width: 2.2;
+      }
+    }
+
+    .label {
+      font-weight: 700;
+    }
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+}

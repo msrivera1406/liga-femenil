@@ -1,0 +1,400 @@
+<div class="inicio-page">
+  <!-- 1. SCROLL-DRIVEN 3D ANIMATION STAGE (120 FRAMES INTERACTIVOS) -->
+  <section class="scroll-track" #scrollTrack>
+    <div 
+      class="sticky-stage" 
+      [class.is-top]="pinState() === 'top'"
+      [class.is-fixed]="pinState() === 'fixed'"
+      [class.is-bottom]="pinState() === 'bottom'"
+    >
+      <!-- Fondo estático con textura / mesh -->
+      <div class="stage-backdrop"></div>
+
+      <!-- Canvas interactivo que dibuja el frame según el scroll -->
+      <canvas #scrollCanvas class="frames-canvas"></canvas>
+
+      <!-- Indicador sutil de progreso del tiro / jugada -->
+      <div class="scroll-progress-line">
+        <div class="progress-fill" [style.width.%]="scrollPct()"></div>
+      </div>
+
+      <!-- Overlays editoriales sincronizados con el scroll -->
+      <div class="stage-overlays container">
+        <!-- Fase 1: Introducción & Bienvenida -->
+        <div class="overlay-phase phase-1" [class.active]="activePhase() === 1">
+          <div class="hero-badge">
+            <span class="badge-icon">🌈</span>
+            <span>Espacio Seguro & Diversidad en CDMX</span>
+          </div>
+
+          <h1 class="hero-title">
+            Fútbol con orgullo. <br />
+            <span class="hero-gradient-text">Más que una liga, una comunidad.</span>
+          </h1>
+
+          <p class="hero-description">
+            ¿Amas el fútbol o tienes ganas de volver a jugar pero no tienes equipo? 
+            <strong>Este es tu espacio seguro.</strong> Juega y compite sin miedo ni prejuicios en una cancha pensada para todas y todes.
+          </p>
+
+          <div class="scroll-hint">
+            <div class="mouse-icon">
+              <div class="wheel"></div>
+            </div>
+            <span>Desliza hacia abajo para avanzar la jugada ↓</span>
+          </div>
+        </div>
+
+        <!-- Fase 2: La jugada inicia (La leona avanza con el balón) -->
+        <div class="overlay-phase phase-2" [class.active]="activePhase() === 2">
+          <div class="hero-badge badge-mint">
+            <span>⚽ EL TOQUE INICIAL</span>
+          </div>
+
+          <h2 class="phase-title">
+            Rompe esquemas. <br />
+            <span class="highlight-text">Entra a la cancha.</span>
+          </h2>
+
+          <p class="hero-description">
+            Cada jugada es un acto de orgullo. Equipos formados con valores de respeto,
+            sororidad y pasión por el deporte en la Ciudad de México.
+          </p>
+        </div>
+
+        <!-- Fase 3: Disparo directo (El balón viaja hacia la pantalla) -->
+        <div class="overlay-phase phase-3" [class.active]="activePhase() === 3">
+          <div class="hero-badge badge-blue">
+            <span>⚡ DISPARO DIRECTO</span>
+          </div>
+
+          <h2 class="phase-title">
+            ¡El balón está <br />
+            <span class="highlight-text">en tu cancha!</span>
+          </h2>
+
+          <p class="hero-description">
+            No necesitas conocer a un equipo completo para integrarte. Inscríbete de forma
+            individual y te asignamos a una escuadra ideal para ti.
+          </p>
+        </div>
+
+        <!-- Fase 4: Golazo & Acciones principales -->
+        <div class="overlay-phase phase-4" [class.active]="activePhase() === 4">
+          <div class="hero-badge badge-coral">
+            <span>🔥 ¡GOLAZO COMUNITARIO!</span>
+          </div>
+
+          <h2 class="phase-title">
+            ¿Lista para el próximo <br />
+            <span class="highlight-text">partido del domingo?</span>
+          </h2>
+
+          <p class="hero-description">
+            12 escuadras oficiales, 11 jornadas dominicales y más de 180 jugadoras activas.
+            Únete hoy mismo a la liga.
+          </p>
+
+          <div class="hero-cta-group">
+            <a routerLink="/comunidad" class="btn-primary-hero">
+              <span>¡Quiero Jugar!</span>
+            </a>
+
+            <a routerLink="/jornadas" class="btn-secondary-hero">
+              <span>Ver Partidos del Domingo</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="arrow-icon">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2. METRICS & IMPACT BAR -->
+  <section class="metrics-section">
+    <div class="container">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-number">12</span>
+          <span class="metric-label">Escuadras Oficiales</span>
+          <span class="metric-sub">Formato round-robin</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-number">11</span>
+          <span class="metric-label">Jornadas Dominicales</span>
+          <span class="metric-sub">6 partidos por fecha</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-number">180+</span>
+          <span class="metric-label">Jugadoras Activas</span>
+          <span class="metric-sub">Identidad y dorsal único</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-number">3 pts</span>
+          <span class="metric-label">Al Ganador Oficial</span>
+          <span class="metric-sub">Sin empates sin definición</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. PARTIDO DESTACADO DE LA SEMANA (SECCIÓN DEDICADA FUERA DEL HERO) -->
+  <section class="featured-match-section" *ngIf="jornadaActual$ | async as jornada">
+    <div class="container" *ngIf="jornada.partidos && jornada.partidos.length > 0">
+      <div class="featured-match-wrapper">
+        <div class="match-badge-live">
+          <span class="live-pulse"></span>
+          <span>EN CANCHA ESTE DOMINGO · JORNADA {{ jornada.numero_jornada }}</span>
+        </div>
+
+        <div class="match-showcase-grid">
+          <!-- Local -->
+          <div class="team-showcase">
+            <img [src]="jornada.partidos[0].equipo_local?.escudo_url" [alt]="jornada.partidos[0].equipo_local?.nombre"
+              class="showcase-crest" />
+            <h3 class="showcase-name">{{ jornada.partidos[0].equipo_local?.nombre }}</h3>
+            <span class="showcase-badge badge-leader">Líder Invicto (1° Lugar)</span>
+          </div>
+
+          <!-- VS Center -->
+          <div class="vs-showcase">
+            <span class="vs-text">VS</span>
+            <div class="schedule-pill">
+              <span class="pill-time">{{ jornada.partidos[0].horario }} hrs</span>
+              <span class="pill-field">{{ jornada.partidos[0].cancha }}</span>
+            </div>
+            <span class="penalty-rule-tag">Empate al min 18 = Tanda de Penales</span>
+          </div>
+
+          <!-- Visitante -->
+          <div class="team-showcase">
+            <img [src]="jornada.partidos[0].equipo_visitante?.escudo_url"
+              [alt]="jornada.partidos[0].equipo_visitante?.nombre" class="showcase-crest" />
+            <h3 class="showcase-name">{{ jornada.partidos[0].equipo_visitante?.nombre }}</h3>
+            <span class="showcase-badge badge-chaser">2° Clasificado</span>
+          </div>
+        </div>
+
+        <div class="showcase-action">
+          <a routerLink="/jornadas" class="btn-all-matches">
+            <span>Ver los 6 partidos de la Jornada {{ jornada.numero_jornada }} →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. PULSO DEL TORNEO (Top 4 Clasificación) -->
+  <section class="standings-preview-section">
+    <div class="container">
+      <div class="section-header">
+        <div>
+          <span class="section-tag">TABLA GENERAL</span>
+          <h2 class="section-title">Líderes de la Competencia</h2>
+          <p class="section-sub">Apertura 2026 · Clasificación tras 4 jornadas disputadas</p>
+        </div>
+        <a routerLink="/posiciones" class="btn-link-action">
+          <span>Ver tabla completa (12 equipos)</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sm-icon">
+            <path d="M5 12h14M12 5l7 7-7 7" />
+          </svg>
+        </a>
+      </div>
+
+      <div class="table-card" *ngIf="posiciones$ | async as posiciones">
+        <div class="table-responsive">
+          <table class="editorial-table">
+            <thead>
+              <tr>
+                <th class="th-pos">#</th>
+                <th class="th-team">Equipo</th>
+                <th class="th-num">PJ</th>
+                <th class="th-num">PG</th>
+                <th class="th-num">PP</th>
+                <th class="th-num">GF</th>
+                <th class="th-num">GC</th>
+                <th class="th-num">DG</th>
+                <th class="th-pts">PTS</th>
+                <th class="th-form">Racha</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of posiciones.slice(0, 4); let i = index" class="table-row">
+                <td class="td-pos">
+                  <span class="pos-badge" [ngClass]="{'top-1': i === 0, 'top-playoff': i < 4}">{{ item.posicion
+                    }}</span>
+                </td>
+                <td class="td-team">
+                  <div class="team-cell">
+                    <img [src]="item.escudo_url" [alt]="item.nombre_equipo" class="mini-crest" />
+                    <span class="cell-team-name">{{ item.nombre_equipo }}</span>
+                  </div>
+                </td>
+                <td class="td-num">{{ item.pj }}</td>
+                <td class="td-num">{{ item.pg }}</td>
+                <td class="td-num">{{ item.pp }}</td>
+                <td class="td-num">{{ item.gf }}</td>
+                <td class="td-num">{{ item.gc }}</td>
+                <td class="td-num" [ngClass]="{'dg-pos': item.dg > 0, 'dg-neg': item.dg < 0}">
+                  {{ item.dg > 0 ? '+' + item.dg : item.dg }}
+                </td>
+                <td class="td-pts">
+                  <span class="pts-pill">{{ item.pts }}</span>
+                </td>
+                <td class="td-form">
+                  <div class="form-bubbles">
+                    <span *ngFor="let f of item.forma_reciente" class="form-dot"
+                      [ngClass]="f === 'G' ? 'form-win' : 'form-loss'">
+                      {{ f }}
+                    </span>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. PILARES DE INCLUSIÓN Y PROTECCIÓN (Clarificación y Humanización) -->
+  <section class="pillars-section">
+    <div class="container">
+      <div class="section-center-header">
+        <span class="section-tag">INCLUSIÓN RADICAL & SEGURIDAD</span>
+        <h2 class="section-title">Construyendo un deporte seguro para todas y todes</h2>
+        <p class="section-sub">
+          Diseñamos la plataforma para resolver las barreras reales que enfrentan las mujeres y la comunidad LGBT+ en el
+          fútbol amateur.
+        </p>
+      </div>
+
+      <div class="pillars-grid">
+        <!-- Pillar 1: Ghost Player -->
+        <div class="pillar-card highlight-card">
+          <div class="card-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+          </div>
+          <h3 class="pillar-title">Modo Ghost Player</h3>
+          <p class="pillar-desc">
+            Protección de imagen por defecto. Si decides no exponer tu rostro por razones laborales o personales,
+            la liga sustituye tu foto por un avatar con silueta y tu dorsal oficial. Nadie te obligará a mostrarte.
+          </p>
+          <div class="pillar-preview-ghost">
+            <div class="ghost-demo-item">
+              <app-ghost-avatar [autorizaImagen]="false" [dorsal]="10" nombre="Valeria" size="lg"></app-ghost-avatar>
+              <span class="ghost-caption">Silueta protegida</span>
+            </div>
+            <div class="ghost-arrow">⇄</div>
+            <div class="ghost-demo-item">
+              <app-ghost-avatar [autorizaImagen]="true"
+                fotoUrl="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80"
+                [dorsal]="7" nombre="Camila" size="lg"></app-ghost-avatar>
+              <span class="ghost-caption">Foto autorizada</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar 2: Registro de Jugadoras sin Equipo (Renombrado humanamente) -->
+        <div class="pillar-card">
+          <div class="card-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+            </svg>
+          </div>
+          <h3 class="pillar-title">¿Buscas equipo? Encuentra el tuyo</h3>
+          <p class="pillar-desc">
+            No necesitas conocer a un equipo completo para jugar. Regístrate individualmente y la Directora del Programa
+            te asignará a una escuadra con base en tu posición, nivel y afinidad de convivencia.
+          </p>
+          <a routerLink="/comunidad" class="pillar-link">
+            <span>Inscribirme individualmente →</span>
+          </a>
+        </div>
+
+        <!-- Pillar 3: Staff de Entrenadores -->
+        <div class="pillar-card">
+          <div class="card-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <polyline points="12 6 12 12 16 14" />
+            </svg>
+          </div>
+          <h3 class="pillar-title">Staff Oficial a Domicilio</h3>
+          <p class="pillar-desc">
+            Acondicionamiento físico personalizado (boxeo, karate, funcional). Consulta zonas en CDMX,
+            tarifas transparentes y agenda directamente con entrenadoras y entrenadores avalados vía WhatsApp.
+          </p>
+          <a routerLink="/comunidad" class="pillar-link">
+            <span>Ver staff y horarios →</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. ALIANZAS Y PATROCINIOS -->
+  <section class="alliances-section">
+    <div class="container">
+      <div class="alliances-card">
+        <div class="alliances-content">
+          <span class="gold-badge">RESPALDO INSTITUCIONAL & PATROCINIOS</span>
+          <h2 class="alliances-title">Impulsando el deporte con impacto social</h2>
+          <p class="alliances-text">
+            Nuestra liga es una vitrina de talento, sororidad y diversidad. Colaboramos con marcas comprometidas con la
+            equidad de género
+            y la visibilidad LGBT+ en el deporte amateur mexicano.
+          </p>
+          <div class="partner-logos">
+            <span class="partner-tag">Gatorade Community</span>
+            <span class="partner-tag">ONU Mujeres México</span>
+            <span class="partner-tag">Incode Pride</span>
+            <span class="partner-tag">Secretaría de las Mujeres CDMX</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. FOOTER EDITORIAL -->
+  <footer class="app-footer">
+    <div class="container footer-container">
+      <div class="footer-brand-col">
+        <div class="footer-brand-header">
+          <img src="images/logo.png" alt="Logo Oficial Liga de Fútbol Mujeres Diversas México" class="footer-logo-img" />
+          <span class="footer-title">LIGA DE FÚTBOL MUJERES DIVERSAS MÉXICO</span>
+        </div>
+        <p class="footer-desc">
+          "Fútbol con orgullo. Más que una liga, una comunidad". <br />
+          Torneo oficial de Fútbol 7 amateur, Ciudad de México.
+        </p>
+      </div>
+      <div class="footer-links-col">
+        <span class="footer-col-title">Navegación</span>
+        <a routerLink="/inicio">Inicio</a>
+        <a routerLink="/jornadas">Calendario y Jornadas</a>
+        <a routerLink="/posiciones">Tabla de Clasificación</a>
+        <a routerLink="/comunidad">Comunidad & Entrenadores</a>
+      </div>
+      <div class="footer-links-col">
+        <span class="footer-col-title">Privacidad & Legal</span>
+        <span>Doble capa de identidad</span>
+        <span>Aviso de Privacidad Ley ARCO</span>
+        <span>Protocolo de Cero Tolerancia</span>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="container footer-bottom-inner">
+        <span>© 2026 Liga de Fútbol Mujeres Diversas México. Todos los derechos reservados.</span>
+        <span>CDMX, México</span>
+      </div>
+    </div>
+  </footer>
+</div>

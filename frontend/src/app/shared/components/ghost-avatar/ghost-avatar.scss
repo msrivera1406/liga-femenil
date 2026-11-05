@@ -1,0 +1,125 @@
+@use 'styles/variables' as *;
+
+.avatar-container {
+  position: relative;
+  border-radius: 50%;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.25s ease;
+
+  // Sizes
+  &.size-sm {
+    width: 32px;
+    height: 32px;
+    font-size: 10px;
+
+    .silhouette-svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .dorsal-badge {
+      font-size: 8px;
+      padding: 1px 3px;
+    }
+  }
+
+  &.size-md {
+    width: 44px;
+    height: 44px;
+    font-size: 12px;
+
+    .silhouette-svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .dorsal-badge {
+      font-size: 9px;
+      padding: 1px 4px;
+    }
+  }
+
+  &.size-lg {
+    width: 60px;
+    height: 60px;
+    font-size: 14px;
+
+    .silhouette-svg {
+      width: 32px;
+      height: 32px;
+    }
+
+    .dorsal-badge {
+      font-size: 11px;
+      padding: 2px 6px;
+    }
+  }
+
+  &.size-xl {
+    width: 80px;
+    height: 80px;
+    font-size: 16px;
+
+    .silhouette-svg {
+      width: 44px;
+      height: 44px;
+    }
+
+    .dorsal-badge {
+      font-size: 12px;
+      padding: 2px 8px;
+    }
+  }
+
+  // Photo state
+  &.has-photo {
+    border: 2px solid $bg-surface;
+    box-shadow: $shadow-soft;
+
+    .avatar-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  // Ghost state (Warm editorial silhouette)
+  &.is-ghost {
+    background: linear-gradient(145deg, #F0EAE1 0%, #E7DED3 100%);
+    border: 1.5px dashed rgba(197, 160, 89, 0.45);
+    color: $text-secondary;
+
+    .ghost-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ghost-silhouette {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0.65;
+      color: $text-secondary;
+    }
+
+    .dorsal-badge {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      background: $gold-dark;
+      color: #FFFFFF;
+      font-weight: 700;
+      border-radius: $radius-pill;
+      line-height: 1;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+  }
+}

@@ -1,0 +1,69 @@
+// =============================================================================
+// Paleta Oficial Estable · Liga Femenil & Comunidad Diversa
+// =============================================================================
+$color-coral:   #FFB6A6; // Coral suave pastel
+$color-cream:   #FFEBD3; // Crema cálido melocotón
+$color-mint:    #9BCEC1; // Menta / Verde salvia suave
+$color-blue:    #67A2C5; // Azul celeste medio
+$color-canvas:  #FEFAF3; // Blanco roto / Lienzo base oficial
+
+// Lienzo y Superficies Oficiales
+$bg-canvas:           $color-canvas; // #FEFAF3
+$bg-surface:          #FFFFFF;       // Blanco puro para tarjetas
+$bg-surface-elevated: $color-cream;  // #FFEBD3
+$bg-canvas-subtle:    rgba($color-cream, 0.45);
+
+// Tipografía y Textos
+$text-primary:   #2C2623;       // Marrón carbón cálido (alto contraste)
+$text-secondary: #5D544D;       // Tono medio cálido nítido
+$text-muted:     #8F857D;       // Metadatos y labels secundarios
+
+// Acentos Institucionales (mapeados armónicamente a la nueva paleta)
+$gold-primary: #C5A059;         // Dorado champaña institucional
+$gold-light:   $color-cream;    // #FFEBD3
+$gold-dark:    #8F6F33;         // Para texto legible
+
+// Gradientes Oficiales del Sistema (construidos con la nueva paleta)
+$palette-gradient: linear-gradient(
+  135deg,
+  #FFB6A6 0%,
+  #FFEBD3 33%,
+  #9BCEC1 66%,
+  #67A2C5 100%
+);
+
+$palette-border-gradient: linear-gradient(
+  135deg,
+  #FFB6A6,
+  #FFEBD3,
+  #9BCEC1,
+  #67A2C5
+);
+
+$pride-gradient: $palette-gradient;
+$pride-border-gradient: $palette-border-gradient;
+
+// Botones y CTAs principales
+$btn-gradient-primary: linear-gradient(
+  135deg,
+  #FFB6A6 0%,
+  #F59E7E 35%,
+  #9BCEC1 70%,
+  #67A2C5 100%
+);
+
+// Sombras Orgánicas y Bordes
+$shadow-soft: 0 4px 20px -2px rgba(60, 45, 30, 0.05), 0 2px 6px -1px rgba(60, 45, 30, 0.02);
+$shadow-floating: 0 12px 32px -4px rgba(60, 45, 30, 0.08), 0 4px 12px -2px rgba(60, 45, 30, 0.03);
+$border-light: 1px solid rgba(103, 162, 197, 0.22);
+$border-subtle: 1px solid rgba(220, 210, 195, 0.6);
+
+// Radio y Espaciados
+$radius-sm: 8px;
+$radius-md: 16px;
+$radius-lg: 24px;
+$radius-pill: 9999px;
+
+// Tipografías
+$font-display: 'Fraunces', serif;
+$font-body: 'Plus Jakarta Sans', sans-serif;

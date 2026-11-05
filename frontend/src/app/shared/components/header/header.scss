@@ -1,0 +1,264 @@
+@use 'styles/variables' as *;
+
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 90;
+  width: 100%;
+  background: rgba(254, 250, 243, 0.52);
+  backdrop-filter: blur(22px);
+  -webkit-backdrop-filter: blur(22px);
+  border-bottom: 1px solid rgba(155, 206, 193, 0.28);
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 24px -2px rgba(60, 45, 30, 0.03);
+
+  // Subtle pride glow line under header
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 182, 166, 0.5) 0%,
+      rgba(255, 235, 211, 0.5) 33%,
+      rgba(155, 206, 193, 0.5) 66%,
+      rgba(103, 162, 197, 0.5) 100%
+    );
+    opacity: 0.75;
+  }
+}
+
+// Nav Container
+.nav-container {
+  max-width: 1240px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 24px;
+  height: 68px;
+}
+
+// Brand
+.brand {
+  .brand-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: transform 0.2s ease;
+
+    &:hover {
+      transform: scale(1.02);
+
+      .brand-logo-img {
+        transform: scale(1.06) rotate(-2deg);
+      }
+    }
+  }
+
+  .brand-crest {
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    .brand-logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 6px rgba(60, 45, 30, 0.12));
+      transition: transform 0.25s ease;
+    }
+  }
+
+  .brand-names {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.15;
+
+    .title {
+      font-family: $font-display;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: -0.01em;
+      color: $text-primary;
+      white-space: nowrap;
+    }
+
+    .subtitle {
+      font-size: 8.5px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      background: linear-gradient(90deg, #D96552 0%, #67A2C5 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      white-space: nowrap;
+    }
+  }
+}
+
+// Desktop Navigation
+.desktop-nav {
+  display: none;
+
+  @media (min-width: 860px) {
+    display: block;
+  }
+
+  .nav-list {
+    display: flex;
+    align-items: center;
+    list-style: none;
+    gap: 6px;
+    background: rgba(255, 235, 211, 0.45);
+    padding: 5px;
+    border-radius: $radius-pill;
+    border: 1px solid rgba(155, 206, 193, 0.4);
+    box-shadow: inset 0 2px 4px rgba(60, 45, 30, 0.03);
+  }
+
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 18px;
+    border-radius: $radius-pill;
+    font-size: 13px;
+    font-weight: 500;
+    color: $text-secondary;
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative;
+
+    // Hover effect with new stable palette wash
+    &:hover {
+      color: $text-primary;
+      background: linear-gradient(
+        135deg,
+        rgba(255, 182, 166, 0.3) 0%,
+        rgba(255, 235, 211, 0.45) 50%,
+        rgba(155, 206, 193, 0.35) 100%
+      );
+      transform: translateY(-1px);
+    }
+
+    // Active State with ball icon and vibrant glow
+    &.active {
+      color: #2C2623;
+      font-weight: 700;
+      background: #FFFFFF;
+      box-shadow: 0 4px 14px -2px rgba(60, 45, 30, 0.08),
+                  0 0 0 1.5px #9BCEC1;
+
+      .active-ball {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        animation: ballBounce 0.4s ease-out;
+
+        .ball-svg {
+          width: 15px;
+          height: 15px;
+          filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+        }
+      }
+    }
+  }
+}
+
+@keyframes ballBounce {
+  0% {
+    transform: scale(0.4) rotate(-30deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2) rotate(15deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+
+// Actions
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .btn-ghost-icon {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: $radius-pill;
+    background: #FFFFFF;
+    border: 1px solid rgba(197, 160, 89, 0.25);
+    color: $text-secondary;
+    transition: all 0.25s ease;
+    box-shadow: $shadow-soft;
+
+    &:hover {
+      color: #D96552;
+      border-color: rgba(255, 182, 166, 0.6);
+      background: rgba(255, 182, 166, 0.12);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255, 182, 166, 0.25);
+    }
+
+    .action-icon {
+      width: 19px;
+      height: 19px;
+    }
+
+    .badge-dot {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 7px;
+      height: 7px;
+      background: #9BCEC1;
+      border-radius: 50%;
+      box-shadow: 0 0 0 2px #FFFFFF;
+    }
+  }
+
+  // Primary CTA Button - Clean White & Coral Accents (like 'ver partidos')
+  .btn-primary-header {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #2C2623;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: $radius-pill;
+    border: 1.5px solid rgba(155, 206, 193, 0.7);
+    box-shadow: $shadow-soft;
+    backdrop-filter: blur(12px);
+    transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+
+    .sparkle {
+      font-size: 14px;
+    }
+
+    &:hover {
+      background: #FFFFFF;
+      border-color: #FFB6A6;
+      color: #D96552;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px -2px rgba(255, 182, 166, 0.35);
+    }
+
+    &:active {
+      transform: scale(0.96);
+    }
+  }
+}

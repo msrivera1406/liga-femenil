@@ -1,0 +1,21 @@
+<div class="avatar-container" [ngClass]="['size-' + size, autorizaImagen && fotoUrl ? 'has-photo' : 'is-ghost']">
+  <!-- Case 1: Photo Authorized & Available -->
+  <ng-container *ngIf="autorizaImagen && fotoUrl; else ghostTemplate">
+    <img [src]="fotoUrl" [alt]="nombre" class="avatar-img" loading="lazy" />
+  </ng-container>
+
+  <!-- Case 2: Ghost Player (Silueta protectora con dorsal visible) -->
+  <ng-template #ghostTemplate>
+    <div class="ghost-wrapper" title="Modo Ghost Player: Imagen protegida por privacidad">
+      <div class="ghost-silhouette">
+        <svg viewBox="0 0 24 24" fill="none" class="silhouette-svg" stroke="currentColor" stroke-width="1.6">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+          <circle cx="12" cy="7" r="4" />
+        </svg>
+      </div>
+      <div class="dorsal-badge" *ngIf="dorsal !== null && dorsal !== undefined">
+        <span>#{{ dorsal }}</span>
+      </div>
+    </div>
+  </ng-template>
+</div>
