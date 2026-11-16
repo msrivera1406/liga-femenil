@@ -97,7 +97,7 @@ export class ComunidadEquiposComponent implements OnInit {
     }
   }
 
-  // Generador de respaldo para asegurar que todos los 12 equipos tengan su alineación completa en 4 líneas
+  // Generador de respaldo para asegurar que los 11 equipos tengan su alineación completa en 4 líneas
   private generarPlantelCompleto(equipo: Equipo, existentes: JugadoraPublica[]): JugadoraPublica[] {
     const defaultRoster: JugadoraPublica[] = [
       {

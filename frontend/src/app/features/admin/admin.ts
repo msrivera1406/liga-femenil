@@ -99,7 +99,7 @@ export class AdminComponent implements OnInit, OnDestroy {
       icon: 'teams',
       iconClass: 'icon-teams',
       title: 'Equipos',
-      desc: 'Gestión de los 12 clubes oficiales, escudos, videos destacados, capitanas y colores de juego.'
+      desc: 'Gestión de los 11 clubes oficiales, escudos, videos destacados, capitanas y colores de juego.'
     },
     {
       id: 'jugadoras',
@@ -165,7 +165,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     },
     'equipos': {
       title: 'Gestión de Equipos Oficiales',
-      desc: 'Administración de los 12 clubes oficiales, escudos, videos y capitanas.',
+      desc: 'Administración de los 11 clubes oficiales, escudos, videos y capitanas.',
       icon: 'teams'
     },
     'jugadoras': {

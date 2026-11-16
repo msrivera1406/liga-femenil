@@ -154,7 +154,7 @@
             </div>
           </div>
 
-          <!-- PESTAÑAS 3 Y 3 PARA MÓVIL (SÓLO VISIBLES EN RESPONSIVE) -->
+          <!-- PESTAÑAS PARA MÓVIL (PRIMEROS 3 Y RESTANTES) (SÓLO VISIBLES EN RESPONSIVE) -->
           <div class="mobile-matches-tabs" *ngIf="current.partidos && current.partidos.length > 3">
             <button 
               type="button" 
@@ -170,7 +170,7 @@
               [class.active]="mobileMatchTab() === 'second'"
               (click)="setMobileMatchTab('second')"
             >
-              <span>Partidos 4 - 6</span>
+              <span>Partidos 4 - {{ current.partidos.length }}</span>
             </button>
             <button 
               type="button" 
@@ -178,11 +178,11 @@
               [class.active]="mobileMatchTab() === 'all'"
               (click)="setMobileMatchTab('all')"
             >
-              <span>Todos (6)</span>
+              <span>Todos ({{ current.partidos.length }})</span>
             </button>
           </div>
 
-          <!-- Grid de los 6 partidos (3 columnas por fila, coincidiendo con el boceto) -->
+          <!-- Grid de los partidos de la jornada (5 por fecha; 3 columnas por fila) -->
           <div 
             class="active-matches-grid"
             [class.filter-first]="mobileMatchTab() === 'first'"

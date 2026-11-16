@@ -493,7 +493,7 @@ app-landing-footer {
       }
     }
 
-    // Grid de los 6 partidos (3 columnas x 2 filas)
+    // Grid de los partidos de la jornada (5 por fecha, 3 columnas)
     .active-matches-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
