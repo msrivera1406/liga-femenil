@@ -1,0 +1,736 @@
+        <div class="service-pane pane-jugadoras">
+          
+          <!-- Toast de éxito -->
+          <div class="registration-toast-success" *ngIf="jugadoraSuccessToast()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>{{ jugadoraSuccessToast() }}</span>
+          </div>
+
+          <!-- Barra superior de pestañas y herramientas -->
+          <div class="jugadoras-top-toolbar">
+            
+            <!-- Selector de Pestañas -->
+            <div class="jugadoras-nav-tabs">
+              <button 
+                type="button" 
+                class="tab-btn" 
+                [class.active]="jugadorasTab() === 'planteles'"
+                (click)="jugadorasTab.set('planteles')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                  <circle cx="9" cy="7" r="4"/>
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+                <span>Planteles Oficiales</span>
+                <span class="tab-counter">{{ jugadorasPlanteles().length }}</span>
+              </button>
+
+              <button 
+                type="button" 
+                class="tab-btn tab-btn-bolsa" 
+                [class.active]="jugadorasTab() === 'bolsa'"
+                (click)="jugadorasTab.set('bolsa')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                <span>Bolsa Libre / Solicitudes Web</span>
+                <span class="tab-counter counter-alert" *ngIf="jugadorasBolsa().length > 0">
+                  {{ jugadorasBolsa().length }}
+                </span>
+                <span class="pulse-indicator" *ngIf="jugadorasBolsa().length > 0"></span>
+              </button>
+            </div>
+
+            <!-- Acciones de Cabecera -->
+            <div class="jugadoras-toolbar-actions">
+              <!-- Buscador en tiempo real -->
+              <div class="jugadoras-search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input 
+                  type="text" 
+                  [ngModel]="jugadorasSearchQuery()" 
+                  (ngModelChange)="jugadorasSearchQuery.set($event)" 
+                  placeholder="Buscar por nombre, dorsal o teléfono..." 
+                  class="jugadoras-search-input" />
+                <button 
+                  *ngIf="jugadorasSearchQuery()" 
+                  type="button" 
+                  class="btn-clear-search" 
+                  (click)="jugadorasSearchQuery.set('')">✕</button>
+              </div>
+
+              <!-- Botón Alta Manual de Jugadora -->
+              <button type="button" class="btn-add-player-primary" (click)="openCreateJugadoraModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                <span>Nueva Jugadora</span>
+              </button>
+            </div>
+
+          </div>
+
+          <!-- FILTROS SECUNDARIOS (Para Planteles) -->
+          <div class="jugadoras-subfilters-bar" *ngIf="jugadorasTab() === 'planteles'">
+            <div class="filter-group-item">
+              <label class="filter-label">Club:</label>
+              <select 
+                class="styled-filter-select select-club"
+                [ngModel]="jugadorasClubFilter()" 
+                (ngModelChange)="jugadorasClubFilter.set($event)">
+                <option value="todos">Todos los Clubes ({{ jugadorasPlanteles().length }})</option>
+                <option *ngFor="let eq of equiposList()" [value]="eq.id">{{ eq.nombre }}</option>
+              </select>
+            </div>
+
+            <div class="filter-group-item">
+              <label class="filter-label">Posición:</label>
+              <div class="position-pills">
+                <button 
+                  type="button" 
+                  class="pos-pill" 
+                  [class.active]="jugadorasPosFilter() === 'todos'" 
+                  (click)="jugadorasPosFilter.set('todos')">Todas</button>
+                <button 
+                  type="button" 
+                  class="pos-pill pos-portera" 
+                  [class.active]="jugadorasPosFilter() === 'Portera'" 
+                  (click)="jugadorasPosFilter.set('Portera')">Portera</button>
+                <button 
+                  type="button" 
+                  class="pos-pill pos-defensa" 
+                  [class.active]="jugadorasPosFilter() === 'Defensa'" 
+                  (click)="jugadorasPosFilter.set('Defensa')">Defensa</button>
+                <button 
+                  type="button" 
+                  class="pos-pill pos-medio" 
+                  [class.active]="jugadorasPosFilter() === 'Medio'" 
+                  (click)="jugadorasPosFilter.set('Medio')">Medio</button>
+                <button 
+                  type="button" 
+                  class="pos-pill pos-delantera" 
+                  [class.active]="jugadorasPosFilter() === 'Delantera'" 
+                  (click)="jugadorasPosFilter.set('Delantera')">Delantera</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- FILTROS SECUNDARIOS (Para Bolsa Libre) -->
+          <div class="jugadoras-subfilters-bar bolsa-info-bar" *ngIf="jugadorasTab() === 'bolsa'">
+            <div class="bolsa-banner-intro">
+              <span class="bolsa-badge-flash">⚡ Solicitudes Web</span>
+              <p>Chicas registradas desde el formulario público de la web listas para integrarse a un equipo oficial.</p>
+            </div>
+
+            <div class="filter-group-item">
+              <label class="filter-label">Posición:</label>
+              <div class="position-pills">
+                <button 
+                  type="button" 
+                  class="pos-pill" 
+                  [class.active]="jugadorasPosFilter() === 'todos'" 
+                  (click)="jugadorasPosFilter.set('todos')">Todas</button>
+                <button 
+                  type="button" 
+                  class="pos-pill pos-portera" 
+                  [class.active]="jugadorasPosFilter() === 'Portera'" 
+                  (click)="jugadorasPosFilter.set('Portera')">Portera</button>
+                <button 
+                  type="button" 
+                  class="pos-pill pos-defensa" 
+                  [class.active]="jugadorasPosFilter() === 'Defensa'" 
+                  (click)="jugadorasPosFilter.set('Defensa')">Defensa</button>
+                <button 
+                  type="button" 
+                  class="pos-pill pos-medio" 
+                  [class.active]="jugadorasPosFilter() === 'Medio'" 
+                  (click)="jugadorasPosFilter.set('Medio')">Medio</button>
+                <button 
+                  type="button" 
+                  class="pos-pill pos-delantera" 
+                  [class.active]="jugadorasPosFilter() === 'Delantera'" 
+                  (click)="jugadorasPosFilter.set('Delantera')">Delantera</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- CUADRÍCULA DE CÉDULAS DEPORTIVAS (PLANTELES)   -->
+          <!-- ============================================== -->
+          <div class="jugadoras-cards-grid" *ngIf="jugadorasTab() === 'planteles'">
+            
+            <!-- Tarjeta Wireframe para añadir nueva jugadora -->
+            <div class="jugadora-card-item card-create-new-player" (click)="openCreateJugadoraModal(jugadorasClubFilter())">
+              <div class="create-player-circle">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </div>
+              <strong class="create-player-title">Registrar Cédula</strong>
+              <p class="create-player-sub">Da de alta una jugadora con dorsal y datos médicos</p>
+            </div>
+
+            <!-- Tarjetas de Jugadoras en Plantel -->
+            <div 
+              *ngFor="let j of filteredJugadorasPlanteles()" 
+              class="jugadora-card-item player-cedula-card">
+              
+              <!-- Cabecera de la Cédula -->
+              <div class="cedula-card-top">
+                <div class="cedula-dorsal-badge" [title]="'Dorsal #' + (j.dorsal || '-')">
+                  #{{ j.dorsal || '-' }}
+                </div>
+                <span class="cedula-pos-chip" [ngClass]="'pos-' + j.posicion.toLowerCase()">
+                  {{ j.posicion }}
+                </span>
+                <div class="cedula-club-chip" [title]="j.nombre_equipo || 'Club Oficial'">
+                  <img *ngIf="getEquipoEscudo(j.equipo_id)" [src]="getEquipoEscudo(j.equipo_id)" class="mini-crest" />
+                  <span class="club-short-name">{{ j.nombre_equipo || 'Club' }}</span>
+                </div>
+              </div>
+
+              <!-- Avatar y Modo Ghost Player -->
+              <div class="cedula-avatar-center">
+                <div class="avatar-frame" [class.is-ghost]="!j.foto_url || !j.autoriza_imagen">
+                  <img *ngIf="j.foto_url && j.autoriza_imagen" [src]="j.foto_url" [alt]="j.nombre_deportivo" class="avatar-photo" />
+                  <div *ngIf="!j.foto_url || !j.autoriza_imagen" class="ghost-avatar-visual">
+                    <span class="ghost-icon">👤</span>
+                  </div>
+                </div>
+
+                <div class="ghost-protection-badge" *ngIf="!j.foto_url || !j.autoriza_imagen" title="Fotografía protegida por el reglamento de privacidad de la liga">
+                  🛡️ Ghost Player
+                </div>
+              </div>
+
+              <!-- Información Principal -->
+              <div class="cedula-info-block">
+                <h4 class="player-sport-name" [title]="j.nombre_deportivo">{{ j.nombre_deportivo }}</h4>
+                <div class="player-sub-meta">
+                  <span class="pronoun-tag">{{ j.pronombres || 'Ella' }}</span>
+                  <span class="legal-name-sub" [title]="j.nombre_legal || 'Nombre legal reservado'">{{ j.nombre_legal || 'Cédula Oficial' }}</span>
+                </div>
+
+                <!-- Chips Médicos / Contacto Rápido -->
+                <div class="cedula-health-row">
+                  <span class="health-chip" title="Tipo de Sangre">🩸 {{ j.tipo_sangre || 'O+' }}</span>
+                  <span class="health-chip" title="Edad">🎂 {{ j.edad || 22 }}a</span>
+                  <span class="health-chip" title="Teléfono">📞 {{ j.telefono_contacto ? j.telefono_contacto.substring(0, 12) + '...' : 'Registrado' }}</span>
+                </div>
+              </div>
+
+              <!-- Acciones al pie de la cédula -->
+              <div class="cedula-card-actions">
+                <button type="button" class="btn-cedula-action btn-view-sheet" (click)="openDetailModal(j)" title="Ver ficha médica y deportiva completa">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="16" y1="13" x2="8" y2="13"/>
+                    <line x1="16" y1="17" x2="8" y2="17"/>
+                  </svg>
+                  <span>Ficha</span>
+                </button>
+
+                <button type="button" class="btn-cedula-action btn-transfer" (click)="openAssignModal(j)" title="Transferir a otro club o cambiar dorsal">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m16 3 4 4-4 4"/>
+                    <path d="M20 7H4"/>
+                    <path d="m8 21-4-4 4-4"/>
+                    <path d="M4 17h16"/>
+                  </svg>
+                  <span>Mover</span>
+                </button>
+
+                <button type="button" class="btn-cedula-action btn-edit" (click)="openEditJugadoraModal(j)" title="Editar datos de la cédula">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                  </svg>
+                </button>
+
+                <button type="button" class="btn-cedula-action btn-delete" (click)="openDeleteJugadoraConfirm(j)" title="Dar de baja jugadora">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </svg>
+                </button>
+              </div>
+
+            </div>
+
+            <!-- Estado Vacío -->
+            <div *ngIf="filteredJugadorasPlanteles().length === 0" class="jugadoras-empty-state">
+              <div class="empty-icon">👥</div>
+              <h4>No se encontraron jugadoras con los filtros aplicados</h4>
+              <p>Prueba seleccionando otro club o limpiando la caja de búsqueda.</p>
+            </div>
+
+          </div>
+
+          <!-- ============================================== -->
+          <!-- CUADRÍCULA DE SOLICITUDES (BOLSA LIBRE)        -->
+          <!-- ============================================== -->
+          <div class="jugadoras-cards-grid bolsa-grid" *ngIf="jugadorasTab() === 'bolsa'">
+            
+            <div 
+              *ngFor="let j of filteredJugadorasBolsa()" 
+              class="jugadora-card-item player-bolsa-card">
+              
+              <!-- Cabecera de la Solicitud -->
+              <div class="bolsa-card-header">
+                <span class="folio-tag">Folio: {{ j.folio_registro || ('IND-' + j.id) }}</span>
+                <span class="cedula-pos-chip" [ngClass]="'pos-' + j.posicion.toLowerCase()">
+                  {{ j.posicion }}
+                </span>
+              </div>
+
+              <!-- Avatar y Status (Idéntico a Planteles) -->
+              <div class="cedula-avatar-center">
+                <div class="avatar-frame" [class.is-ghost]="!j.foto_url || !j.autoriza_imagen">
+                  <img *ngIf="j.foto_url && j.autoriza_imagen" [src]="j.foto_url" [alt]="j.nombre_deportivo" class="avatar-photo" />
+                  <div *ngIf="!j.foto_url || !j.autoriza_imagen" class="ghost-avatar-visual">
+                    <span class="ghost-icon">👤</span>
+                  </div>
+                </div>
+                <div class="ghost-badge-container">
+                  <span class="ghost-protection-badge" *ngIf="!j.foto_url || !j.autoriza_imagen">
+                    🛡️ Ghost Player
+                  </span>
+                </div>
+              </div>
+
+              <!-- Información de la Solicitud -->
+              <div class="cedula-info-block">
+                <h4 class="player-sport-name">{{ j.nombre_deportivo }}</h4>
+                <div class="player-sub-meta">
+                  <span class="pronoun-tag">{{ j.pronombres || 'Ella' }}</span>
+                  <span class="legal-name-sub">{{ j.nombre_legal || 'Nombre reservado' }}</span>
+                </div>
+
+                <div class="bolsa-details-box">
+                  <div class="detail-line">
+                    <span class="detail-label">Experiencia:</span>
+                    <span class="detail-value exp-badge">{{ j.nivel_experiencia || 'Intermedio' }}</span>
+                  </div>
+                  <div class="detail-line" *ngIf="j.telefono_contacto">
+                    <span class="detail-label">Contacto:</span>
+                    <a [href]="'tel:' + j.telefono_contacto" class="phone-link">{{ j.telefono_contacto }}</a>
+                  </div>
+                  <div class="detail-line" *ngIf="j.contacto_emergencia_nombre">
+                    <span class="detail-label">Emergencia:</span>
+                    <span class="detail-value">{{ j.contacto_emergencia_nombre }} ({{ j.contacto_emergencia_parentesco || 'Familiar' }})</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Acciones de Fichaje -->
+              <div class="bolsa-card-actions">
+                <button type="button" class="btn-fichar-primary" (click)="openAssignModal(j)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                  </svg>
+                  <span>Fichar a Club</span>
+                </button>
+
+                <div class="bolsa-secondary-actions">
+                  <button type="button" class="btn-bolsa-action btn-view-sheet" (click)="openDetailModal(j)" title="Ver ficha técnica y médica">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                      <polyline points="14 2 14 8 20 8"/>
+                      <line x1="16" y1="13" x2="8" y2="13"/>
+                      <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                    <span>Ficha</span>
+                  </button>
+
+                  <button type="button" class="btn-bolsa-action btn-edit" (click)="openEditJugadoraModal(j)" title="Editar registro">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                    </svg>
+                  </button>
+
+                  <button type="button" class="btn-bolsa-action btn-delete" (click)="openDeleteJugadoraConfirm(j)" title="Descartar solicitud">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="3 6 5 6 21 6"/>
+                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Estado Vacío Bolsa -->
+            <div *ngIf="filteredJugadorasBolsa().length === 0" class="jugadoras-empty-state">
+              <div class="empty-icon">✨</div>
+              <h4>No hay solicitudes libres en este momento</h4>
+              <p>Todas las jugadoras independientes han sido asignadas a clubes oficiales del torneo.</p>
+            </div>
+
+          </div>
+
+          <!-- ============================================== -->
+          <!-- SUBDIÁLOGO 1: ALTA / EDICIÓN DE JUGADORA       -->
+          <!-- ============================================== -->
+          <div class="player-subdialog-backdrop" *ngIf="showJugadoraFormModal()" (click)="closeJugadoraFormModal()">
+            <div class="player-subdialog-card form-scrollable-card" (click)="$event.stopPropagation()">
+              <div class="subdialog-header">
+                <div class="subdialog-title-group">
+                  <span class="subdialog-icon">📋</span>
+                  <h4>{{ isEditingJugadora() ? 'Editar Cédula Deportiva' : 'Registrar Nueva Jugadora' }}</h4>
+                </div>
+                <button type="button" class="btn-subdialog-close" (click)="closeJugadoraFormModal()">✕</button>
+              </div>
+
+              <div class="subdialog-body">
+                
+                <!-- SECCIÓN 1: IDENTIDAD DEPORTIVA -->
+                <div class="form-section-divider">
+                  <span>1. Identidad Deportiva & Privacidad</span>
+                </div>
+
+                <div class="form-grid-2cols">
+                  <div class="form-field-group">
+                    <label class="field-label">Nombre Deportivo (o Apodo): *</label>
+                    <input 
+                      type="text" 
+                      [(ngModel)]="formJNombreDeportivo" 
+                      placeholder="Ej. Valeria 'La Rusa'" 
+                      class="styled-text-input" />
+                  </div>
+
+                  <div class="form-field-group">
+                    <label class="field-label">Pronombres:</label>
+                    <select [(ngModel)]="formJPronombres" class="styled-text-input">
+                      <option value="Ella">Ella</option>
+                      <option value="Ella/Elle">Ella/Elle</option>
+                      <option value="Elle">Elle</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-grid-3cols">
+                  <div class="form-field-group">
+                    <label class="field-label">Posición: *</label>
+                    <select [(ngModel)]="formJPosicion" class="styled-text-input">
+                      <option value="Portera">Portera</option>
+                      <option value="Defensa">Defensa</option>
+                      <option value="Medio">Medio</option>
+                      <option value="Delantera">Delantera</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field-group">
+                    <label class="field-label">Club Asignado:</label>
+                    <select [(ngModel)]="formJEquipoId" class="styled-text-input">
+                      <option [ngValue]="null">⚡ Bolsa Libre (Sin equipo)</option>
+                      <option *ngFor="let eq of equiposList()" [ngValue]="eq.id">{{ eq.nombre }}</option>
+                    </select>
+                  </div>
+
+                  <div class="form-field-group">
+                    <label class="field-label">Dorsal Oficial:</label>
+                    <input 
+                      type="number" 
+                      [(ngModel)]="formJDorsal" 
+                      min="1" 
+                      max="99" 
+                      placeholder="10" 
+                      class="styled-text-input" />
+                  </div>
+                </div>
+
+                <div class="form-field-group">
+                  <label class="field-label">URL Fotografía:</label>
+                  <input 
+                    type="text" 
+                    [(ngModel)]="formJFotoUrl" 
+                    placeholder="https://ejemplo.com/foto.jpg (opcional)" 
+                    class="styled-text-input" />
+                </div>
+
+                <!-- SWITCH GHOST PLAYER -->
+                <div class="ghost-toggle-container">
+                  <label class="switch-control">
+                    <input type="checkbox" [(ngModel)]="formJAutorizaImagen" />
+                    <span class="switch-slider"></span>
+                  </label>
+                  <div class="ghost-toggle-text">
+                    <strong>{{ formJAutorizaImagen ? 'Fotografía Pública Autorizada' : 'Modo Ghost Player Activo (Identidad Protegida)' }}</strong>
+                    <p>
+                      {{ formJAutorizaImagen ? 'Su rostro será visible en la plantilla web y cédulas del torneo.' : 'Se protegerá la identidad de la jugadora ocultando su fotografía en la web pública.' }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- SECCIÓN 2: DATOS DEL REGISTRO PÚBLICO & FICHA MÉDICA -->
+                <div class="form-section-divider">
+                  <span>2. Ficha Médica y Contacto de Emergencia</span>
+                </div>
+
+                <div class="form-grid-2cols">
+                  <div class="form-field-group">
+                    <label class="field-label">Nombre Legal Completo:</label>
+                    <input 
+                      type="text" 
+                      [(ngModel)]="formJNombreLegal" 
+                      placeholder="Nombre oficial para seguro deportivo" 
+                      class="styled-text-input" />
+                  </div>
+
+                  <div class="form-grid-2cols-nested">
+                    <div class="form-field-group">
+                      <label class="field-label">Edad:</label>
+                      <input 
+                        type="number" 
+                        [(ngModel)]="formJEdad" 
+                        min="15" 
+                        max="65" 
+                        placeholder="22" 
+                        class="styled-text-input" />
+                    </div>
+                    <div class="form-field-group">
+                      <label class="field-label">Tipo Sangre:</label>
+                      <select [(ngModel)]="formJTipoSangre" class="styled-text-input">
+                        <option value="O+">O+</option>
+                        <option value="O-">O-</option>
+                        <option value="A+">A+</option>
+                        <option value="A-">A-</option>
+                        <option value="B+">B+</option>
+                        <option value="B-">B-</option>
+                        <option value="AB+">AB+</option>
+                        <option value="AB-">AB-</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-grid-2cols">
+                  <div class="form-field-group">
+                    <label class="field-label">Teléfono Directo de la Jugadora:</label>
+                    <input 
+                      type="text" 
+                      [(ngModel)]="formJTelefonoContacto" 
+                      placeholder="+52 55 1234 5678" 
+                      class="styled-text-input" />
+                  </div>
+
+                  <div class="form-field-group">
+                    <label class="field-label">Nivel de Experiencia:</label>
+                    <select [(ngModel)]="formJNivelExperiencia" class="styled-text-input">
+                      <option value="Principiante (Inicio en fútbol 7/11)">Principiante (Inicio en fútbol 7/11)</option>
+                      <option value="Intermedio (Juego recreativo y regular)">Intermedio (Juego recreativo y regular)</option>
+                      <option value="Avanzado (Ligas competitivas anteriores)">Avanzado (Ligas competitivas anteriores)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-grid-3cols">
+                  <div class="form-field-group">
+                    <label class="field-label">Contacto de Emergencia:</label>
+                    <input 
+                      type="text" 
+                      [(ngModel)]="formJContactoEmergenciaNombre" 
+                      placeholder="Nombre del familiar" 
+                      class="styled-text-input" />
+                  </div>
+
+                  <div class="form-field-group">
+                    <label class="field-label">Teléfono de Emergencia:</label>
+                    <input 
+                      type="text" 
+                      [(ngModel)]="formJContactoEmergenciaTelefono" 
+                      placeholder="+52 55 9876 5432" 
+                      class="styled-text-input" />
+                  </div>
+
+                  <div class="form-field-group">
+                    <label class="field-label">Parentesco:</label>
+                    <select [(ngModel)]="formJContactoEmergenciaParentesco" class="styled-text-input">
+                      <option value="Madre">Madre</option>
+                      <option value="Padre">Padre</option>
+                      <option value="Pareja">Pareja</option>
+                      <option value="Hermano/a">Hermano/a</option>
+                      <option value="Amistad">Amistad</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-field-group">
+                  <label class="field-label">Alergias o Condiciones Médicas:</label>
+                  <input 
+                    type="text" 
+                    [(ngModel)]="formJAlergiasCondiciones" 
+                    placeholder="Ej. Asma, alérgica a penicilina (o Ninguna)" 
+                    class="styled-text-input" />
+                </div>
+
+
+              </div>
+
+              <div class="subdialog-footer">
+                <button type="button" class="btn-sub-cancel" (click)="closeJugadoraFormModal()">Cancelar</button>
+                <button 
+                  type="button" 
+                  class="btn-sub-confirm" 
+                  [disabled]="!formJNombreDeportivo.trim() || jugadoraIsSaving()" 
+                  (click)="guardarJugadoraForm()">
+                  <span>{{ jugadoraIsSaving() ? 'Guardando...' : (isEditingJugadora() ? 'Guardar Cambios' : 'Registrar Cédula Oficial') }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- SUBDIÁLOGO 2: FICHAR / ASIGNAR CLUB            -->
+          <!-- ============================================== -->
+          <div class="player-subdialog-backdrop" *ngIf="showAssignJugadoraModal()" (click)="closeAssignModal()">
+            <div class="player-subdialog-card card-assign-player" (click)="$event.stopPropagation()">
+              <div class="subdialog-header">
+                <div class="subdialog-title-group">
+                  <span class="subdialog-icon">⚡</span>
+                  <h4>{{ assignTargetJugadora()?.equipo_id ? 'Transferir a ' + assignTargetJugadora()?.nombre_deportivo : 'Fichar a ' + assignTargetJugadora()?.nombre_deportivo }}</h4>
+                </div>
+                <button type="button" class="btn-subdialog-close" (click)="closeAssignModal()" aria-label="Cerrar ventana">✕</button>
+              </div>
+
+              <div class="subdialog-body assign-subdialog-body">
+                <div class="assign-player-summary">
+                  <div class="avatar-frame mini" [class.is-ghost]="!assignTargetJugadora()?.foto_url || !assignTargetJugadora()?.autoriza_imagen">
+                    <img *ngIf="assignTargetJugadora()?.foto_url && assignTargetJugadora()?.autoriza_imagen" [src]="assignTargetJugadora()?.foto_url" class="avatar-photo" />
+                    <span *ngIf="!assignTargetJugadora()?.foto_url || !assignTargetJugadora()?.autoriza_imagen" class="ghost-icon">👤</span>
+                  </div>
+                  <div class="assign-summary-info">
+                    <strong class="assign-player-name">{{ assignTargetJugadora()?.nombre_deportivo }}</strong>
+                    <div class="assign-badges-row">
+                      <span class="cedula-pos-chip" [ngClass]="'pos-' + (assignTargetJugadora()?.posicion?.toLowerCase() || 'medio')">{{ assignTargetJugadora()?.posicion }}</span>
+                      <span class="assign-origin-tag">{{ assignTargetJugadora()?.nombre_equipo ? 'Club: ' + assignTargetJugadora()?.nombre_equipo : 'Solicitud Libre (Bolsa)' }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-field-group">
+                  <label class="field-label">Club Destino: *</label>
+                  <select [(ngModel)]="assignTargetEquipoId" class="styled-text-input styled-assign-select">
+                    <option [ngValue]="null" disabled selected>Selecciona el club oficial...</option>
+                    <option *ngFor="let eq of equiposList()" [ngValue]="eq.id">{{ eq.nombre }}</option>
+                  </select>
+                  <span class="field-help-hint">El club oficial donde jugará en el torneo dominical.</span>
+                </div>
+
+                <div class="form-field-group">
+                  <label class="field-label">Dorsal en el Equipo: *</label>
+                  <div class="assign-dorsal-input-row">
+                    <input 
+                      type="number" 
+                      [(ngModel)]="assignTargetDorsal" 
+                      min="1" 
+                      max="99" 
+                      placeholder="10" 
+                      class="styled-text-input input-dorsal" />
+                    <span class="dorsal-unit-badge">Número en camiseta (1 - 99)</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="subdialog-footer">
+                <button type="button" class="btn-sub-cancel" (click)="closeAssignModal()">Cancelar</button>
+                <button 
+                  type="button" 
+                  class="btn-sub-confirm" 
+                  [disabled]="!assignTargetEquipoId || assignIsSaving()" 
+                  (click)="guardarAsignacionClub()">
+                  <span>{{ assignIsSaving() ? 'Guardando...' : (assignTargetJugadora()?.equipo_id ? 'Confirmar Transferencia' : 'Confirmar Fichaje Oficial') }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- SUBDIÁLOGO 3: FICHA MÉDICA & DEPORTIVA (DETALLE)-->
+          <!-- ============================================== -->
+          <div class="player-subdialog-backdrop" *ngIf="showDetailJugadoraModal()" (click)="closeDetailModal()">
+            <div class="player-subdialog-card card-player-sheet" (click)="$event.stopPropagation()">
+              <div class="subdialog-header">
+                <div class="subdialog-title-group">
+                  <span class="subdialog-icon">📄</span>
+                  <h4>Cédula Oficial de Atleta</h4>
+                </div>
+                <button type="button" class="btn-subdialog-close" (click)="closeDetailModal()">✕</button>
+              </div>
+
+              <div class="subdialog-body sheet-body">
+                <!-- Header Atleta -->
+                <div class="sheet-hero-box">
+                  <div class="avatar-frame large" [class.is-ghost]="!detailTargetJugadora()?.foto_url || !detailTargetJugadora()?.autoriza_imagen">
+                    <img *ngIf="detailTargetJugadora()?.foto_url && detailTargetJugadora()?.autoriza_imagen" [src]="detailTargetJugadora()?.foto_url" class="avatar-photo" />
+                    <span *ngIf="!detailTargetJugadora()?.foto_url || !detailTargetJugadora()?.autoriza_imagen" class="ghost-icon">👤</span>
+                  </div>
+                  <div class="sheet-hero-info">
+                    <div class="sheet-dorsal-tag">#{{ detailTargetJugadora()?.dorsal || 'LIBRE' }}</div>
+                    <h3 class="sheet-name">{{ detailTargetJugadora()?.nombre_deportivo }}</h3>
+                    <p class="sheet-legal">{{ detailTargetJugadora()?.nombre_legal || 'Nombre legal reservado' }} · {{ detailTargetJugadora()?.pronombres || 'Ella' }}</p>
+                    <div class="sheet-chips-line">
+                      <span class="sheet-chip-pos">{{ detailTargetJugadora()?.posicion }}</span>
+                      <span class="sheet-chip-club">{{ detailTargetJugadora()?.nombre_equipo || 'Bolsa Independiente' }}</span>
+                      <span *ngIf="!detailTargetJugadora()?.autoriza_imagen" class="ghost-badge-pill">🛡️ Ghost Player</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Bloques de Información -->
+                <div class="sheet-info-grid">
+                  <div class="sheet-card-section">
+                    <h5>🏥 Ficha Médica de Urgencia</h5>
+                    <p><strong>Tipo de Sangre:</strong> {{ detailTargetJugadora()?.tipo_sangre || 'O+' }}</p>
+                    <p><strong>Edad:</strong> {{ detailTargetJugadora()?.edad || 22 }} años</p>
+                    <p><strong>Alergias / Condiciones:</strong> {{ detailTargetJugadora()?.alergias_condiciones || 'Ninguna reportada' }}</p>
+                  </div>
+
+                  <div class="sheet-card-section">
+                    <h5>🚨 Contacto y Emergencia</h5>
+                    <p><strong>Teléfono Directo:</strong> {{ detailTargetJugadora()?.telefono_contacto || 'No disponible' }}</p>
+                    <p><strong>Avisar a:</strong> {{ detailTargetJugadora()?.contacto_emergencia_nombre || 'No registrado' }} ({{ detailTargetJugadora()?.contacto_emergencia_parentesco || 'Familiar' }})</p>
+                    <p><strong>Teléfono de Emergencia:</strong> {{ detailTargetJugadora()?.contacto_emergencia_telefono || 'No disponible' }}</p>
+                  </div>
+                </div>
+
+              </div>
+
+              <div class="subdialog-footer">
+                <a 
+                  *ngIf="detailTargetJugadora()?.telefono_contacto" 
+                  [href]="'https://wa.me/' + detailTargetJugadora()?.telefono_contacto?.replace('+', '')?.replace(' ', '')" 
+                  target="_blank" 
+                  class="btn-whatsapp-direct">
+                  <span>💬 Enviar WhatsApp</span>
+                </a>
+                <button type="button" class="btn-sub-cancel" (click)="closeDetailModal()">Cerrar Cédula</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- SUBDIÁLOGO 4: CONFIRMAR ELIMINACIÓN            -->
+          <!-- ============================================== -->
+          <div class="player-subdialog-backdrop" *ngIf="showDeleteJugadoraModal()" (click)="closeDeleteJugadoraModal()">
+            <div class="player-subdialog-card card-delete-confirm" (click)="$event.stopPropagation()">
+              <div class="delete-icon-warning">⚠️</div>
+              <h4 class="delete-title">¿Dar de baja la cédula de "{{ jugadoraToDelete()?.nombre_deportivo }}"?</h4>
+              <p class="delete-desc">
+                Esta acción retirará a la jugadora del torneo y de las planillas oficiales.
+              </p>
+              <div class="delete-actions-row">
+                <button type="button" class="btn-sub-cancel" (click)="closeDeleteJugadoraModal()">Cancelar</button>
+                <button type="button" class="btn-confirm-delete" (click)="confirmDeleteJugadora()">Sí, dar de baja</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+

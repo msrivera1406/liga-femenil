@@ -1,0 +1,1024 @@
+@use 'styles/variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.rep-club-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  color: #2C2623;
+  font-family: $font-body;
+}
+
+// ==============================================
+// 1. TOAST / ALERTAS
+// ==============================================
+.rep-alert-toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-radius: 14px;
+  font-size: 13px;
+  animation: slideToast 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+  .toast-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+    }
+  }
+
+  .toast-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
+    strong {
+      font-size: 13.5px;
+      font-weight: 800;
+    }
+    span {
+      font-size: 12.5px;
+    }
+  }
+
+  &.success-toast {
+    background: rgba(22, 86, 68, 0.1);
+    border: 1.5px solid rgba(22, 86, 68, 0.3);
+    color: #165644;
+
+    .toast-icon {
+      background: #165644;
+      color: #FFFFFF;
+    }
+  }
+
+  &.error-toast {
+    background: rgba(217, 68, 38, 0.1);
+    border: 1.5px solid rgba(217, 68, 38, 0.3);
+    color: #D94426;
+
+    .toast-icon {
+      background: #D94426;
+      color: #FFFFFF;
+    }
+  }
+}
+
+// ==============================================
+// 2. TABS BAR
+// ==============================================
+.rep-tabs-bar {
+  display: flex;
+  gap: 8px;
+  background: #FAF7F2;
+  border: 1px solid rgba(46, 39, 36, 0.08);
+  border-radius: 14px;
+  padding: 4px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-btn {
+    flex: 1;
+    min-width: 140px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    color: #7A726B;
+    font-family: $font-body;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+
+    svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover:not(.active) {
+      background: rgba(46, 39, 36, 0.04);
+      color: #2C2623;
+    }
+
+    &.active {
+      background: #FFFFFF;
+      color: #165644;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      font-weight: 800;
+
+      svg {
+        transform: scale(1.1);
+      }
+    }
+  }
+}
+
+// ==============================================
+// 3. LAYOUT DIVIDIDO (SPLIT GRID)
+// ==============================================
+.rep-split-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+  align-items: start;
+
+  .form-column {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .preview-column {
+    position: sticky;
+    top: 10px;
+  }
+}
+
+// ==============================================
+// 4. PANELES Y FORMULARIOS
+// ==============================================
+.section-card-panel {
+  background: #FAF7F2;
+  border: 1.5px solid rgba(46, 39, 36, 0.08);
+  border-radius: 18px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .panel-header {
+    .panel-title {
+      font-family: $font-display;
+      font-size: 15.5px;
+      font-weight: 800;
+      color: #2C2623;
+      margin: 0 0 3px;
+      line-height: 1.25;
+    }
+
+    .panel-subtitle {
+      font-size: 12px;
+      color: #7A726B;
+      margin: 0;
+      line-height: 1.4;
+    }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: #4A423D;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+
+      .required-star {
+        color: #D94426;
+      }
+    }
+
+    .input-hint {
+      font-size: 11px;
+      color: #8F857D;
+    }
+  }
+
+  .form-grid-two {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+}
+
+// Input con icono decorativo
+.input-with-icon {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  .input-icon {
+    position: absolute;
+    left: 12px;
+    font-size: 15px;
+    pointer-events: none;
+    color: #8F857D;
+    z-index: 1;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 10px 14px 10px 38px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(46, 39, 36, 0.12);
+    background: #FFFFFF;
+    color: #2C2623;
+    font-family: $font-body;
+    font-size: 13.5px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+
+    &::placeholder {
+      color: #B4ACA5;
+      font-weight: 400;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #165644;
+      box-shadow: 0 0 0 3.5px rgba(22, 86, 68, 0.14);
+      background: #FFFFFF;
+    }
+  }
+}
+
+// Selector de escudo con avatar
+.crest-uploader-layout {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  .crest-avatar-preview {
+    width: 86px;
+    height: 86px;
+    border-radius: 50%;
+    background: #FFFFFF;
+    border: 2.5px solid #FFFFFF;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.1), 0 0 0 1.5px rgba(22, 86, 68, 0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    flex-shrink: 0;
+
+    .crest-img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .crest-placeholder {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      color: #8F857D;
+
+      svg {
+        width: 26px;
+        height: 26px;
+        stroke: currentColor;
+      }
+
+      span {
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+      }
+    }
+  }
+
+  .crest-upload-controls {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+
+    .btn-file-upload {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #165644;
+      color: #FFFFFF;
+      padding: 9px 16px;
+      border-radius: 12px;
+      font-size: 12.5px;
+      font-weight: 800;
+      cursor: pointer;
+      width: fit-content;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(22, 86, 68, 0.2);
+
+      svg {
+        width: 15px;
+        height: 15px;
+        stroke: currentColor;
+      }
+
+      &:hover {
+        background: #0D382C;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(22, 86, 68, 0.3);
+      }
+    }
+
+    .url-input-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .sub-label {
+        font-size: 11px;
+        color: #7A726B;
+        font-weight: 700;
+      }
+    }
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+// Presets de escudos
+.crest-presets-strip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(46, 39, 36, 0.1);
+
+  .presets-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #7A726B;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .presets-chips-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    .chip-preset-escudo {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #FFFFFF;
+      border: 1.5px solid rgba(46, 39, 36, 0.1);
+      border-radius: 999px;
+      padding: 4px 10px 4px 5px;
+      font-family: $font-body;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #4A423D;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      .mini-crest {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid #FFFFFF;
+      }
+
+      &:hover {
+        border-color: #165644;
+        background: rgba(22, 86, 68, 0.05);
+        color: #165644;
+      }
+
+      &.selected {
+        border-color: #165644;
+        background: rgba(22, 86, 68, 0.12);
+        color: #165644;
+        font-weight: 800;
+      }
+    }
+  }
+}
+
+// Selectores de colores de uniforme
+.colors-selectors-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+
+  .color-picker-box {
+    background: #FFFFFF;
+    border: 1.5px solid rgba(46, 39, 36, 0.08);
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .color-badge-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .color-dot {
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        border: 2px solid #FFFFFF;
+        flex-shrink: 0;
+      }
+
+      .color-title {
+        font-family: $font-display;
+        font-size: 13.5px;
+        font-weight: 800;
+        color: #2C2623;
+        margin: 0;
+      }
+
+      .color-desc {
+        font-size: 10.5px;
+        color: #8F857D;
+      }
+    }
+
+    .color-input-combo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .color-native-input {
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        padding: 0;
+        background: none;
+
+        &::-webkit-color-swatch-wrapper {
+          padding: 0;
+        }
+        &::-webkit-color-swatch {
+          border: 1.5px solid rgba(46, 39, 36, 0.15);
+          border-radius: 8px;
+        }
+      }
+
+      .color-hex-input {
+        flex: 1;
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1.5px solid rgba(46, 39, 36, 0.12);
+        font-family: monospace;
+        font-size: 13px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #2C2623;
+
+        &:focus {
+          outline: none;
+          border-color: #165644;
+        }
+      }
+    }
+
+    .color-swatches-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+
+      .swatch-btn {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        border: 2px solid #FFFFFF;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        transition: transform 0.18s ease;
+
+        &:hover {
+          transform: scale(1.15);
+        }
+
+        &.active {
+          box-shadow: 0 0 0 2px #165644, 0 2px 6px rgba(0, 0, 0, 0.2);
+          transform: scale(1.15);
+        }
+      }
+    }
+  }
+}
+
+.colors-banner-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  .preview-tag {
+    font-size: 11px;
+    font-weight: 800;
+    color: #7A726B;
+    text-transform: uppercase;
+  }
+
+  .jersey-stripe-preview {
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.2);
+
+    .stripe-label {
+      background: rgba(0, 0, 0, 0.45);
+      color: #FFFFFF;
+      backdrop-filter: blur(4px);
+      padding: 4px 12px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+    }
+  }
+}
+
+// ==============================================
+// 5. CREDENCIAL OFICIAL EN VIVO (LIVE CARD)
+// ==============================================
+.official-credential-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  border: 1.5px solid rgba(46, 39, 36, 0.08);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  position: relative;
+  transition: transform 0.25s ease;
+
+  .credential-ribbon {
+    background: linear-gradient(135deg, #165644 0%, #0D382C 100%);
+    color: #FFFFFF;
+    padding: 10px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .ribbon-text {
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      color: #F7D08A;
+      text-transform: uppercase;
+    }
+
+    .ribbon-season {
+      font-size: 9.5px;
+      font-weight: 800;
+      background: rgba(255, 255, 255, 0.16);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+  }
+
+  .credential-body {
+    padding: 22px 20px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+
+    .credential-crest-wrap {
+      position: relative;
+
+      .crest-halo {
+        width: 96px;
+        height: 96px;
+        border-radius: 50%;
+        background: #FFFFFF;
+        border: 3.5px solid #165644;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 0 0 2px rgba(255, 255, 255, 0.85);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        transition: border-color 0.2s ease;
+
+        .credential-crest-img {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          object-fit: cover;
+          display: block;
+        }
+
+        .credential-crest-placeholder {
+          font-size: 42px;
+        }
+      }
+    }
+
+    .credential-club-title {
+      font-family: $font-display;
+      font-size: 19px;
+      font-weight: 800;
+      color: #2C2623;
+      margin: 0;
+      line-height: 1.25;
+      max-width: 260px;
+      word-break: break-word;
+    }
+
+    .credential-badge-verified {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(22, 86, 68, 0.1);
+      color: #165644;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 800;
+
+      svg {
+        width: 12px;
+        height: 12px;
+        stroke: currentColor;
+      }
+    }
+
+    .credential-colors-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #7A726B;
+
+      .color-chips-group {
+        display: flex;
+        gap: 6px;
+
+        .color-chip-pill {
+          padding: 2px 10px;
+          border-radius: 999px;
+          color: #FFFFFF;
+          font-size: 9.5px;
+          font-weight: 800;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        }
+      }
+    }
+
+    .credential-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      width: 100%;
+      background: #FAF7F2;
+      border: 1px solid rgba(46, 39, 36, 0.08);
+      border-radius: 14px;
+      padding: 10px;
+
+      .cred-stat-cell {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        padding: 4px;
+
+        .c-label {
+          font-size: 8.5px;
+          font-weight: 800;
+          color: #7A726B;
+          letter-spacing: 0.5px;
+        }
+
+        .c-val {
+          font-family: $font-display;
+          font-size: 13.5px;
+          font-weight: 900;
+          color: #2C2623;
+
+          &.gold { color: #A37F33; }
+          &.emerald { color: #165644; }
+        }
+      }
+    }
+
+    .credential-roster-cta {
+      width: 100%;
+      background: linear-gradient(135deg, rgba(22, 86, 68, 0.08), rgba(197, 160, 89, 0.08));
+      border: 1.5px solid rgba(22, 86, 68, 0.2);
+      border-radius: 14px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: linear-gradient(135deg, rgba(22, 86, 68, 0.14), rgba(197, 160, 89, 0.14));
+        border-color: #165644;
+        transform: translateY(-1px);
+
+        .btn-roster-arrow {
+          background: #165644;
+          color: #FFFFFF;
+          transform: translateX(3px);
+        }
+      }
+
+      .roster-cta-info {
+        display: flex;
+        flex-direction: column;
+        text-align: left;
+
+        .cta-title {
+          font-family: $font-display;
+          font-size: 13px;
+          font-weight: 800;
+          color: #165644;
+        }
+
+        .cta-sub {
+          font-size: 11px;
+          color: #5D544D;
+          font-weight: 600;
+        }
+      }
+
+      .btn-roster-arrow {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        border: none;
+        background: #FFFFFF;
+        color: #165644;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        transition: all 0.2s ease;
+
+        svg {
+          width: 14px;
+          height: 14px;
+          stroke: currentColor;
+        }
+      }
+    }
+
+  }
+}
+
+// ==============================================
+// 6. BARRA INFERIOR DE ACCIONES (FOOTER BAR)
+// ==============================================
+.rep-modal-footer-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1.5px solid rgba(46, 39, 36, 0.08);
+  gap: 14px;
+  margin-top: 4px;
+
+  .footer-left-info {
+    font-size: 12.5px;
+    color: #7A726B;
+
+    strong {
+      color: #165644;
+    }
+  }
+
+  .footer-actions-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    .btn-action-cancel {
+      padding: 10px 18px;
+      border-radius: 12px;
+      border: 1.5px solid rgba(46, 39, 36, 0.12);
+      background: #FFFFFF;
+      color: #5D544D;
+      font-family: $font-body;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover:not(:disabled) {
+        background: #F5EFEB;
+        color: #2C2623;
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    }
+
+    .btn-action-save {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 22px;
+      border-radius: 12px;
+      border: none;
+      background: #165644;
+      color: #FFFFFF;
+      font-family: $font-body;
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 14px rgba(22, 86, 68, 0.3);
+
+      .btn-icon svg {
+        width: 15px;
+        height: 15px;
+        stroke: currentColor;
+      }
+
+      .spinner-mini {
+        width: 14px;
+        height: 14px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #FFFFFF;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+      }
+
+      &:hover:not(:disabled) {
+        background: #0D382C;
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(22, 86, 68, 0.4);
+      }
+
+      &:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+// ==============================================
+// 7. RESPONSIVIDAD AUDITADA (TABLET & MOBILE)
+// ==============================================
+@media (max-width: 960px) {
+  .rep-split-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+
+    .preview-column {
+      position: static;
+      order: -1; // En tablet la credencial se ve al inicio como resumen visual atractivo
+    }
+  }
+
+  .official-credential-card {
+    max-width: 480px;
+    margin: 0 auto;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .rep-club-container {
+    gap: 16px;
+  }
+
+  .rep-tabs-bar {
+    .tab-btn {
+      min-width: 110px;
+      font-size: 12px;
+      padding: 8px 10px;
+      gap: 5px;
+    }
+  }
+
+  .section-card-panel {
+    padding: 14px;
+    border-radius: 16px;
+
+    .form-grid-two {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+  }
+
+  .crest-uploader-layout {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+
+    .crest-upload-controls {
+      width: 100%;
+      align-items: center;
+
+      .btn-file-upload {
+        width: 100%;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+
+      .url-input-wrap {
+        width: 100%;
+      }
+    }
+  }
+
+  .colors-selectors-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .official-credential-card {
+    border-radius: 20px;
+    .credential-body {
+      padding: 16px 14px;
+      gap: 12px;
+
+      .credential-crest-wrap .crest-halo {
+        width: 76px;
+        height: 76px;
+      }
+
+      .credential-club-title {
+        font-size: 17px;
+      }
+    }
+  }
+
+  .rep-modal-footer-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+
+    .footer-left-info {
+      text-align: center;
+    }
+
+    .footer-actions-group {
+      display: grid;
+      grid-template-columns: 1fr 1.6fr;
+      width: 100%;
+
+      .btn-action-cancel,
+      .btn-action-save {
+        width: 100%;
+        justify-content: center;
+        box-sizing: border-box;
+      }
+    }
+  }
+}
+
+@keyframes slideToast {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

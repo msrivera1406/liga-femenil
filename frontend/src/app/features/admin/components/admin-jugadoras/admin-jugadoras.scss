@@ -1,0 +1,1748 @@
+@use 'styles/variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.pane-jugadoras {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  position: relative;
+
+  .jugadoras-top-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    background: #FAF7F2;
+    border: 1.5px solid rgba(46, 39, 36, 0.08);
+    border-radius: 20px;
+    padding: 12px 18px;
+
+    .jugadoras-nav-tabs {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+
+      .tab-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: #FFFFFF;
+        border: 1.5px solid rgba(46, 39, 36, 0.1);
+        border-radius: 999px;
+        padding: 8px 16px;
+        font-family: $font-body;
+        font-size: 13px;
+        font-weight: 800;
+        color: #5D544D;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+
+        svg {
+          width: 15px;
+          height: 15px;
+          stroke: currentColor;
+        }
+
+        .tab-counter {
+          background: rgba(46, 39, 36, 0.08);
+          color: #2C2623;
+          border-radius: 999px;
+          padding: 2px 8px;
+          font-size: 11px;
+          font-weight: 800;
+          transition: all 0.2s ease;
+
+          &.counter-alert {
+            background: #D94426;
+            color: #FFFFFF;
+          }
+        }
+
+        .pulse-indicator {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: #D94426;
+          animation: pulseMic 1.2s infinite;
+        }
+
+        &:hover {
+          background: #FFFFFF;
+          border-color: #165644;
+          color: #165644;
+          transform: translateY(-1px);
+        }
+
+        &.active {
+          background: linear-gradient(135deg, #165644, #1E7059);
+          border-color: transparent;
+          color: #FFFFFF;
+          box-shadow: 0 4px 14px rgba(22, 86, 68, 0.25);
+
+          .tab-counter {
+            background: rgba(255, 255, 255, 0.25);
+            color: #FFFFFF;
+          }
+        }
+
+        &.tab-btn-bolsa.active {
+          background: linear-gradient(135deg, #D94426, #E85D3F);
+          box-shadow: 0 4px 14px rgba(217, 68, 38, 0.3);
+        }
+      }
+    }
+
+    .jugadoras-toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+
+      .jugadoras-search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: #FFFFFF;
+        border: 1.5px solid rgba(46, 39, 36, 0.12);
+        border-radius: 999px;
+        padding: 6px 14px 6px 12px;
+        gap: 8px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+
+        &:focus-within {
+          border-color: #165644;
+          box-shadow: 0 0 0 3px rgba(22, 86, 68, 0.08);
+        }
+
+        svg {
+          width: 15px;
+          height: 15px;
+          stroke: #7A726B;
+          flex-shrink: 0;
+        }
+
+        .jugadoras-search-input {
+          border: none;
+          background: transparent;
+          font-family: $font-body;
+          font-size: 13px;
+          font-weight: 600;
+          color: #2C2623;
+          outline: none;
+          width: 200px;
+          transition: width 0.2s;
+
+          &::placeholder {
+            color: #A39B94;
+          }
+
+          &:focus {
+            width: 250px;
+          }
+        }
+
+        .btn-clear-search {
+          background: none;
+          border: none;
+          color: #7A726B;
+          cursor: pointer;
+          font-size: 12px;
+          padding: 2px;
+          border-radius: 50%;
+          line-height: 1;
+
+          &:hover {
+            color: #D94426;
+          }
+        }
+      }
+
+      .btn-add-player-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #165644, #1E7059);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 999px;
+        padding: 9px 20px;
+        font-family: $font-body;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 14px rgba(22, 86, 68, 0.25);
+
+        svg {
+          width: 16px;
+          height: 16px;
+          stroke: currentColor;
+        }
+
+        &:hover {
+          background: linear-gradient(135deg, #1E7059, #25856B);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 18px rgba(22, 86, 68, 0.32);
+        }
+      }
+    }
+  }
+
+  // Filtros secundarios (Club y Posición)
+  .jugadoras-subfilters-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    padding: 0 4px;
+
+    &.bolsa-info-bar {
+      background: rgba(217, 68, 38, 0.04);
+      border: 1px solid rgba(217, 68, 38, 0.15);
+      border-radius: 16px;
+      padding: 10px 16px;
+
+      .bolsa-banner-intro {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        .bolsa-badge-flash {
+          background: #D94426;
+          color: #FFFFFF;
+          padding: 4px 10px;
+          border-radius: 999px;
+          font-size: 11px;
+          font-weight: 800;
+          text-transform: uppercase;
+        }
+
+        p {
+          font-size: 12.5px;
+          font-weight: 600;
+          color: #5D544D;
+          margin: 0;
+        }
+      }
+    }
+
+    .filter-group-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .filter-label {
+        font-size: 11.5px;
+        font-weight: 800;
+        color: #7A726B;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .styled-filter-select {
+        background: #FFFFFF;
+        border: 1.5px solid rgba(46, 39, 36, 0.12);
+        border-radius: 12px;
+        padding: 6px 14px;
+        font-family: $font-body;
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #2C2623;
+        outline: none;
+        cursor: pointer;
+
+        &:focus {
+          border-color: #165644;
+        }
+      }
+
+      .position-pills {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+
+        .pos-pill {
+          background: #FFFFFF;
+          border: 1px solid rgba(46, 39, 36, 0.12);
+          border-radius: 999px;
+          padding: 4px 12px;
+          font-family: $font-body;
+          font-size: 11.5px;
+          font-weight: 700;
+          color: #7A726B;
+          cursor: pointer;
+          transition: all 0.18s ease;
+
+          &:hover {
+            border-color: #2C2623;
+            color: #2C2623;
+          }
+
+          &.active {
+            background: #2C2623;
+            color: #FFFFFF;
+            border-color: #2C2623;
+          }
+
+          &.pos-portera.active {
+            background: #7C3AED;
+            border-color: #7C3AED;
+          }
+
+          &.pos-defensa.active {
+            background: #2F6F94;
+            border-color: #2F6F94;
+          }
+
+          &.pos-medio.active {
+            background: #165644;
+            border-color: #165644;
+          }
+
+          &.pos-delantera.active {
+            background: #D94426;
+            border-color: #D94426;
+          }
+        }
+      }
+    }
+  }
+
+  // Cuadrícula de Jugadoras (Cédulas)
+  .jugadoras-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 18px;
+
+    // Tarjeta Wireframe para añadir jugadora (en Planteles)
+    .card-create-new-player {
+      border: 2px dashed rgba(22, 86, 68, 0.3);
+      background: rgba(22, 86, 68, 0.02);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px 14px;
+      cursor: pointer;
+      min-height: 290px;
+      height: 100%;
+
+      .create-player-circle {
+        width: 52px;
+        height: 52px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #165644, #1E7059);
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 20px rgba(22, 86, 68, 0.22);
+        margin-bottom: 12px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+        svg {
+          width: 24px;
+          height: 24px;
+          stroke: #FFFFFF;
+        }
+      }
+
+      .create-player-title {
+        font-family: $font-display;
+        font-size: 15px;
+        font-weight: 800;
+        color: #165644;
+        margin-bottom: 4px;
+      }
+
+      .create-player-sub {
+        font-size: 11px;
+        color: #7A726B;
+        margin: 0;
+        line-height: 1.35;
+        max-width: 170px;
+      }
+
+      &:hover {
+        border-color: #165644;
+        background: rgba(22, 86, 68, 0.05);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 24px rgba(22, 86, 68, 0.1);
+
+        .create-player-circle {
+          transform: scale(1.1) rotate(90deg);
+          background: linear-gradient(135deg, #1E7059, #25856B);
+        }
+      }
+    }
+
+    // ==============================================
+    // BASE COMÚN: TARJETAS DE JUGADORAS (PLANTEL & BOLSA)
+    // ==============================================
+    .jugadora-card-item {
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 16px 16px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      min-height: auto;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+
+      // 1. Avatar Circular Centrado y Estandarizado (mismas dimensiones y aspecto)
+      .cedula-avatar-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 6px 0 10px;
+        position: relative;
+
+        .avatar-frame {
+          width: 80px;
+          height: 80px;
+          min-width: 80px;
+          min-height: 80px;
+          border-radius: 50%;
+          overflow: hidden;
+          background: #FAF7F2;
+          border: 3px solid #FFFFFF;
+          box-shadow: 0 4px 16px rgba(46, 39, 36, 0.12);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          position: relative;
+          transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+          .avatar-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 20%;
+            display: block;
+            transition: transform 0.25s ease;
+          }
+
+          .ghost-avatar-visual {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FAF7F2, #E8E2D9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .ghost-icon {
+              font-size: 34px;
+              opacity: 0.8;
+            }
+          }
+
+          &.is-ghost {
+            border-color: rgba(22, 86, 68, 0.3);
+            background: #F4EFEB;
+          }
+        }
+
+        &:hover .avatar-photo {
+          transform: scale(1.08);
+        }
+
+        .ghost-badge-container {
+          min-height: 22px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          margin-top: 6px;
+        }
+
+        .ghost-protection-badge {
+          font-size: 10px;
+          font-weight: 800;
+          color: #165644;
+          background: rgba(22, 86, 68, 0.08);
+          border: 1px solid rgba(22, 86, 68, 0.2);
+          border-radius: 999px;
+          padding: 2px 8px;
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+        }
+      }
+
+      // 2. Bloque de Nombre y Submetas (Espaciado profesional)
+      .cedula-info-block {
+        text-align: center;
+        margin-bottom: 10px;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+
+        .player-sport-name {
+          font-family: $font-display;
+          font-size: 16px;
+          font-weight: 800;
+          color: #2C2623;
+          margin: 0 0 5px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .player-sub-meta {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          margin-bottom: 10px;
+
+          .pronoun-tag {
+            font-size: 10.5px;
+            font-weight: 800;
+            color: #165644;
+            background: rgba(22, 86, 68, 0.08);
+            border-radius: 999px;
+            padding: 2px 8px;
+            flex-shrink: 0;
+          }
+
+          .legal-name-sub {
+            font-size: 12px;
+            color: #7A726B;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 145px;
+          }
+        }
+      }
+
+      // 3. Chips de Posición
+      .cedula-pos-chip {
+        padding: 3px 9px;
+        border-radius: 999px;
+        font-size: 10.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        border: 1px solid transparent;
+        letter-spacing: 0.3px;
+
+        &.pos-portera {
+          background: rgba(124, 58, 237, 0.09);
+          color: #7C3AED;
+          border-color: rgba(124, 58, 237, 0.2);
+        }
+        &.pos-defensa {
+          background: rgba(47, 111, 148, 0.09);
+          color: #2F6F94;
+          border-color: rgba(47, 111, 148, 0.2);
+        }
+        &.pos-medio {
+          background: rgba(22, 86, 68, 0.09);
+          color: #165644;
+          border-color: rgba(22, 86, 68, 0.2);
+        }
+        &.pos-delantera {
+          background: rgba(217, 68, 38, 0.09);
+          color: #D94426;
+          border-color: rgba(217, 68, 38, 0.2);
+        }
+      }
+    }
+
+    // ==============================================
+    // TARJETA DE CÉDULA OFICIAL (PLANTELES)
+    // ==============================================
+    .player-cedula-card {
+      min-height: 290px;
+      padding: 14px 14px 12px;
+      border: 1.5px solid rgba(46, 39, 36, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        border-color: rgba(22, 86, 68, 0.25);
+      }
+
+      .cedula-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+        margin-bottom: 6px;
+
+        .cedula-dorsal-badge {
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          background: #FAF7F2;
+          border: 1.5px solid rgba(46, 39, 36, 0.12);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-family: $font-display;
+          font-size: 12px;
+          font-weight: 900;
+          color: #165644;
+          flex-shrink: 0;
+        }
+
+        .cedula-club-chip {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          background: #FAF7F2;
+          border-radius: 999px;
+          padding: 3px 8px;
+          max-width: 120px;
+
+          .mini-crest {
+            width: 16px;
+            height: 16px;
+            object-fit: cover;
+            border-radius: 50%;
+            flex-shrink: 0;
+            border: 1px solid #FFFFFF;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+          }
+
+          .club-short-name {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: #5D544D;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+
+      .cedula-avatar-center {
+        margin: 4px 0 6px;
+
+        .avatar-frame {
+          width: 74px;
+          height: 74px;
+          min-width: 74px;
+          min-height: 74px;
+        }
+
+        .ghost-badge-container {
+          min-height: 20px;
+          margin-top: 4px;
+        }
+      }
+
+      .cedula-info-block {
+        margin-bottom: 4px;
+        flex: 0 1 auto;
+
+        .player-sport-name {
+          font-size: 15px;
+          margin: 0 0 3px;
+        }
+
+        .player-sub-meta {
+          margin-bottom: 6px;
+          gap: 6px;
+
+          .pronoun-tag {
+            font-size: 10px;
+            padding: 1.5px 7px;
+          }
+
+          .legal-name-sub {
+            font-size: 11.5px;
+          }
+        }
+      }
+
+      .cedula-health-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        flex-wrap: wrap;
+        margin-top: 2px;
+
+        .health-chip {
+          background: #FAF7F2;
+          border: 1px solid rgba(46, 39, 36, 0.07);
+          border-radius: 6px;
+          padding: 2.5px 6px;
+          font-size: 9.5px;
+          font-weight: 700;
+          color: #5D544D;
+        }
+      }
+
+      .cedula-card-actions {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding-top: 8px;
+        margin-top: 10px;
+        border-top: 1px solid rgba(46, 39, 36, 0.06);
+
+        .btn-cedula-action {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          border: 1px solid rgba(46, 39, 36, 0.12);
+          background: #FAF7F2;
+          border-radius: 10px;
+          padding: 6px 8px;
+          font-family: $font-body;
+          font-size: 11px;
+          font-weight: 700;
+          color: #5D544D;
+          cursor: pointer;
+          transition: all 0.18s ease;
+          flex: 1;
+
+          svg {
+            width: 13px;
+            height: 13px;
+            stroke: currentColor;
+          }
+
+          &.btn-view-sheet:hover {
+            background: rgba(47, 111, 148, 0.1);
+            color: #2F6F94;
+            border-color: #2F6F94;
+          }
+
+          &.btn-transfer:hover {
+            background: rgba(22, 86, 68, 0.1);
+            color: #165644;
+            border-color: #165644;
+          }
+
+          &.btn-edit {
+            flex: 0 0 30px;
+            padding: 6px 0;
+            &:hover {
+              background: rgba(46, 39, 36, 0.08);
+              color: #2C2623;
+            }
+          }
+
+          &.btn-delete {
+            flex: 0 0 30px;
+            padding: 6px 0;
+            &:hover {
+              background: rgba(217, 68, 38, 0.1);
+              color: #D94426;
+              border-color: #D94426;
+            }
+          }
+        }
+      }
+    }
+
+    // ==============================================
+    // TARJETA DE SOLICITUDES (BOLSA LIBRE)
+    // ==============================================
+    .player-bolsa-card {
+      min-height: 415px;
+      padding: 16px 16px 14px;
+      border: 1.5px solid rgba(217, 68, 38, 0.18);
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(217, 68, 38, 0.12);
+        border-color: #D94426;
+      }
+
+      .bolsa-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+
+        .folio-tag {
+          font-family: $font-display;
+          font-size: 11px;
+          font-weight: 800;
+          color: #D94426;
+          background: rgba(217, 68, 38, 0.08);
+          padding: 3px 9px;
+          border-radius: 999px;
+          letter-spacing: 0.3px;
+        }
+      }
+
+      .bolsa-details-box {
+        background: #FAF7F2;
+        border: 1px solid rgba(46, 39, 36, 0.06);
+        border-radius: 12px;
+        padding: 10px 12px;
+        margin-top: auto;
+        text-align: left;
+        font-size: 11.5px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+
+        .detail-line {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          overflow: hidden;
+
+          .detail-label {
+            color: #7A726B;
+            font-size: 11px;
+            font-weight: 700;
+            min-width: 70px;
+            flex-shrink: 0;
+          }
+
+          .detail-value {
+            color: #2C2623;
+            font-weight: 700;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+
+            &.exp-badge {
+              background: rgba(22, 86, 68, 0.08);
+              color: #165644;
+              padding: 1px 6px;
+              border-radius: 4px;
+              font-size: 10.5px;
+            }
+          }
+
+          .phone-link {
+            color: #165644;
+            font-weight: 700;
+            text-decoration: none;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            &:hover { text-decoration: underline; }
+          }
+        }
+      }
+
+      .bolsa-card-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(46, 39, 36, 0.06);
+
+        .btn-fichar-primary {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          background: linear-gradient(135deg, #165644, #1E7059);
+          color: #FFFFFF;
+          border: none;
+          border-radius: 12px;
+          padding: 10px 14px;
+          font-family: $font-body;
+          font-size: 12.5px;
+          font-weight: 800;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          box-shadow: 0 4px 12px rgba(22, 86, 68, 0.2);
+
+          svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+          }
+
+          &:hover {
+            background: linear-gradient(135deg, #1E7059, #25856B);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(22, 86, 68, 0.3);
+          }
+        }
+
+        .bolsa-secondary-actions {
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          width: 100%;
+
+          .btn-bolsa-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            border: 1.5px solid rgba(46, 39, 36, 0.12);
+            background: #FAF7F2;
+            border-radius: 10px;
+            padding: 7px 10px;
+            font-family: $font-body;
+            font-size: 11.5px;
+            font-weight: 800;
+            color: #4A423E;
+            cursor: pointer;
+            transition: all 0.18s ease;
+
+            svg {
+              width: 13.5px;
+              height: 13.5px;
+              stroke: currentColor;
+              flex-shrink: 0;
+            }
+
+            &.btn-view-sheet {
+              flex: 1;
+              &:hover {
+                background: rgba(47, 111, 148, 0.1);
+                color: #2F6F94;
+                border-color: #2F6F94;
+                transform: translateY(-1px);
+              }
+            }
+
+            &.btn-edit {
+              flex: 0 0 34px;
+              height: 34px;
+              padding: 0;
+              &:hover {
+                background: rgba(46, 39, 36, 0.08);
+                color: #2C2623;
+                border-color: rgba(46, 39, 36, 0.25);
+                transform: translateY(-1px);
+              }
+            }
+
+            &.btn-delete {
+              flex: 0 0 34px;
+              height: 34px;
+              padding: 0;
+              color: #D94426;
+              border-color: rgba(217, 68, 38, 0.2);
+              background: rgba(217, 68, 38, 0.04);
+              &:hover {
+                background: rgba(217, 68, 38, 0.12);
+                color: #C03518;
+                border-color: #D94426;
+                transform: translateY(-1px);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .jugadoras-empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 40px 20px;
+      background: #FAF7F2;
+      border: 1.5px dashed rgba(46, 39, 36, 0.1);
+      border-radius: 20px;
+
+      .empty-icon {
+        font-size: 40px;
+        margin-bottom: 12px;
+      }
+
+      h4 {
+        font-family: $font-display;
+        font-size: 16px;
+        font-weight: 800;
+        color: #2C2623;
+        margin: 0 0 6px;
+      }
+
+      p {
+        font-size: 12.5px;
+        color: #7A726B;
+        margin: 0;
+      }
+    }
+  }
+
+  // ==============================================
+  // SUBDIÁLOGOS (ALTA, FICHAR, FICHA MÉDICA, BAJA)
+  // ==============================================
+  .player-subdialog-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(16, 26, 23, 0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeInSubdialog 0.2s ease;
+  }
+
+  .player-subdialog-card {
+    background: #FFFFFF;
+    border: 1.5px solid rgba(46, 39, 36, 0.1);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+    overflow: hidden;
+    animation: popUpSubdialog 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+    // Padding por defecto para el cuerpo del subdiálogo
+    .subdialog-body {
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    &.form-scrollable-card {
+      max-width: 640px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+
+      .subdialog-body {
+        overflow-y: auto;
+        padding: 20px 24px;
+        gap: 14px;
+      }
+    }
+
+    .subdialog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 26px;
+      background: #FAF7F2;
+      border-bottom: 1px solid rgba(46, 39, 36, 0.08);
+
+      .subdialog-title-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        .subdialog-icon {
+          font-size: 18px;
+        }
+
+        h4 {
+          font-family: $font-display;
+          font-size: 16.5px;
+          font-weight: 800;
+          color: #2C2623;
+          margin: 0;
+        }
+      }
+
+      .btn-subdialog-close {
+        background: transparent;
+        border: none;
+        font-size: 16px;
+        color: #7A726B;
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+
+        &:hover {
+          background: rgba(46, 39, 36, 0.08);
+          color: #2C2623;
+        }
+      }
+    }
+
+    // Formularios
+    .form-section-divider {
+      margin: 8px 0 2px;
+      padding-bottom: 6px;
+      border-bottom: 1.5px solid rgba(22, 86, 68, 0.15);
+
+      span {
+        font-family: $font-display;
+        font-size: 12px;
+        font-weight: 800;
+        color: #165644;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+    }
+
+    .form-grid-2cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-grid-2cols-nested {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .form-grid-3cols {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .form-field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+
+      .field-label {
+        font-size: 12px;
+        font-weight: 800;
+        color: #4A423E;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+
+      .field-help-hint {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #8F857D;
+        line-height: 1.35;
+        margin-top: 1px;
+      }
+
+      .styled-text-input, .styled-select-input, select {
+        width: 100%;
+        border: 1.5px solid rgba(46, 39, 36, 0.16);
+        border-radius: 12px;
+        padding: 11px 14px;
+        font-family: $font-body;
+        font-size: 13.5px;
+        font-weight: 600;
+        color: #2C2623;
+        background: #FFFFFF;
+        outline: none;
+        transition: all 0.18s ease;
+        box-sizing: border-box;
+
+        &:focus {
+          border-color: #165644;
+          box-shadow: 0 0 0 3.5px rgba(22, 86, 68, 0.12);
+        }
+      }
+    }
+
+    // Switch Ghost Player
+    .ghost-toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #FAF7F2;
+      border: 1.5px solid rgba(22, 86, 68, 0.2);
+      border-radius: 14px;
+      padding: 12px 14px;
+
+      .switch-control {
+        position: relative;
+        display: inline-block;
+        width: 44px;
+        height: 24px;
+        flex-shrink: 0;
+
+        input {
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+
+        .switch-slider {
+          position: absolute;
+          cursor: pointer;
+          inset: 0;
+          background-color: #C5BCB3;
+          transition: 0.3s;
+          border-radius: 24px;
+
+          &:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+          }
+        }
+
+        input:checked + .switch-slider {
+          background-color: #165644;
+        }
+
+        input:checked + .switch-slider:before {
+          transform: translateX(20px);
+        }
+      }
+
+      .ghost-toggle-text {
+        strong {
+          font-size: 12.5px;
+          font-weight: 800;
+          color: #2C2623;
+          display: block;
+        }
+        p {
+          font-size: 11px;
+          color: #7A726B;
+          margin: 2px 0 0;
+          line-height: 1.35;
+        }
+      }
+    }
+
+    // Modal Asignar / Fichar (AMPLIO, ESPACIOSO Y CON MÁRGENES GENEROSOS)
+    &.card-assign-player {
+      max-width: 520px;
+      border-radius: 24px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+
+      .assign-subdialog-body {
+        padding: 24px 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+
+      .assign-player-summary {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: linear-gradient(135deg, rgba(22, 86, 68, 0.06), rgba(22, 86, 68, 0.02));
+        border: 1.5px solid rgba(22, 86, 68, 0.18);
+        border-radius: 16px;
+        padding: 14px 18px;
+
+        .avatar-frame.mini {
+          width: 54px;
+          height: 54px;
+          min-width: 54px;
+          min-height: 54px;
+          border-radius: 50%;
+          overflow: hidden;
+          background: #E8E2D9;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 2px solid #FFFFFF;
+          box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+          flex-shrink: 0;
+
+          .avatar-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+
+          .ghost-icon {
+            font-size: 26px;
+          }
+        }
+
+        .assign-summary-info {
+          flex: 1;
+          min-width: 0;
+
+          .assign-player-name {
+            font-family: $font-display;
+            font-size: 16px;
+            font-weight: 800;
+            color: #165644;
+            display: block;
+            margin: 0 0 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .assign-badges-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+
+            .assign-origin-tag {
+              font-size: 11px;
+              font-weight: 700;
+              color: #7A726B;
+              background: rgba(46, 39, 36, 0.06);
+              padding: 2px 8px;
+              border-radius: 999px;
+            }
+          }
+        }
+      }
+
+      .styled-assign-select {
+        height: 46px;
+        cursor: pointer;
+      }
+
+      .assign-dorsal-input-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .input-dorsal {
+          width: 110px;
+          height: 46px;
+          text-align: center;
+          font-family: $font-display;
+          font-size: 18px;
+          font-weight: 800;
+          color: #165644;
+          flex-shrink: 0;
+        }
+
+        .dorsal-unit-badge {
+          font-size: 12px;
+          font-weight: 700;
+          color: #7A726B;
+        }
+      }
+    }
+
+    // Modal Ficha Completa
+    &.card-player-sheet {
+      max-width: 600px;
+
+      .sheet-body {
+        padding: 24px 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        max-height: 75vh;
+        overflow-y: auto;
+
+        .sheet-hero-box {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          background: #FAF7F2;
+          border: 1.5px solid rgba(46, 39, 36, 0.08);
+          border-radius: 18px;
+          padding: 16px 18px;
+
+          .avatar-frame.large {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #E8E2D9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #165644;
+            flex-shrink: 0;
+
+            .avatar-photo {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+
+            .ghost-icon {
+              font-size: 38px;
+            }
+          }
+
+          .sheet-hero-info {
+            .sheet-dorsal-tag {
+              display: inline-block;
+              font-family: $font-display;
+              font-size: 12px;
+              font-weight: 900;
+              color: #165644;
+              background: rgba(22, 86, 68, 0.1);
+              padding: 2px 8px;
+              border-radius: 6px;
+              margin-bottom: 4px;
+            }
+
+            .sheet-name {
+              font-family: $font-display;
+              font-size: 18px;
+              font-weight: 800;
+              color: #2C2623;
+              margin: 0 0 2px;
+            }
+
+            .sheet-legal {
+              font-size: 12px;
+              color: #7A726B;
+              margin: 0 0 8px;
+            }
+
+            .sheet-chips-line {
+              display: flex;
+              align-items: center;
+              gap: 6px;
+              flex-wrap: wrap;
+
+              .sheet-chip-pos {
+                background: #2C2623;
+                color: #FFFFFF;
+                font-size: 10.5px;
+                font-weight: 800;
+                padding: 2px 8px;
+                border-radius: 999px;
+              }
+
+              .sheet-chip-club {
+                background: rgba(22, 86, 68, 0.08);
+                color: #165644;
+                font-size: 10.5px;
+                font-weight: 800;
+                padding: 2px 8px;
+                border-radius: 999px;
+              }
+
+              .ghost-badge-pill {
+                background: rgba(22, 86, 68, 0.1);
+                color: #165644;
+                font-size: 10.5px;
+                font-weight: 800;
+                padding: 2px 8px;
+                border-radius: 999px;
+              }
+            }
+          }
+        }
+
+        .sheet-info-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+
+          .info-card-block {
+            background: #FAF7F2;
+            border-radius: 14px;
+            padding: 12px 14px;
+
+            h5 {
+              font-family: $font-display;
+              font-size: 12px;
+              font-weight: 800;
+              color: #165644;
+              text-transform: uppercase;
+              letter-spacing: 0.4px;
+              margin: 0 0 8px;
+            }
+
+            .info-item-row {
+              display: flex;
+              justify-content: space-between;
+              font-size: 12px;
+              margin-bottom: 6px;
+              &:last-child { margin-bottom: 0; }
+
+              .info-k { color: #7A726B; }
+              .info-v { color: #2C2623; font-weight: 700; }
+            }
+          }
+        }
+
+        .sheet-notes-section {
+          background: #FAF7F2;
+          border-radius: 14px;
+          padding: 12px 14px;
+
+          h5 {
+            font-family: $font-display;
+            font-size: 12.5px;
+            font-weight: 800;
+            color: #2C2623;
+            margin: 0 0 6px;
+          }
+
+          p {
+            font-size: 12px;
+            color: #5D544D;
+            margin: 0;
+            line-height: 1.4;
+          }
+        }
+      }
+    }
+
+    // Modal Confirmar Baja
+    &.card-delete-confirm {
+      max-width: 440px;
+      padding: 30px 26px;
+      text-align: center;
+      border-radius: 24px;
+
+      .delete-icon-warning {
+        font-size: 44px;
+        margin-bottom: 12px;
+      }
+
+      .delete-title {
+        font-family: $font-display;
+        font-size: 17.5px;
+        font-weight: 800;
+        color: #2C2623;
+        margin: 0 0 8px;
+        line-height: 1.35;
+      }
+
+      .delete-desc {
+        font-size: 13px;
+        color: #7A726B;
+        margin: 0 0 22px;
+        line-height: 1.45;
+      }
+
+      .delete-actions-row {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+
+        .btn-sub-cancel {
+          background: #FAF7F2;
+          border: 1.5px solid rgba(46, 39, 36, 0.15);
+          border-radius: 12px;
+          padding: 10px 20px;
+          font-family: $font-body;
+          font-size: 13px;
+          font-weight: 700;
+          color: #5D544D;
+          cursor: pointer;
+          transition: all 0.18s ease;
+
+          &:hover {
+            background: rgba(46, 39, 36, 0.08);
+            color: #2C2623;
+          }
+        }
+
+        .btn-confirm-delete {
+          background: #D94426;
+          border: none;
+          border-radius: 12px;
+          padding: 10px 24px;
+          font-family: $font-body;
+          font-size: 13px;
+          font-weight: 800;
+          color: #FFFFFF;
+          cursor: pointer;
+          transition: all 0.18s ease;
+          box-shadow: 0 4px 14px rgba(217, 68, 38, 0.25);
+
+          &:hover {
+            background: #C03518;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(217, 68, 38, 0.35);
+          }
+        }
+      }
+    }
+
+    .subdialog-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 16px 28px;
+      background: #FAF7F2;
+      border-top: 1px solid rgba(46, 39, 36, 0.08);
+
+      .btn-whatsapp-direct {
+        background: #25D366;
+        color: #FFFFFF;
+        text-decoration: none;
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-family: $font-body;
+        font-size: 12.5px;
+        font-weight: 800;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: all 0.18s ease;
+
+        &:hover {
+          background: #1EBE5D;
+          transform: translateY(-1px);
+        }
+      }
+
+      .btn-sub-cancel {
+        background: #FFFFFF;
+        border: 1.5px solid rgba(46, 39, 36, 0.15);
+        border-radius: 12px;
+        padding: 9px 20px;
+        font-family: $font-body;
+        font-size: 13px;
+        font-weight: 700;
+        color: #5D544D;
+        cursor: pointer;
+        transition: all 0.18s ease;
+
+        &:hover {
+          background: rgba(46, 39, 36, 0.06);
+          color: #2C2623;
+        }
+      }
+
+      .btn-sub-confirm {
+        background: linear-gradient(135deg, #165644, #1E7059);
+        border: none;
+        border-radius: 12px;
+        padding: 10px 24px;
+        font-family: $font-body;
+        font-size: 13.5px;
+        font-weight: 800;
+        color: #FFFFFF;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 14px rgba(22, 86, 68, 0.25);
+
+        &:hover {
+          background: linear-gradient(135deg, #1E7059, #25856B);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 18px rgba(22, 86, 68, 0.35);
+        }
+
+        &:disabled {
+          opacity: 0.55;
+          cursor: not-allowed;
+          transform: none;
+          box-shadow: none;
+        }
+      }
+    }
+  }
+
+}
+
+@keyframes fadeInSubdialog {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popUpSubdialog {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes slideDownToast {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseMic {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pingRing {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+
+@media (max-width: 640px) {
+  .jugadoras-top-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+
+    .jugadoras-nav-tabs {
+      width: 100%;
+      .tab-btn {
+        flex: 1;
+        justify-content: center;
+        font-size: 11.5px;
+        padding: 8px 10px;
+      }
+    }
+
+    .jugadoras-toolbar-actions {
+      flex-direction: column;
+      align-items: stretch;
+
+      .jugadoras-search-box .jugadoras-search-input {
+        width: 100%;
+        &:focus { width: 100%; }
+      }
+
+      .btn-add-player-primary {
+        justify-content: center;
+      }
+    }
+  }
+
+  .jugadoras-subfilters-bar {
+    flex-direction: column;
+    align-items: stretch;
+
+    .filter-group-item {
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+
+      .styled-filter-select {
+        width: 100%;
+      }
+
+      .position-pills {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+    }
+  }
+
+  .jugadoras-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .player-subdialog-card {
+    .form-grid-2cols, .form-grid-3cols, .sheet-info-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+

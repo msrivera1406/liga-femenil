@@ -1,0 +1,112 @@
+<!-- 3. CARRUSEL DE PARTIDOS DE LA PRÓXIMA JORNADA (3 A LA VEZ CON DESPLAZAMIENTO AUTOMÁTICO) -->
+<section class="matches-carousel-section" id="proximos-partidos" *ngIf="jornadaActual$ | async as jornada">
+  <div class="container" *ngIf="jornada.partidos && jornada.partidos.length > 0">
+    
+    <!-- Encabezado: Texto limpio con el nombre de la jornada -->
+    <div class="matches-carousel-header">
+      <div class="header-text-group">
+        <span class="section-tag">EN CANCHA ESTE DOMINGO</span>
+        <h2 class="section-title">Partidos · Jornada {{ jornada.numero_jornada }}</h2>
+      </div>
+
+      <!-- Controles de navegación manual (flechas discretas) -->
+      <div class="carousel-nav-arrows" *ngIf="getSlides(jornada.partidos).length > 1">
+        <button 
+          type="button" 
+          class="nav-arrow-btn" 
+          (click)="prevSlide(getSlides(jornada.partidos).length)" 
+          aria-label="Partidos anteriores"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M15 18l-6-6 6-6" />
+          </svg>
+        </button>
+        <button 
+          type="button" 
+          class="nav-arrow-btn" 
+          (click)="nextSlide(getSlides(jornada.partidos).length)" 
+          aria-label="Siguientes partidos"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M9 18l6-6-6-6" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Viewport del carrusel con pausa automática al pasar el mouse -->
+    <div 
+      class="carousel-viewport" 
+      (mouseenter)="pauseCarousel()" 
+      (mouseleave)="resumeCarousel()"
+    >
+      <div 
+        class="carousel-track" 
+        [style.transform]="'translateX(-' + (currentMatchSlide() * 100) + '%)'"
+      >
+        <!-- Cada slide muestra 3 partidos -->
+        <div class="carousel-slide" *ngFor="let slide of getSlides(jornada.partidos); let sIdx = index">
+          <div class="matches-triad-grid">
+            <div class="match-fixture-card" *ngFor="let partido of slide">
+              
+              <!-- Equipo Local -->
+              <div class="team-side local-side">
+                <div class="crest-box">
+                  <img 
+                    [src]="partido.equipo_local?.escudo_url" 
+                    [alt]="partido.equipo_local?.nombre" 
+                    class="team-crest-img" 
+                  />
+                </div>
+                <span class="team-title">{{ partido.equipo_local?.nombre }}</span>
+              </div>
+
+              <!-- Centro: VS y Horario -->
+              <div class="match-center-info">
+                <span class="vs-text">VS</span>
+                <div class="match-time-pill">
+                  <span>{{ partido.horario }} hrs</span>
+                </div>
+              </div>
+
+              <!-- Equipo Visitante -->
+              <div class="team-side away-side">
+                <div class="crest-box">
+                  <img 
+                    [src]="partido.equipo_visitante?.escudo_url" 
+                    [alt]="partido.equipo_visitante?.nombre" 
+                    class="team-crest-img" 
+                  />
+                </div>
+                <span class="team-title">{{ partido.equipo_visitante?.nombre }}</span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer del carrusel: Indicadores (dots) y enlace a calendario -->
+    <div class="carousel-footer-bar">
+      <div class="carousel-dots-group" *ngIf="getSlides(jornada.partidos).length > 1">
+        <button 
+          type="button" 
+          class="dot-indicator" 
+          *ngFor="let slide of getSlides(jornada.partidos); let dIdx = index"
+          [class.active]="currentMatchSlide() === dIdx"
+          (click)="setSlide(dIdx)"
+          [attr.aria-label]="'Ir a partidos ' + (dIdx * 3 + 1) + ' al ' + (dIdx * 3 + 3)"
+        ></button>
+      </div>
+
+      <a routerLink="/jornadas" class="btn-all-fixtures-link">
+        <span>Ver calendario completo de jornadas</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="arrow-svg">
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+
+  </div>
+</section>

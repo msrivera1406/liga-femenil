@@ -1,0 +1,95 @@
+<!-- 6. NUESTROS SERVICIOS & STAFF DE ENTRENADORAS -->
+<section class="services-trainers-section" id="servicios" *ngIf="entrenadores$ | async as trainers">
+  <div class="container">
+    <!-- Section Header -->
+    <div class="services-header">
+      <div class="services-header-left">
+        <div class="services-tag">
+          <span class="tag-icon">⚡</span>
+          <span>NUESTROS SERVICIOS & BIENESTAR</span>
+        </div>
+        <h2 class="services-title">
+          Staff Oficial de <span class="gradient-text">Entrenadores y Servicios</span>
+        </h2>
+      </div>
+
+      <div class="services-header-right">
+        <!-- Navigation Arrows for Carousel -->
+        <div class="trainers-nav-arrows">
+          <button type="button" class="trainer-nav-btn" (click)="scrollTrainers('left')" aria-label="Entrenadora anterior">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button type="button" class="trainer-nav-btn" (click)="scrollTrainers('right')" aria-label="Siguiente entrenadora">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Horizontal Carousel of Trainer Cards -->
+    <div class="trainers-carousel-track" #trainersTrack>
+      <article class="trainer-card" *ngFor="let trainer of trainers">
+        <!-- Card Photo / Header -->
+        <div class="trainer-card-header">
+          <img [src]="trainer.foto_url" [alt]="trainer.nombre_completo" class="trainer-photo" loading="lazy" />
+          <div class="trainer-photo-overlay"></div>
+          
+          <!-- Badges on Photo -->
+          <div class="trainer-badge-verified">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="badge-icon">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+            </svg>
+            <span>Staff Verificada</span>
+          </div>
+        </div>
+
+        <!-- Card Body -->
+        <div class="trainer-card-body">
+          <div class="trainer-identity">
+            <h3 class="trainer-name">{{ trainer.nombre_completo }}</h3>
+            <div class="trainer-zone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span>{{ trainer.zonas_cobertura }}</span>
+            </div>
+          </div>
+
+          <!-- Disciplines -->
+          <div class="trainer-disciplines-tags">
+            <span class="discipline-chip" *ngFor="let disc of getDisciplinasList(trainer.disciplinas)">
+              {{ disc }}
+            </span>
+          </div>
+
+          <!-- Bio -->
+          <p class="trainer-bio">{{ trainer.bio }}</p>
+
+          <!-- Availability -->
+          <div class="trainer-schedule-info">
+            <div class="schedule-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12 6 12 12 16 14"/>
+              </svg>
+            </div>
+            <span class="schedule-text">{{ getDisponibilidadResumen(trainer) }}</span>
+          </div>
+        </div>
+
+        <!-- Card Actions -->
+        <div class="trainer-card-footer">
+          <a [href]="getWhatsAppLink(trainer)" target="_blank" rel="noopener noreferrer" class="trainer-wa-btn" [title]="'Agendar sesión con ' + trainer.nombre_completo">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="wa-icon">
+              <path d="M17.472 14.382c-.301-.15-1.782-.879-2.057-.98-.276-.1-.476-.15-.676.15-.199.301-.775.98-.95 1.18-.175.2-.351.225-.651.075s-1.268-.468-2.416-1.492c-.893-.797-1.496-1.782-1.672-2.082-.175-.3-.019-.462.131-.611.136-.134.301-.35.451-.525.15-.176.2-.3.301-.5.1-.2.05-.375-.025-.525-.075-.15-.676-1.628-.926-2.23-.244-.585-.492-.506-.676-.515-.175-.008-.376-.01-.576-.01-.2 0-.526.075-.802.375-.276.301-1.052 1.028-1.052 2.508 0 1.48 1.077 2.91 1.227 3.111.15.201 2.12 3.238 5.136 4.542.717.311 1.277.496 1.713.635.72.229 1.376.197 1.895.12.578-.087 1.782-.729 2.032-1.433.251-.703.251-1.306.176-1.432-.075-.126-.275-.201-.576-.351z"/>
+              <path d="M12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.662 1.435 5.178L2 22l4.981-1.396A9.957 9.957 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18.2c-1.637 0-3.155-.494-4.423-1.341l-.317-.212-3.284.92.924-3.208-.233-.33A8.17 8.17 0 013.8 12c0-4.521 3.679-8.2 8.2-8.2 4.521 0 8.2 3.679 8.2 8.2 0 4.521-3.679 8.2-8.2 8.2z"/>
+            </svg>
+            <span>Agendar por WhatsApp</span>
+          </a>
+          <span class="trainer-guarantee-note">Atención directa y personalizada</span>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>

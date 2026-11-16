@@ -80,5 +80,45 @@ export const MOCK_ENTRENADORES: Entrenador[] = [
       sabado: { activo: true, horas: ['10:00 - 13:00'] },
       domingo: { activo: false, horas: [] }
     }
+  },
+  {
+    id: 5,
+    nombre_completo: 'Camila "Cami" Valenzuela',
+    disciplinas: 'Fútbol Femenil, Velocidad & Agilidad, Prevención de Lesiones',
+    zonas_cobertura: 'Coyoacán, Tlalpan, Benito Juárez, San Ángel',
+    bio: 'Directora técnica y preparadora con experiencia en torneos universitarios femeniles. Especialista en fundamentos de golpeo, velocidad de reacción y calentamiento preventivo.',
+    precio_sesion: 420,
+    telefono_publico: '+52 55 5678 9012',
+    activo: true,
+    foto_url: 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&auto=format&fit=crop&q=80',
+    disponibilidad_json: {
+      lunes: { activo: true, horas: ['07:00 - 09:00', '18:00 - 20:00'] },
+      martes: { activo: true, horas: ['07:00 - 09:00', '18:00 - 20:00'] },
+      miercoles: { activo: true, horas: ['07:00 - 09:00', '18:00 - 20:00'] },
+      jueves: { activo: true, horas: ['07:00 - 09:00', '18:00 - 20:00'] },
+      viernes: { activo: true, horas: ['07:00 - 09:00', '17:00 - 19:00'] },
+      sabado: { activo: true, horas: ['09:00 - 12:00'] },
+      domingo: { activo: false, horas: [] }
+    }
+  },
+  {
+    id: 6,
+    nombre_completo: 'Daniela "Dani" Orozco',
+    disciplinas: 'Autodefensa Urbana, Muay Thai, Fuerza & Resistencia',
+    zonas_cobertura: 'Cuauhtémoc, Roma Norte, Condesa, Tabacalera',
+    bio: 'Instructora de artes marciales mixtas y defensa personal integral. Talleres dinámicos para construir confianza, técnica efectiva de desvío y acondicionamiento cardiovascular.',
+    precio_sesion: 460,
+    telefono_publico: '+52 55 6789 0123',
+    activo: true,
+    foto_url: 'https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=600&auto=format&fit=crop&q=80',
+    disponibilidad_json: {
+      lunes: { activo: true, horas: ['06:30 - 08:30', '19:00 - 21:00'] },
+      martes: { activo: true, horas: ['06:30 - 08:30', '19:00 - 21:00'] },
+      miercoles: { activo: true, horas: ['06:30 - 08:30', '19:00 - 21:00'] },
+      jueves: { activo: true, horas: ['06:30 - 08:30', '19:00 - 21:00'] },
+      viernes: { activo: true, horas: ['06:30 - 08:30', '18:00 - 20:00'] },
+      sabado: { activo: true, horas: ['08:30 - 11:30'] },
+      domingo: { activo: false, horas: [] }
+    }
   }
 ];

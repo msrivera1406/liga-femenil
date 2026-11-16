@@ -1,0 +1,71 @@
+<!-- 4. PULSO DEL TORNEO (Top 4 Clasificación) -->
+<section class="standings-preview-section" id="tabla">
+  <div class="container">
+    <div class="section-header">
+      <div>
+        <span class="section-tag">TABLA GENERAL</span>
+        <h2 class="section-title">Líderes de la Competencia</h2>
+        <p class="section-sub">Apertura 2026 · Clasificación tras 4 jornadas disputadas</p>
+      </div>
+      <a routerLink="/posiciones" class="btn-link-action">
+        <span>Ver tabla completa (12 equipos)</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="sm-icon">
+          <path d="M5 12h14M12 5l7 7-7 7" />
+        </svg>
+      </a>
+    </div>
+
+    <div class="table-card" *ngIf="posiciones$ | async as posiciones">
+      <div class="table-responsive">
+        <table class="editorial-table">
+          <thead>
+            <tr>
+              <th class="th-pos">#</th>
+              <th class="th-team">Equipo</th>
+              <th class="th-num">PJ</th>
+              <th class="th-num">PG</th>
+              <th class="th-num">PP</th>
+              <th class="th-num">GF</th>
+              <th class="th-num">GC</th>
+              <th class="th-num">DG</th>
+              <th class="th-pts">PTS</th>
+              <th class="th-form">Racha</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of posiciones.slice(0, 4); let i = index" class="table-row">
+              <td class="td-pos">
+                <span class="pos-badge" [ngClass]="{'top-1': i === 0, 'top-playoff': i < 4}">{{ item.posicion }}</span>
+              </td>
+              <td class="td-team">
+                <div class="team-cell">
+                  <img [src]="item.escudo_url" [alt]="item.nombre_equipo" class="mini-crest" />
+                  <span class="cell-team-name">{{ item.nombre_equipo }}</span>
+                </div>
+              </td>
+              <td class="td-num">{{ item.pj }}</td>
+              <td class="td-num">{{ item.pg }}</td>
+              <td class="td-num">{{ item.pp }}</td>
+              <td class="td-num">{{ item.gf }}</td>
+              <td class="td-num">{{ item.gc }}</td>
+              <td class="td-num" [ngClass]="{'dg-pos': item.dg > 0, 'dg-neg': item.dg < 0}">
+                {{ item.dg > 0 ? '+' + item.dg : item.dg }}
+              </td>
+              <td class="td-pts">
+                <span class="pts-pill">{{ item.pts }}</span>
+              </td>
+              <td class="td-form">
+                <div class="form-bubbles">
+                  <span *ngFor="let f of item.forma_reciente" class="form-dot"
+                    [ngClass]="f === 'G' ? 'form-win' : 'form-loss'">
+                    {{ f }}
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>

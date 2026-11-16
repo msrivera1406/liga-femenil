@@ -1,0 +1,640 @@
+<div class="rep-dashboard-page">
+  <!-- Fondo oficial del panel con fondo_equipos.jpeg -->
+  <div class="rep-bg-wallpaper"></div>
+  <div class="rep-bg-overlay"></div>
+
+  <div class="rep-main-container relative-z">
+    
+    <!-- ============================================== -->
+    <!-- 1. NAVBAR FLOTANTE (Reciclada del admin)       -->
+    <!-- ============================================== -->
+    <header class="rep-navbar-capsule">
+      <div class="nav-brand-left">
+        <div class="nav-logo-circle">
+          <img src="/images/logo.png" alt="Liga Femenil" class="nav-logo-img" />
+        </div>
+        <div class="nav-headings">
+          <span class="nav-portal-tag">PORTAL REPRESENTANTE DE CLUB</span>
+          <h2 class="nav-title">Panel de Club</h2>
+        </div>
+      </div>
+
+      <!-- Centro: Mensaje de bienvenida y Club activo -->
+      <div class="nav-center-welcome">
+        <div class="welcome-text-group">
+          <span class="welcome-center-text">
+            ¡Bienvenida, {{ authService.currentUser()?.nombre_contacto || 'Capitana' }}!
+          </span>
+          <span class="welcome-team-sub" *ngIf="miEquipo() as eq">
+            Representante oficial de <strong>{{ eq.nombre }}</strong>
+          </span>
+        </div>
+      </div>
+
+      <div class="nav-actions-right">
+        <!-- Chip del club activo con escudo -->
+        <div class="club-profile-capsule" *ngIf="miEquipo() as eq" [title]="eq.nombre">
+          <img *ngIf="eq.escudo_url" [src]="eq.escudo_url" [alt]="eq.nombre" class="profile-crest-mini" />
+          <span *ngIf="!eq.escudo_url" class="profile-placeholder-mini">⚽</span>
+          <span class="profile-club-name">{{ eq.nombre }}</span>
+        </div>
+
+        <span class="nav-link-pill active">
+          <span class="pill-dot"></span>
+          <span>Dashboard</span>
+        </span>
+
+        <button type="button" class="btn-nav-logout" (click)="onLogout()" title="Cerrar sesión de representante">
+          <span>Cerrar sesión</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- ============================================== -->
+    <!-- 2. RESUMEN: TABLA ENFOCADA & PARTIDO DE FECHA   -->
+    <!-- ============================================== -->
+    <section class="rep-overview-grid">
+      
+      <!-- TARJETA 1: TABLA DE POSICIONES ENFOCADA EN TU EQUIPO -->
+      <article class="overview-card standings-overview-card">
+        <div class="card-top-bar">
+          <div class="title-with-icon">
+            <span class="card-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                <path d="M4 22h16"/>
+                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+              </svg>
+            </span>
+            <div>
+              <h3 class="card-heading">Tabla General de Posiciones</h3>
+              <span class="card-sub-hint">
+                Apertura 2026 · Enfoque en {{ miEquipo()?.nombre || 'tu club' }}
+              </span>
+            </div>
+          </div>
+
+          <span class="badge-tag-mini my-pos-pill" *ngIf="miPosicion() as pos">
+            Puesto #{{ pos.posicion }} de {{ posiciones().length }}
+          </span>
+        </div>
+
+        <!-- Banner de métricas destacadas de tu club -->
+        <div class="my-team-stats-strip" *ngIf="miPosicion() as myPos">
+          <div class="stat-box">
+            <span class="stat-label">LUGAR</span>
+            <span class="stat-value gold">#{{ myPos.posicion }}</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-box">
+            <span class="stat-label">PUNTOS</span>
+            <span class="stat-value emerald">{{ myPos.pts }} PTS</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-box">
+            <span class="stat-label">PARTIDOS</span>
+            <span class="stat-value">{{ myPos.pj }} PJ ({{ myPos.pg }}G-{{ myPos.pe }}E-{{ myPos.pp }}P)</span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat-box">
+            <span class="stat-label">DIFERENCIA</span>
+            <span class="stat-value" [ngClass]="{'dg-pos': myPos.dg > 0, 'dg-neg': myPos.dg < 0}">
+              {{ myPos.dg > 0 ? '+' + myPos.dg : myPos.dg }} DG
+            </span>
+          </div>
+        </div>
+
+        <!-- Mini Tabla de posiciones con highlight del equipo propio -->
+        <div class="standings-mini-table-wrapper" *ngIf="posiciones().length > 0; else loadingPosiciones">
+          <table class="standings-mini-table">
+            <thead>
+              <tr>
+                <th class="col-pos">#</th>
+                <th class="col-club">Club</th>
+                <th class="col-stat">PJ</th>
+                <th class="col-stat">DG</th>
+                <th class="col-pts">PTS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr 
+                *ngFor="let pos of posiciones()" 
+                [class.is-my-team-row]="pos.equipo_id === miEquipoId()">
+                
+                <td class="col-pos">
+                  <span class="pos-badge" [class.leader]="pos.posicion === 1" [class.is-my-team]="pos.equipo_id === miEquipoId()">
+                    {{ pos.posicion }}
+                  </span>
+                </td>
+
+                <td class="col-club">
+                  <div class="club-chip-mini">
+                    <img *ngIf="pos.escudo_url" [src]="pos.escudo_url" [alt]="pos.nombre_equipo" class="club-crest-mini" />
+                    <span class="club-name-mini">{{ pos.nombre_equipo }}</span>
+                    <span class="my-team-pill-badge" *ngIf="pos.equipo_id === miEquipoId()">TU CLUB</span>
+                  </div>
+                </td>
+
+                <td class="col-stat">{{ pos.pj }}</td>
+
+                <td class="col-stat" [ngClass]="{'dg-pos': pos.dg > 0, 'dg-neg': pos.dg < 0}">
+                  {{ pos.dg > 0 ? '+' + pos.dg : pos.dg }}
+                </td>
+
+                <td class="col-pts">
+                  <span class="pts-pill-mini" [class.my-pts]="pos.equipo_id === miEquipoId()">
+                    {{ pos.pts }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <ng-template #loadingPosiciones>
+          <div class="widget-loading-pulse">Cargando tabla de posiciones...</div>
+        </ng-template>
+      </article>
+
+      <!-- TARJETA 2: PARTIDO DE LA JORNADA DE TU EQUIPO -->
+      <article class="overview-card matches-overview-card team-match-card">
+        <div class="card-top-bar">
+          <div class="title-with-icon">
+            <span class="card-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </span>
+            <div>
+              <h3 class="card-heading">Calendario de Partidos de tu Club</h3>
+              <span class="card-sub-hint">
+                {{ currentJornada() ? 'Jornada ' + currentJornada()?.numero_jornada + ' · ' + currentJornada()?.fecha_domingo : 'Rol de Juego Oficial' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Selector de Jornada (‹ Jornada X de 11 ›) -->
+          <div class="carousel-nav-arrows" *ngIf="jornadas().length > 0">
+            <button type="button" class="btn-arrow" (click)="prevJornada()" [disabled]="selectedJornadaIndex() === 0" aria-label="Jornada anterior">‹</button>
+            <span class="carousel-counter">Jornada {{ selectedJornadaIndex() + 1 }} / {{ jornadas().length }}</span>
+            <button type="button" class="btn-arrow" (click)="nextJornada()" [disabled]="selectedJornadaIndex() === jornadas().length - 1" aria-label="Siguiente jornada">›</button>
+          </div>
+        </div>
+
+        <div class="matches-carousel-viewport" *ngIf="!isLoading(); else loadingMatch">
+          
+          <!-- Caso A: El equipo tiene partido en esta jornada -->
+          <div class="match-slide-card rep-match-slide" *ngIf="partidoDeMiEquipo() as match; else byeJornada">
+            
+            <!-- Barra de metadatos: horario, cancha y badge de estado -->
+            <div class="match-meta-pill">
+              <span class="meta-time">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                {{ match.horario }} hrs
+              </span>
+              <span class="meta-separator">•</span>
+              <span class="meta-venue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                {{ match.cancha }}
+              </span>
+              <span class="meta-separator">•</span>
+              <span class="match-status-badge" [ngClass]="'status-' + match.estado">
+                {{ match.estado === 'en_juego' ? 'En Juego' : (match.estado === 'finalizado' ? 'Finalizado' : 'Por Jugar') }}
+              </span>
+            </div>
+
+            <!-- Enfrentamiento visual: Local vs Visitante -->
+            <div class="teams-versus-row rep-teams-versus">
+              
+              <!-- Equipo Local -->
+              <div class="team-side local" [class.is-my-club]="match.equipo_local_id === miEquipoId() || match.equipo_local?.id === miEquipoId()">
+                <div class="crest-box">
+                  <img *ngIf="match.equipo_local?.escudo_url" [src]="match.equipo_local?.escudo_url" [alt]="match.equipo_local?.nombre" class="match-crest" />
+                  <span *ngIf="!match.equipo_local?.escudo_url" class="crest-placeholder">L</span>
+                </div>
+                <span class="match-team-name">{{ match.equipo_local?.nombre }}</span>
+                <span class="match-role-tag">
+                  Local
+                  <strong *ngIf="match.equipo_local_id === miEquipoId() || match.equipo_local?.id === miEquipoId()">· TU CLUB</strong>
+                </span>
+              </div>
+
+              <!-- Centro: Marcador o VS -->
+              <div class="versus-center-container">
+                <div *ngIf="match.estado === 'finalizado' || match.estado === 'en_juego'" class="score-result-badge">
+                  <span class="score-numbers">{{ match.goles_local }} - {{ match.goles_visitante }}</span>
+                  <span *ngIf="match.empate_minuto_18" class="penales-result-tag">
+                    Penales: {{ match.penales_local }} - {{ match.penales_visitante }}
+                  </span>
+                </div>
+
+                <div *ngIf="match.estado !== 'finalizado' && match.estado !== 'en_juego'" class="versus-center-circle">
+                  <span class="vs-text">VS</span>
+                </div>
+              </div>
+
+              <!-- Equipo Visitante -->
+              <div class="team-side visitante" [class.is-my-club]="match.equipo_visitante_id === miEquipoId() || match.equipo_visitante?.id === miEquipoId()">
+                <div class="crest-box">
+                  <img *ngIf="match.equipo_visitante?.escudo_url" [src]="match.equipo_visitante?.escudo_url" [alt]="match.equipo_visitante?.nombre" class="match-crest" />
+                  <span *ngIf="!match.equipo_visitante?.escudo_url" class="crest-placeholder">V</span>
+                </div>
+                <span class="match-team-name">{{ match.equipo_visitante?.nombre }}</span>
+                <span class="match-role-tag">
+                  Visita
+                  <strong *ngIf="match.equipo_visitante_id === miEquipoId() || match.equipo_visitante?.id === miEquipoId()">· TU CLUB</strong>
+                </span>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Caso B: Jornada de descanso para este equipo -->
+          <ng-template #byeJornada>
+            <div class="rep-bye-state">
+              <div class="bye-icon">☕</div>
+              <h4>Fecha de descanso</h4>
+              <p>Tu equipo no tiene partido asignado en la Jornada {{ currentJornada()?.numero_jornada }}. Aprovecha este domingo para entrenamiento técnico o recuperación física.</p>
+            </div>
+          </ng-template>
+
+        </div>
+
+        <ng-template #loadingMatch>
+          <div class="widget-loading-pulse">Cargando partidos de la jornada...</div>
+        </ng-template>
+      </article>
+
+    </section>
+
+    <!-- ============================================== -->
+    <!-- 2.5 ESTADÍSTICAS OFICIALES DEL CLUB            -->
+    <!-- ============================================== -->
+    <section class="rep-stats-section">
+      <div class="stats-header-wrap">
+        <span class="section-tag-gold">ESTADÍSTICAS OFICIALES DEL CLUB</span>
+        <h2 class="section-title">Rendimiento, Goleo y Control Disciplinario</h2>
+        <p class="section-desc">Balance oficial de goles marcados, solidez defensiva y estatus de amonestaciones de tus jugadoras.</p>
+      </div>
+
+      <!-- Franja Superior de KPIs Rápidos (4 cápsulas) -->
+      <div class="stats-kpis-strip">
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap icon-gf">
+            <span>⚽</span>
+          </div>
+          <div class="kpi-content">
+            <span class="kpi-label">GOLES A FAVOR</span>
+            <div class="kpi-val-row">
+              <span class="kpi-val emerald">{{ statsGolesFavor() }}</span>
+              <span class="kpi-sub">({{ statsPromedioGf() }} / PJ)</span>
+            </div>
+            <span class="kpi-footer-note">Mejor ofensiva del torneo</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap icon-gc">
+            <span>🛡️</span>
+          </div>
+          <div class="kpi-content">
+            <span class="kpi-label">SOLIDEZ DEFENSIVA</span>
+            <div class="kpi-val-row">
+              <span class="kpi-val">{{ statsGolesContra() }} GC</span>
+              <span class="kpi-sub">({{ statsVallasInvictas() }} a cero)</span>
+            </div>
+            <span class="kpi-footer-note">{{ statsPromedioGc() }} goles recibidos / PJ</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap icon-tarjetas">
+            <span>🟨</span>
+          </div>
+          <div class="kpi-content">
+            <span class="kpi-label">TARJETAS ACUMULADAS</span>
+            <div class="kpi-val-row">
+              <span class="kpi-val gold">{{ statsTotalAmarillas() }} 🟨</span>
+              <span class="kpi-sub">· 0 🟥</span>
+            </div>
+            <span class="kpi-footer-note">Sin jugadoras en capilla</span>
+          </div>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-icon-wrap icon-disponible">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
+          <div class="kpi-content">
+            <span class="kpi-label">PLANTEL HABILITADO</span>
+            <div class="kpi-val-row">
+              <span class="kpi-val emerald">100%</span>
+              <span class="kpi-sub">Elegibles</span>
+            </div>
+            <span class="kpi-footer-note">0 suspendidas para la Jornada {{ currentJornada()?.numero_jornada || '5' }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rejilla de 2 Tarjetas Gemelas: Goleo vs Disciplina -->
+      <div class="stats-twin-grid">
+        
+        <!-- Tarjeta 1: Tabla de Goleadoras de tu Club -->
+        <article class="stat-module-card module-goleadoras">
+          <div class="module-header-row">
+            <div class="module-title-group">
+              <span class="module-badge-icon icon-goal">👟</span>
+              <div>
+                <h3 class="module-title">Goleadoras de tu Club</h3>
+                <span class="module-subtitle">Anotadoras oficiales en tiempo regular</span>
+              </div>
+            </div>
+            <span class="badge-total-goals">{{ statsGolesFavor() }} Goles Totales</span>
+          </div>
+
+          <!-- Lista de Goleadoras del Club -->
+          <div class="scorers-list">
+            <div class="scorer-item" *ngFor="let g of clubGoleadoras(); let i = index">
+              <div class="scorer-rank-badge" [class.rank-1]="i === 0">
+                #{{ i + 1 }}
+              </div>
+
+              <div class="scorer-avatar">
+                <img *ngIf="g.foto_url" [src]="g.foto_url" [alt]="g.nombre" />
+                <span *ngIf="!g.foto_url" class="avatar-placeholder">#{{ g.dorsal }}</span>
+                <span class="dorsal-tag">#{{ g.dorsal }}</span>
+              </div>
+
+              <div class="scorer-info">
+                <div class="scorer-name-row">
+                  <h4 class="scorer-name">{{ g.nombre }}</h4>
+                  <span class="scorer-pos">{{ g.posicion }}</span>
+                </div>
+                <!-- Barra de progreso visual de goles -->
+                <div class="scorer-bar-wrap">
+                  <div class="scorer-bar-fill" [style.width.%]="(g.goles / statsGolesFavor()) * 100"></div>
+                </div>
+                <span class="scorer-percent-note">{{ g.partidosConGol }} de {{ miPosicion()?.pj || 4 }} partidos con gol</span>
+              </div>
+
+              <div class="scorer-goals-box">
+                <span class="goals-number">{{ g.goles }}</span>
+                <span class="goals-label">{{ g.goles === 1 ? 'GOL' : 'GOLES' }}</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Tarjeta 2: Semáforo Disciplinario y Fair Play -->
+        <article class="stat-module-card module-disciplina">
+          <div class="module-header-row">
+            <div class="module-title-group">
+              <span class="module-badge-icon icon-fairplay">🟨</span>
+              <div>
+                <h3 class="module-title">Control Disciplinario & Fair Play</h3>
+                <span class="module-subtitle">Estatus de amonestaciones y elegibilidad arbitral</span>
+              </div>
+            </div>
+            <span class="badge-status-ok">🟢 0 Suspendidas</span>
+          </div>
+
+          <!-- Banner de estado para la próxima jornada -->
+          <div class="eligibility-status-banner">
+            <div class="status-icon-glow">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <polyline points="9 12 11 14 15 10"/>
+              </svg>
+            </div>
+            <div class="status-text-block">
+              <strong>Plantel 100% Habilitado para la Jornada {{ currentJornada()?.numero_jornada || '5' }}</strong>
+              <span>Ninguna jugadora tiene suspensión activa por tarjeta roja ni acumulación de 3 amarillas.</span>
+            </div>
+          </div>
+
+          <!-- Lista de jugadoras amonestadas -->
+          <div class="disciplinary-list">
+            <div class="disciplinary-head-bar">
+              <span>Jugadora Amonestada</span>
+              <span>Acumulación</span>
+              <span>Riesgo</span>
+            </div>
+
+            <div class="disciplinary-row" *ngFor="let am of clubAmonestadas()">
+              <div class="disc-player-col">
+                <span class="disc-dorsal">#{{ am.dorsal }}</span>
+                <span class="disc-name">{{ am.nombre }}</span>
+                <span class="disc-pos">({{ am.posicion }})</span>
+              </div>
+
+              <div class="disc-cards-col">
+                <span class="yellow-card-chip">🟨</span>
+                <span class="cards-count-text">{{ am.amarillas }} {{ am.amarillas === 1 ? 'amarilla' : 'amarillas' }}</span>
+              </div>
+
+              <div class="disc-risk-col">
+                <span class="risk-badge" [ngClass]="am.amarillas >= 2 ? 'risk-high' : 'risk-safe'">
+                  {{ am.amarillas >= 2 ? '⚠️ En Capilla' : '🟢 Seguro (' + (3 - am.amarillas) + ' libres)' }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Estatus Fair Play Summary -->
+            <div class="fairplay-summary-footer">
+              <div class="fp-metric">
+                <span class="fp-label">PUNTOS FAIR PLAY</span>
+                <span class="fp-val">97 / 100</span>
+              </div>
+              <div class="fp-divider"></div>
+              <div class="fp-metric">
+                <span class="fp-label">TARJETAS ROJAS</span>
+                <span class="fp-val green">0 🟥</span>
+              </div>
+              <div class="fp-divider"></div>
+              <div class="fp-metric">
+                <span class="fp-label">REGLA ACUMULACIÓN</span>
+                <span class="fp-val">3 🟨 = 1 Fecha</span>
+              </div>
+            </div>
+
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- 3. MÓDULOS DE ADMINISTRACIÓN DE TU EQUIPO       -->
+    <!-- ============================================== -->
+    <section class="rep-services-section">
+      <div class="services-header-wrap">
+        <span class="section-tag-gold">MÓDULOS DE GESTIÓN OFICIAL</span>
+        <h2 class="section-title">Administración de tu Club</h2>
+        <p class="section-desc">Accede a las herramientas de control para actualizar la ficha de tu club y administrar el plantel de jugadoras oficiales.</p>
+      </div>
+
+      <!-- Rejilla de 2 tarjetas oficiales: Mi Club y Plantel de Jugadoras -->
+      <div class="services-grid two-cards-grid">
+        
+        <!-- Tarjeta 1: Mi Club y Escudo -->
+        <article class="service-card rep-card-club" (click)="openService('club')">
+          <div class="service-card-top">
+            <div class="service-icon-box icon-club">
+              <!-- SVG Escudo / Club -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="M12 6v12"/>
+                <path d="M8 10h8"/>
+              </svg>
+            </div>
+
+            <span class="service-cat-pill cat-identidad">
+              Identidad Oficial
+            </span>
+          </div>
+
+          <h3 class="service-card-title">Mi Club y Escudo</h3>
+          <p class="service-card-desc">
+            Modifica la identidad oficial de tu equipo: nombre representativo, escudo de juego, colores de local/visita, enlace de video destacado y redes sociales.
+          </p>
+
+          <div class="service-action-link">
+            <span>Gestionar Identidad del Club</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </div>
+        </article>
+
+        <!-- Tarjeta 2: Plantel de Jugadoras -->
+        <article class="service-card rep-card-jugadoras" (click)="openService('jugadoras')">
+          <div class="service-card-top">
+            <div class="service-icon-box icon-jugadoras">
+              <!-- SVG Jugadoras / Nómina -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+
+            <span class="service-cat-pill cat-plantel">
+              Plantel Registrado ({{ totalJugadoras() }} jugadoras)
+            </span>
+          </div>
+
+          <h3 class="service-card-title">Plantel de Jugadoras</h3>
+          <p class="service-card-desc">
+            Consulta la lista de tus jugadoras inscritas ({{ totalJugadoras() }} oficiales), asigna números de dorsal de juego, edita fotografías y mantén al día sus expedientes deportivos.
+          </p>
+
+          <div class="service-action-link">
+            <span>Gestionar Plantel de Jugadoras</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </div>
+        </article>
+
+      </div>
+    </section>
+
+    <!-- ============================================== -->
+    <!-- 4. MODAL DINÁMICO DE SERVICIOS (Lazy Loaded)   -->
+    <!-- ============================================== -->
+    <div class="rep-modal-backdrop" *ngIf="activeModal()" (click)="closeModal()">
+      <div class="rep-modal-card modal-wide-split" (click)="$event.stopPropagation()">
+        
+        <!-- Cabecera del modal -->
+        <div class="modal-header-row">
+          <div class="modal-title-group">
+            <div class="modal-header-icon-wrap" [ngClass]="'icon-' + activeModal()">
+              <svg *ngIf="activeModal() === 'club'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="M12 6v12"/>
+                <path d="M8 10h8"/>
+              </svg>
+              <svg *ngIf="activeModal() === 'jugadoras'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="modal-main-title">{{ currentModalData()?.title }}</h2>
+              <p class="modal-main-desc">{{ currentModalData()?.desc }}</p>
+            </div>
+          </div>
+
+          <button type="button" class="btn-close-modal" (click)="closeModal()" aria-label="Cerrar modal">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Cuerpo del modal interactivo con lazy loading -->
+        <div class="modal-workspace-body">
+          
+          <!-- Vista Servicio 1: Mi Club (Lazy Loaded con @defer) -->
+          @defer (when activeModal() === 'club') {
+            @if (activeModal() === 'club') {
+              <app-rep-club 
+                [equipoId]="miEquipoId()"
+                [initialEquipo]="miEquipo()"
+                [posicionTabla]="miPosicion()"
+                [totalJugadoras]="totalJugadoras()"
+                (cerrar)="closeModal()" 
+                (clubActualizado)="onClubActualizado($event)"
+                (irAJugadoras)="openService('jugadoras')">
+              </app-rep-club>
+            }
+          } @loading (minimum 150ms) {
+            <div class="service-pane-loading" *ngIf="activeModal() === 'club'">
+              <div class="loading-spinner"></div>
+              <span>Cargando identidad de tu club...</span>
+            </div>
+          }
+
+          <!-- Vista Servicio 2: Plantel de Jugadoras (Lazy Loaded con @defer) -->
+          @defer (when activeModal() === 'jugadoras') {
+            @if (activeModal() === 'jugadoras') {
+              <app-rep-jugadoras 
+                [equipoId]="miEquipoId()"
+                [equipoNombre]="miEquipo()?.nombre || 'Tu Club'"
+                [equipoEscudoUrl]="miEquipo()?.escudo_url || null"
+                (cerrar)="closeModal()"
+                (totalJugadorasChange)="totalJugadoras.set($event)"
+                (irAClub)="openService('club')">
+              </app-rep-jugadoras>
+            }
+          } @loading (minimum 150ms) {
+            <div class="service-pane-loading" *ngIf="activeModal() === 'jugadoras'">
+              <div class="loading-spinner"></div>
+              <span>Cargando nómina oficial de jugadoras...</span>
+            </div>
+          }
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>

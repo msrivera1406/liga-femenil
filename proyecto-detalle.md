@@ -10,7 +10,7 @@
 ## 2. Decisiones de Arquitectura y Stack Tecnológico
 * **Frontend:** Angular (Standalone Components, TypeScript estricto, Mobile-First).
 * **Backend Core:** PHP 8.x servido en Apache (XAMPP local) con conexión PDO a MySQL 8.x (`liga_femenil_db`, cotejamiento `utf8mb4_unicode_ci`) y phpMyAdmin. **Sin contenedores Docker.**
-* **Microservicio IA Satélite:** Python 3.10+ con FastAPI corriendo en `http://localhost:8000` para OCR multimodal de actas manuscritas y tareas de IA.
+* **Microservicio IA Satélite:** Python 3.10+ con Flask corriendo en `http://localhost:5000` (`ai-service/`). Ofrece OCR multimodal de cédulas manuscritas (Gemini) con matching difuso contra la plantilla, parser de incidencias por voz y generación de contenido para Instagram. Requiere `GEMINI_API_KEY` en `ai-service/.env` (no se versiona).
 * **Desacoplamiento del equipo (2 desarrolladores):**
   * **Compañero (Backend):** Base de datos, API REST en PHP, transacciones de partidos y servicio Python.
   * **Usuario (Frontend):** UI/UX en Angular, maquetación, animaciones, servicios reactivos y consumo de la API.
@@ -30,14 +30,14 @@
 ---
 
 ## 4. Pilares de Inclusión y Privacidad (Features Diferenciales)
+> El Buzón Seguro Anónimo se descartó del alcance.
+
 1. **Doble Capa de Identidad:**
    * *Datos públicos:* Nombre deportivo, pronombres y dorsal.
    * *Datos sensibles/privados:* Nombre legal, teléfono y contactos de emergencia (cifrados y visibles solo para la Directora para responsivas o seguros).
 2. **Modo "Ghost Player" (Protección de Imagen):**
    * Campo booleano `autoriza_imagen`. Si es `false`, la interfaz renderiza un avatar con silueta y dorsal en lugar de su fotografía para proteger su identidad laboral/personal.
-3. **Buzón Seguro Anónimo:**
-   * Formulario con generación de folio alfanumérico para reportar incidentes de cancha o discriminación sin comprometer la identidad de quien reporta.
-4. **Bolsa de Jugadoras Independientes:**
+3. **Bolsa de Jugadoras Independientes:**
    * Formulario reactivo para chicas sin equipo, con match por nivel deportivo y afinidad de convivencia para su asignación por parte de la Directora.
 
 ---
@@ -61,9 +61,9 @@
   * Textos/Datos: *Plus Jakarta Sans* o *Inter* (Sans-serif limpia y legible).
 * **Navegación Móvil:**
   * Experiencia de aplicación nativa mediante **Bottom Navigation Bar fija** en forma de cápsula (*pill floating nav*) con efecto vidrio translúcido (*backdrop-filter: blur*):
-    * 🏠 Inicio | 📅 Jornadas | 🏆 Posiciones | 🤝 Comunidad | 🛡️ Buzón
+    * 🏠 Inicio | 📅 Jornadas | 🏆 Posiciones | 🤝 Comunidad
 * **Animaciones Planificadas:**
-  * Scrollytelling suave con GSAP / ScrollTrigger (textos que emergen con desenfoque suave, tarjetas de partidos en cascada, parallax sutil en fotografías de jugadoras).
+  * Animaciones implementadas sin GSAP ni ScrollTrigger (textos que emergen con desenfoque suave, tarjetas de partidos en cascada, parallax sutil, hero con secuencia de frames en `public/frames2/`).
 
 ---
 
@@ -96,15 +96,20 @@ Rutas clave a consumir por el frontend:
 * `GET /api/equipos.php` (12 equipos y fichas con jugadoras públicas).
 * `POST /api/jugadoras/independientes.php` (Alta en bolsa).
 * `GET /api/entrenadores.php` (Catálogo con matriz horaria).
-* `POST /api/buzon/reportar.php` (Reporte anónimo).
 * `POST /api/admin/partidos/guardar-acta.php` (Captura transaccional de la Directora).
 
 ---
 
-## 9. Estado Actual del Frontend y Siguiente Paso
-* **Estado:** Se decidió migrar a un entorno limpio en Antigravity para evitar conflictos de versiones y tooling de Angular CLI reciente.
-* **Punto de reanudación:**
-  1. Configuración de estilos base (variables SCSS arena/dorado/orgullo).
-  2. Implementación de los modelos TypeScript basados en el DDL.
-  3. Creación de la barra de navegación flotante inferior (`BottomNav`) y layout responsive.
-  4. Maquetación del Landing Page con enfoque comunidad/movimiento y visualización de la tabla de posiciones.
+## 9. Estado Actual y Siguientes Pasos
+* **Frontend (Angular 22):** implementado con datos simulados (`environment.useMock: true`).
+  * Público: inicio (hero, partidos, posiciones, Instagram, entrenadores), jornadas, posiciones y comunidad (equipos, destacadas, bolsa de independientes).
+  * Login y portal de representante (capitana).
+  * Panel de la Directora: registrar partido (con escaneo de cédula por IA y dictado por voz), programar calendario, equipos, jugadoras, entrenadores y generador de contenido para Instagram.
+  * El login es demostrativo (credenciales locales, sesión en `localStorage`). Faltan guards de ruta.
+* **Base de datos (`database/`):** `init.sql` con el DDL, más seeds oficiales y scripts de sincronización de fotos y escudos.
+* **Servicio de IA (`ai-service/`):** Flask en el puerto 5000, con pruebas.
+* **Backend PHP (`backend/`):** solo existe `api/instagram/posts.php`.
+* **Pendiente:**
+  1. Endpoints PHP del contrato (sección 8) y autenticación real.
+  2. Cambiar `useMock` a `false` e integrar con la API real.
+  3. Guards de rutas y protección de datos sensibles.

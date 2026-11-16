@@ -64,4 +64,24 @@ export class TorneoService {
       dto
     );
   }
+
+  actualizarCalendarioJornada(jornadaId: number, fecha: string, partidos: Partido[]): Observable<ApiResponse<{ actualizado: boolean }>> {
+    if (environment.useMock) {
+      const idx = MOCK_JORNADAS.findIndex(j => j.id === jornadaId);
+      if (idx !== -1) {
+        MOCK_JORNADAS[idx].fecha_domingo = fecha;
+        MOCK_JORNADAS[idx].partidos = partidos.map(p => ({ ...p }));
+      }
+      return of({
+        success: true,
+        data: { actualizado: true },
+        message: 'Calendario oficial de la jornada actualizado correctamente.'
+      }).pipe(delay(250));
+    }
+    return this.http.post<ApiResponse<{ actualizado: boolean }>>(
+      `${this.apiUrl}/admin/jornadas/actualizar-calendario.php`,
+      { jornada_id: jornadaId, fecha_domingo: fecha, partidos }
+    );
+  }
 }
+

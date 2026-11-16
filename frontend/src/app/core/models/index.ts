@@ -8,3 +8,7 @@ export * from './partido.model';
 export * from './jornada.model';
 export * from './entrenador.model';
 export * from './posicion.model';
+export * from './instagram.model';
+export * from './ai-cedula.model';
+export * from './ai-voice.model';
+export * from './ai-ig.model';

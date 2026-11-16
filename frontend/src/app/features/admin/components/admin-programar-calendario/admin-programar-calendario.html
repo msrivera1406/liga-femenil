@@ -1,0 +1,236 @@
+        <div class="service-pane pane-programar-calendario">
+          
+          <!-- Notificación de guardado exitoso -->
+          <div class="registration-toast-success" *ngIf="calSuccessToast()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>{{ calSuccessToast() }}</span>
+          </div>
+
+          <!-- Barra de Control Superior de la Jornada -->
+          <div class="calendar-top-controls-card">
+            <div class="cal-jornada-selector-row">
+              <div class="jornada-badge-stepper">
+                <button type="button" class="btn-jornada-arrow" (click)="prevCalJornada()" title="Jornada anterior">‹</button>
+                <div class="jornada-current-info">
+                  <span class="jornada-tag">Torneo Apertura 2026</span>
+                  <h3 class="jornada-title">Jornada {{ calSelectedJornada()?.numero_jornada || 1 }} de 11</h3>
+                </div>
+                <button type="button" class="btn-jornada-arrow" (click)="nextCalJornada()" title="Siguiente jornada">›</button>
+              </div>
+
+              <!-- Selector de fecha dominical -->
+              <div class="cal-date-picker-group">
+                <label class="control-sublabel">Fecha del Domingo:</label>
+                <div class="styled-date-input-wrap">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                  </svg>
+                  <input type="date" [ngModel]="calFechaDomingo()" (ngModelChange)="calFechaDomingo.set($event)" class="styled-date-input" />
+                </div>
+              </div>
+
+              <!-- Indicador de Cancha Única -->
+              <div class="cal-venue-chip">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/>
+                  <circle cx="12" cy="10" r="3"/>
+                </svg>
+                <div class="venue-info">
+                  <span class="venue-label">Sede Oficial</span>
+                  <strong class="venue-name">Cancha Única Principal (CDMX)</strong>
+                </div>
+              </div>
+
+              <!-- Switch Borrador / Publicado -->
+              <div class="cal-publish-toggle-wrap">
+                <button 
+                  type="button" 
+                  class="btn-publish-pill" 
+                  [class.is-published]="calJornadaPublicada()" 
+                  (click)="toggleCalPublicada()"
+                  title="Alternar visibilidad del calendario">
+                  <span class="publish-dot"></span>
+                  <span>{{ calJornadaPublicada() ? 'Jornada Publicada' : 'Modo Borrador' }}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Barra de Acciones Inteligentes Rápidas -->
+            <div class="cal-quick-actions-bar">
+              <div class="actions-left-summary">
+                <span class="summary-pill">
+                  <strong>{{ calPartidos().length }}</strong> partidos programados
+                </span>
+                <span class="conflict-summary-pill" *ngIf="calConflictTimes().length > 0">
+                  ⚠️ <strong>{{ calConflictTimes().length }}</strong> horarios empalmados
+                </span>
+                <span class="ok-summary-pill" *ngIf="calConflictTimes().length === 0">
+                  ✨ Sin conflictos de horario
+                </span>
+              </div>
+
+              <div class="actions-right-buttons">
+                <button type="button" class="btn-quick-cal btn-cascade-hours" (click)="autoAssignSequentialTimes()" title="Asignar horarios escalonados consecutivos">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  <span>Auto-asignar Horarios en Cascada</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Banner de Advertencia si hay Empalmes en la Cancha Única -->
+          <div class="cal-conflict-banner" *ngIf="calConflictTimes().length > 0">
+            <div class="conflict-icon-wrap">⚠️</div>
+            <div class="conflict-text">
+              <strong>Atención: Conflicto de horario detectado en Cancha Única</strong>
+              <p>
+                Hay partidos asignados exactamente a la misma hora ({{ calConflictTimes().join(', ') }} hrs).
+                Al ser una sola cancha disponible, debes asignar horarios diferentes a cada partido para evitar empalmes.
+              </p>
+            </div>
+          </div>
+
+          <!-- LISTA DE TARJETAS DIRECTAS DE PARTIDOS -->
+          <div class="calendar-direct-cards-grid">
+            <div 
+              *ngFor="let match of calPartidos(); let i = index" 
+              class="match-direct-card"
+              [class.has-conflict]="hasTimeConflict(match.horario)"
+              [class.is-postponed]="match.estado === 'suspendido'">
+              
+              <!-- Cabecera de la tarjeta del partido -->
+              <div class="direct-card-top-bar">
+                <div class="match-order-badge">
+                  <span class="order-num">#{{ i + 1 }}</span>
+                  <span class="match-time-slot-tag" [class.badge-conflict]="hasTimeConflict(match.horario)">
+                    {{ match.horario }} hrs
+                  </span>
+                  <span *ngIf="hasTimeConflict(match.horario)" class="empalme-tag">
+                    ⚠️ Empalme
+                  </span>
+                  <span *ngIf="match.estado === 'suspendido'" class="postponed-tag">
+                    ⏸️ Pospuesto
+                  </span>
+                </div>
+
+                <!-- Selector de Horario Directo -->
+                <div class="direct-time-select-wrap">
+                  <label class="time-select-label">Hora inicio:</label>
+                  <select 
+                    class="styled-time-select" 
+                    [ngModel]="match.horario" 
+                    (ngModelChange)="setMatchTime(match.id, $event)">
+                    <option *ngFor="let t of allTimeSlotOptions" [value]="t">{{ t }} hrs</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Cuerpo del Enfrentamiento Visual -->
+              <div class="direct-versus-stage">
+                <!-- Equipo Local -->
+                <div class="team-direct-side local">
+                  <div class="team-crest-box">
+                    <img *ngIf="match.equipo_local?.escudo_url" [src]="match.equipo_local?.escudo_url" [alt]="match.equipo_local?.nombre" class="direct-crest" />
+                    <span *ngIf="!match.equipo_local?.escudo_url" class="direct-crest-placeholder">L</span>
+                  </div>
+                  <div class="team-direct-info">
+                    <strong class="team-direct-name">{{ match.equipo_local?.nombre }}</strong>
+                    <span class="role-badge role-local">Local</span>
+                  </div>
+                </div>
+
+                <!-- Botón central interactivo para Invertir Localía -->
+                <div class="direct-center-action">
+                  <button 
+                    type="button" 
+                    class="btn-swap-venues" 
+                    (click)="invertirLocalia(match.id)" 
+                    title="Invertir Local y Visitante (1 clic)">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                      <path d="m16 3 4 4-4 4"/>
+                      <path d="M20 7H4"/>
+                      <path d="m8 21-4-4 4-4"/>
+                      <path d="M4 17h16"/>
+                    </svg>
+                    <span class="swap-caption">Invertir</span>
+                  </button>
+                  <span class="vs-label">VS</span>
+                </div>
+
+                <!-- Equipo Visitante -->
+                <div class="team-direct-side visitante">
+                  <div class="team-crest-box">
+                    <img *ngIf="match.equipo_visitante?.escudo_url" [src]="match.equipo_visitante?.escudo_url" [alt]="match.equipo_visitante?.nombre" class="direct-crest" />
+                    <span *ngIf="!match.equipo_visitante?.escudo_url" class="direct-crest-placeholder">V</span>
+                  </div>
+                  <div class="team-direct-info">
+                    <strong class="team-direct-name">{{ match.equipo_visitante?.nombre }}</strong>
+                    <span class="role-badge role-visitante">Visitante</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Barra Inferior de la Tarjeta con Chips de Horario Rápido y Estado -->
+              <div class="direct-card-footer-bar">
+                <div class="quick-hours-chips">
+                  <span class="chips-hint">Horarios sugeridos:</span>
+                  <button 
+                    *ngFor="let slot of standardTimeSlots"
+                    type="button" 
+                    class="btn-time-chip" 
+                    [class.active]="match.horario === slot"
+                    (click)="setMatchTime(match.id, slot)">
+                    {{ slot }}
+                  </button>
+                </div>
+
+                <div class="match-card-extra-actions">
+                  <button 
+                    type="button" 
+                    class="btn-postpone-toggle" 
+                    [class.is-postponed]="match.estado === 'suspendido'"
+                    (click)="togglePostponedMatch(match.id)">
+                    <span>{{ match.estado === 'suspendido' ? 'Reanudar Partido' : 'Posponer Partido' }}</span>
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Barra de Guardado Inferior Fija -->
+          <div class="calendar-submit-sticky-bar">
+            <div class="save-status-info">
+              <span class="status-summary-text">
+                Jornada {{ calSelectedJornada()?.numero_jornada }} · {{ calPartidos().length }} partidos · Fecha: {{ calFechaDomingo() }}
+              </span>
+            </div>
+
+            <div class="save-buttons-group">
+              <button type="button" class="btn-cal-cancel" (click)="initCalendarForJornada()">
+                Descartar Cambios
+              </button>
+              <button 
+                type="button" 
+                class="btn-cal-save" 
+                [disabled]="calIsSaving()" 
+                (click)="guardarCalendarioJornada()">
+                <svg *ngIf="!calIsSaving()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                  <polyline points="17 21 17 13 7 13 7 21"/>
+                  <polyline points="7 3 7 8 15 8"/>
+                </svg>
+                <span>{{ calIsSaving() ? 'Guardando Calendario...' : 'Guardar Calendario Oficial de la Jornada' }}</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Vista Servicio 3: Equipos (Cuadrícula de Clubes con Alta, Edición, Eliminación y Vista Previa de Plantel) -->

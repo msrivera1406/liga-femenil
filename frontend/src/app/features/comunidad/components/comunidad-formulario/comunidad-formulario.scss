@@ -1,0 +1,447 @@
+@use 'styles/variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.relative-z {
+  position: relative;
+  z-index: 2;
+}
+
+.section-pill-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+
+  .pill-title-tag {
+    display: inline-flex;
+    align-items: center;
+    background: #FFFFFF;
+    border: 1.5px solid rgba(46, 39, 36, 0.14);
+    padding: 7px 18px;
+    border-radius: 999px;
+    font-family: $font-display;
+    font-size: 13px;
+    font-weight: 800;
+    color: #2C2623;
+    box-shadow: 0 3px 10px rgba(46, 39, 36, 0.05);
+    letter-spacing: 0.04em;
+
+    &.alt-pill {
+      background: #165644;
+      color: #FFFFFF;
+      border-color: #165644;
+    }
+  }
+
+  .pill-count-hint {
+    font-size: 13px;
+    font-weight: 700;
+    color: #6B625B;
+  }
+}
+
+// ==========================================
+// SECCIÓN 2: ÚNETE A NOSOTROS
+// ==========================================
+.section-formulario-wrapper {
+  padding: 56px 0 68px;
+  position: relative;
+  overflow: hidden;
+  background-color: #FAF7F2;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    opacity: 0.94;
+    filter: saturate(1.35) contrast(1.08) brightness(1.04);
+    z-index: 0;
+  }
+
+  .formulario-bg-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(250, 247, 242, 0.28) 0%,
+      rgba(250, 247, 242, 0.08) 40%,
+      rgba(250, 247, 242, 0.32) 100%
+    );
+    z-index: 1;
+    pointer-events: none;
+  }
+}
+
+.formulario-card-container {
+  position: relative;
+  z-index: 2;
+  border-radius: 32px;
+  overflow: hidden;
+  border: 2px solid rgba(155, 206, 193, 0.65);
+  box-shadow: 0 20px 50px rgba(46, 39, 36, 0.12), 0 2px 6px rgba(0, 0, 0, 0.02);
+
+  .formulario-inner-card {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(14px);
+    padding: 40px 48px;
+
+    .formulario-badge-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 800;
+      color: #D96552;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+
+      .tag-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #D96552;
+      }
+    }
+
+    .formulario-main-title {
+      font-family: $font-display;
+      font-size: clamp(24px, 3vw, 32px);
+      font-weight: 800;
+      color: #2C2623;
+      margin: 0 0 12px;
+
+      .coral-accent {
+        color: #D96552;
+      }
+    }
+
+    .formulario-intro-desc {
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: #5D544D;
+      margin: 0 0 28px;
+      max-width: 820px;
+    }
+
+    .form-section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: $font-display;
+      font-size: 15px;
+      font-weight: 800;
+      color: #2C2623;
+      margin: 24px 0 14px;
+
+      .section-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #165644;
+        color: #FFFFFF;
+        font-size: 12px;
+        font-weight: 800;
+      }
+
+      &.sensitive .section-num {
+        background: #D96552;
+      }
+    }
+
+    .form-row-cols {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+      margin-bottom: 14px;
+
+      &.three-cols {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      &.full-grid-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .form-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      label {
+        font-size: 12.5px;
+        font-weight: 700;
+        color: #4A423D;
+      }
+
+      input,
+      select {
+        width: 100%;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1.5px solid rgba(46, 39, 36, 0.14);
+        background: #FFFFFF;
+        color: #2C2623;
+        font-family: $font-body;
+        font-size: 13.5px;
+        font-weight: 500;
+        outline: none;
+        transition: all 0.2s ease;
+
+        &:focus {
+          border-color: #165644;
+          box-shadow: 0 0 0 3px rgba(22, 86, 68, 0.12);
+        }
+
+        &::placeholder {
+          color: #A8A19B;
+        }
+      }
+    }
+
+    // Caja de Privacidad
+    .form-privacy-box {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: #FAF7F2;
+      border: 1.5px solid rgba(46, 39, 36, 0.08);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-top: 18px;
+
+      .checkbox-option {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        cursor: pointer;
+
+        input[type="checkbox"] {
+          width: 18px;
+          height: 18px;
+          margin-top: 2px;
+          accent-color: #165644;
+          cursor: pointer;
+        }
+
+        .checkbox-label-text {
+          font-size: 12.5px;
+          line-height: 1.5;
+          color: #4A423D;
+
+          strong {
+            color: #2C2623;
+            display: block;
+          }
+
+          small {
+            color: #7A726B;
+          }
+        }
+
+        &.mandatory {
+          border-top: 1px solid rgba(46, 39, 36, 0.06);
+          padding-top: 10px;
+        }
+      }
+    }
+
+    // Barra de Acciones
+    .form-actions-bar {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 24px;
+
+      .btn-submit-registro {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: linear-gradient(135deg, #165644 0%, #1E7059 100%);
+        color: #FFFFFF;
+        font-family: $font-body;
+        font-size: 14px;
+        font-weight: 800;
+        padding: 14px 28px;
+        border-radius: 999px;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 6px 20px rgba(22, 86, 68, 0.25);
+        transition: all 0.25s ease;
+
+        svg {
+          width: 16px;
+          height: 16px;
+          transition: transform 0.2s ease;
+        }
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 26px rgba(22, 86, 68, 0.35);
+
+          svg {
+            transform: translateX(4px);
+          }
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+    }
+  }
+}
+
+// MODAL DE ÉXITO
+.success-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 16, 15, 0.68);
+  backdrop-filter: blur(8px);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: modalFade 0.25s ease;
+}
+
+.success-card {
+  background: #FFFFFF;
+  border-radius: 28px;
+  max-width: 480px;
+  width: 100%;
+  padding: 36px 32px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  animation: modalSlide 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  .success-icon-badge {
+    font-size: 40px;
+    margin-bottom: 12px;
+  }
+
+  .success-title {
+    font-family: $font-display;
+    font-size: 22px;
+    font-weight: 800;
+    color: #2C2623;
+    margin: 0 0 10px;
+  }
+
+  .success-message {
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #5D544D;
+    margin: 0 0 20px;
+  }
+
+  .folio-box {
+    background: #FAF7F2;
+    border: 1.5px dashed rgba(22, 86, 68, 0.4);
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 16px;
+
+    .folio-label {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #7A726B;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .folio-code {
+      font-family: $font-display;
+      font-size: 20px;
+      font-weight: 800;
+      color: #165644;
+      letter-spacing: 0.08em;
+    }
+  }
+
+  .next-step-hint {
+    font-size: 12px;
+    color: #7A726B;
+    margin: 0 0 24px;
+  }
+
+  .btn-ack-success {
+    background: #165644;
+    color: #FFFFFF;
+    border: none;
+    font-size: 13.5px;
+    font-weight: 700;
+    padding: 12px 28px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: #D96552;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+@keyframes modalFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalSlide {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 1024px) {
+  .formulario-inner-card {
+    padding: 32px 28px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .formulario-card-container .formulario-inner-card {
+    padding: 24px 18px !important;
+
+    .form-row-cols {
+      grid-template-columns: 1fr !important;
+      gap: 14px !important;
+
+      &.three-cols {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    .form-actions-bar .btn-submit-registro {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
