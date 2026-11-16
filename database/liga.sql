@@ -23,23 +23,6 @@ SET time_zone = "+00:00";
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `buzon_reportes`
---
-
-CREATE TABLE `buzon_reportes` (
-  `id` int(11) NOT NULL,
-  `folio` varchar(16) NOT NULL,
-  `partido_id` int(11) DEFAULT NULL,
-  `tipo_incidente` enum('acoso','discriminacion','violencia_verbal','violencia_fisica','otro') NOT NULL,
-  `descripcion` text NOT NULL,
-  `urgencia` enum('baja','media','alta','critica') DEFAULT 'media',
-  `estado` enum('pendiente','en_revision','atendido') DEFAULT 'pendiente',
-  `resolucion` text DEFAULT NULL,
-  `creado_en` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
 
 --
 -- Table structure for table `entrenadores`
@@ -396,14 +379,6 @@ INSERT INTO `usuarios` (`id`, `email`, `password_hash`, `rol`, `nombre_contacto`
 --
 
 --
--- Indexes for table `buzon_reportes`
---
-ALTER TABLE `buzon_reportes`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `folio` (`folio`),
-  ADD KEY `fk_buzon_partido` (`partido_id`);
-
---
 -- Indexes for table `entrenadores`
 --
 ALTER TABLE `entrenadores`
@@ -469,12 +444,6 @@ ALTER TABLE `usuarios`
 --
 
 --
--- AUTO_INCREMENT for table `buzon_reportes`
---
-ALTER TABLE `buzon_reportes`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT for table `entrenadores`
 --
 ALTER TABLE `entrenadores`
@@ -525,12 +494,6 @@ ALTER TABLE `usuarios`
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `buzon_reportes`
---
-ALTER TABLE `buzon_reportes`
-  ADD CONSTRAINT `fk_buzon_partido` FOREIGN KEY (`partido_id`) REFERENCES `partidos` (`id`) ON DELETE SET NULL;
 
 --
 -- Constraints for table `entrenadores`

@@ -1,7 +1,7 @@
 # Plataforma Digital - Liga de Fútbol Femenil & Comunidad Diversa
 
 ## 1. Visión y Propósito del Proyecto
-* **Naturaleza:** Plataforma integral para una liga amateur de fútbol 7/femenil en México (12 equipos oficiales, partidos dominicales), combinada con una comunidad segura y marketplace de entrenamiento físico a domicilio.
+* **Naturaleza:** Plataforma integral para una liga amateur de fútbol 7/femenil en México (11 equipos oficiales, partidos dominicales), combinada con una comunidad segura y marketplace de entrenamiento físico a domicilio.
 * **Misión institucional:** "Fútbol con orgullo. Más que una liga, una comunidad". Espacio inclusivo, seguro y de empoderamiento para mujeres y la comunidad LGBT+.
 * **Objetivo del concurso:** Desarrollar un sistema innovador, minimalista y de máxima usabilidad en 4 semanas para ganar un certamen tecnológico. El cliente principal a convencer es la **Directora del Programa**, a quien se le debe automatizar la captura operativa dominical y la visibilidad para patrocinios (marcas como Gatorade, fondos gubernamentales, ONU Mujeres).
 
@@ -18,7 +18,7 @@
 ---
 
 ## 3. Reglas de Negocio del Torneo Deportivo
-* **Equipos:** 12 escuadras oficiales en formato round-robin (todos contra todos, 11 jornadas dominicales, 6 partidos por jornada).
+* **Equipos:** 11 escuadras oficiales en formato round-robin (todos contra todos, 11 jornadas dominicales, 5 partidos por jornada; en cada jornada un equipo descansa).
 * **Duración:** 2 tiempos de 20 minutos con 5 minutos de descanso.
 * **Regla de desempate:** Si al minuto 18 del segundo tiempo persiste el empate, se define por tanda de penales.
 * **Puntuación oficial:** 
@@ -93,7 +93,7 @@ Todas las respuestas de PHP responden con la firma:
 Rutas clave a consumir por el frontend:
 * `GET /api/torneo/posiciones.php` (Tabla con PJ, PG, PE, PP, GF, GC, DG, Pts calculados).
 * `GET /api/torneo/jornadas.php?torneo_id=1` (Calendario de las 11 fechas con partidos).
-* `GET /api/equipos.php` (12 equipos y fichas con jugadoras públicas).
+* `GET /api/equipos.php` (11 equipos y fichas con jugadoras públicas).
 * `POST /api/jugadoras/independientes.php` (Alta en bolsa).
 * `GET /api/entrenadores.php` (Catálogo con matriz horaria).
 * `POST /api/admin/partidos/guardar-acta.php` (Captura transaccional de la Directora).
@@ -106,7 +106,7 @@ Rutas clave a consumir por el frontend:
   * Login y portal de representante (capitana).
   * Panel de la Directora: registrar partido (con escaneo de cédula por IA y dictado por voz), programar calendario, equipos, jugadoras, entrenadores y generador de contenido para Instagram.
   * El login es demostrativo (credenciales locales, sesión en `localStorage`). Faltan guards de ruta.
-* **Base de datos (`database/`):** `init.sql` con el DDL, más seeds oficiales y scripts de sincronización de fotos y escudos.
+* **Base de datos (`database/`):** `liga.sql` (esquema, datos y las vistas `vista_posiciones` y `vista_porteria`), más scripts de seed y scripts de sincronización de fotos y escudos.
 * **Servicio de IA (`ai-service/`):** Flask en el puerto 5000, con pruebas.
 * **Backend PHP (`backend/`):** solo existe `api/instagram/posts.php`.
 * **Pendiente:**
