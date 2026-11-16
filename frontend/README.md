@@ -1,59 +1,39 @@
-# Frontend
+# Frontend - Liga Femenil
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.5.
+Aplicación Angular 22 (componentes standalone, TypeScript estricto, mobile-first). Detalles del proyecto en [`../proyecto-detalle.md`](../proyecto-detalle.md).
 
-## Development server
+## Requisitos
+* Node.js y npm (ver `packageManager` en `package.json`).
 
-To start a local development server, run:
-
+## Comandos
 ```bash
-ng serve
+npm install
+npm start        # ng serve en http://localhost:4200/
+npm run build    # compila en dist/
+npm test         # pruebas con Vitest
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Configuración
+`src/environments/environment.ts`:
 
-## Code scaffolding
+| Variable | Descripción |
+|---|---|
+| `apiUrl` | API PHP (`http://localhost/liga-femenil/backend/api`) |
+| `aiApiUrl` | Servicio de IA Flask (`http://localhost:5000/api`) |
+| `useMock` | `true` usa los datos de `src/app/core/mocks/`. `false` llama a la API real |
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+## Estructura
+```
+src/app/
+  core/       modelos, mocks y servicios (torneo, equipos, jugadoras, entrenadores, auth, IA)
+  shared/     header, bottom-nav y avatar Ghost Player
+  features/   inicio, jornadas, posiciones, comunidad, auth, admin, representante
+src/styles/   variables SCSS del sistema de diseño
+public/       imágenes, escudos y frames del hero
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Rutas
+`/inicio`, `/jornadas`, `/posiciones`, `/comunidad`, `/login`, `/admin` (Directora) y `/representante` (capitana).
 
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Credenciales de demostración
+Mientras el login sea simulado: `admin` / `admin123` (Directora) y `capitana` / `equipo123` (representante). Se eliminan al integrar la autenticación real.
