@@ -1,0 +1,237 @@
+<div class="ig-studio-flow">
+
+  <!-- PASO 1: SELECCIONAR TIPO DE PUBLICACIÓN / HISTORIA -->
+  <div class="flow-step-section">
+    <div class="step-label-row">
+      <span class="step-number">1</span>
+      <span class="step-title">Selecciona el tipo de contenido</span>
+    </div>
+
+    <div class="type-selector-pills">
+      <button 
+        type="button" 
+        class="pill-btn" 
+        [class.active]="tipoContenido() === 'resultados_jornada'"
+        (click)="onTipoContenidoChange('resultados_jornada')">
+        Resultados de la Jornada
+      </button>
+
+      <button 
+        type="button" 
+        class="pill-btn" 
+        [class.active]="tipoContenido() === 'partido_destacado'"
+        (click)="onTipoContenidoChange('partido_destacado')">
+        Partido de la Fecha
+      </button>
+
+      <button 
+        type="button" 
+        class="pill-btn" 
+        [class.active]="tipoContenido() === 'tabla_posiciones'"
+        (click)="onTipoContenidoChange('tabla_posiciones')">
+        Tabla de Posiciones
+      </button>
+
+      <button 
+        type="button" 
+        class="pill-btn pill-story" 
+        [class.active]="tipoContenido() === 'goleadora_jornada'"
+        (click)="onTipoContenidoChange('goleadora_jornada')">
+        Story: Goleadora (9:16)
+      </button>
+
+      <button 
+        type="button" 
+        class="pill-btn pill-story" 
+        [class.active]="tipoContenido() === 'portera_segura'"
+        (click)="onTipoContenidoChange('portera_segura')">
+        Story: Portera (9:16)
+      </button>
+    </div>
+  </div>
+
+  <!-- PASO 2: SELECCIONAR JORNADA, FORMATO Y ESTILO -->
+  <div class="flow-step-section">
+    <div class="step-label-row">
+      <span class="step-number">2</span>
+      <span class="step-title">Jornada, formato y estilo</span>
+    </div>
+
+    <div class="params-row">
+      <div class="param-field">
+        <label>Jornada</label>
+        <select [ngModel]="selectedJornadaNumero()" (ngModelChange)="onJornadaChange($event)">
+          <option *ngFor="let j of jornadas()" [value]="j.numero_jornada">
+            Jornada {{ j.numero_jornada }} ({{ j.fecha_domingo }})
+          </option>
+        </select>
+      </div>
+
+      <div class="param-field">
+        <label>Formato de Imagen</label>
+        <select [ngModel]="formato()" (ngModelChange)="onFormatoChange($event)">
+          <option value="feed_4_5">Feed Vertical 4:5 (1080×1350 px)</option>
+          <option value="cuadrado_1_1">Cuadrado 1:1 (1080×1080 px)</option>
+          <option value="story_9_16">Story Vertical 9:16 (1080×1920 px)</option>
+        </select>
+      </div>
+
+      <div class="param-field">
+        <label>Estilo / Tono del Copy</label>
+        <select [(ngModel)]="tono">
+          <option value="emocionante">Emocionante & Vibrante</option>
+          <option value="comunitario">Comunitario & Seguro</option>
+          <option value="institucional">Institucional & Formal</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- PASO 3: BOTÓN DE GENERAR CON IA -->
+  <div class="flow-trigger-section">
+    <button 
+      type="button" 
+      class="btn-generate-ai" 
+      (click)="generarConIa()" 
+      [disabled]="isGeneratingAi()">
+      <span class="spinner-dot" *ngIf="isGeneratingAi()"></span>
+      <svg *ngIf="!isGeneratingAi()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <path d="M12 3v3m0 12v3M3 12h3m12 0h3M5.6 5.6l2.1 2.1m8.6 8.6l2.1 2.1M5.6 18.4l2.1-2.1m8.6-8.6l2.1-2.1"/>
+      </svg>
+      <span>{{ isGeneratingAi() ? 'Gemini está redactando la publicación...' : 'Generar Lámina y Copy con IA' }}</span>
+    </button>
+  </div>
+
+  <!-- ALERTA DE ERROR SI HUBIESE -->
+  <div class="flow-alert-error" *ngIf="errorMessage() as err">
+    <span>{{ err }}</span>
+    <button type="button" (click)="errorMessage.set(null)">✕</button>
+  </div>
+
+  <!-- PASO 4: ABAJO DE ESO, LA LÁMINA QUE SE GENERA CON SUS ACCIONES -->
+  <div class="flow-canvas-section">
+    
+    <!-- BARRA DE ACCIONES INMEDIATAS ARRIBA DE LA LÁMINA -->
+    <div class="canvas-actions-bar">
+      <div class="action-left-info">
+        <span class="canvas-tag">
+          {{ formato() === 'story_9_16' ? 'Story 9:16 (1080×1920)' : (formato() === 'cuadrado_1_1' ? 'Cuadrado 1:1 (1080×1080)' : 'Feed 4:5 (1080×1350)') }}
+        </span>
+        <span class="emoji-clean-tag">100% Sin Emojis</span>
+      </div>
+
+      <div class="action-buttons-group">
+        <button type="button" class="btn-subaction" (click)="openEditModal()" title="Editar títulos o pie de foto si deseas ajustarlos">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+          <span>Ajustar Textos</span>
+        </button>
+
+        <button type="button" class="btn-subaction" (click)="copiarCaption()" [class.btn-copied]="copySuccess()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          <span>{{ copySuccess() ? '¡Copiado!' : 'Copiar Caption' }}</span>
+        </button>
+
+        <button type="button" class="btn-primary-download" (click)="descargarImagen()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+            <polyline points="7 10 12 15 17 10"/>
+            <line x1="12" y1="15" x2="12" y2="3"/>
+          </svg>
+          <span>Descargar Lámina PNG</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- VISTA PRINCIPAL DE LA LÁMINA CENTRADA -->
+    <div class="canvas-centered-frame" [class.story-aspect]="formato() === 'story_9_16'">
+      <canvas #previewCanvas class="rendered-canvas"></canvas>
+    </div>
+
+    <!-- RESUMEN DEL CAPTION COPIABLE DIRECTAMENTE -->
+    <div class="caption-preview-card" *ngIf="caption()">
+      <div class="caption-header">
+        <div class="caption-header-left">
+          <span class="caption-title">Pie de Foto para Instagram</span>
+          <span class="ai-status-pill" [class.generated]="modelUsed()">
+            <span class="dot-status"></span>
+            <span>{{ modelUsed() ? ('Redactado con IA: ' + modelUsed()) : 'Boceto Base (Pulsa "Generar con IA" para redactar)' }}</span>
+          </span>
+        </div>
+        <button type="button" class="btn-copy-inline" (click)="copiarCaption()">
+          {{ copySuccess() ? '¡Copiado al portapapeles!' : 'Copiar Texto' }}
+        </button>
+      </div>
+      <p class="caption-body" [class.is-draft]="!modelUsed()">{{ caption() }}</p>
+      <div class="caption-tags" *ngIf="hashtags().length > 0">
+        <span class="tag-pill" *ngFor="let t of hashtags()">{{ t }}</span>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MODAL SECUNDARIO: AJUSTAR TEXTOS (NO ESTORBA EL FLUJO PRINCIPAL) -->
+  <div class="edit-modal-backdrop" *ngIf="isEditModalOpen()">
+    <div class="edit-modal-box">
+      <div class="edit-modal-header">
+        <h3>Ajustar Textos de la Lámina</h3>
+        <button type="button" class="btn-close-edit" (click)="closeEditModal()">✕</button>
+      </div>
+
+      <div class="edit-modal-body">
+        <div class="edit-field">
+          <label>Titular en la Lámina</label>
+          <input type="text" [(ngModel)]="titular" placeholder="Ej: RESULTADOS OFICIALES">
+        </div>
+
+        <div class="edit-field">
+          <label>Subtítulo o Bajada</label>
+          <input type="text" [(ngModel)]="subtitulo" placeholder="Ej: 4.ª Edición - Jornada 1">
+        </div>
+
+        <div class="edit-field" *ngIf="tipoContenido() === 'goleadora_jornada' || tipoContenido() === 'portera_segura'">
+          <div class="story-fields-mini">
+            <div>
+              <label>Nombre de la Jugadora</label>
+              <input type="text" [(ngModel)]="destacadaNombre">
+            </div>
+            <div>
+              <label>Club / Equipo</label>
+              <input type="text" [(ngModel)]="destacadaEquipo">
+            </div>
+            <div>
+              <label>Dorsal</label>
+              <input type="text" [(ngModel)]="destacadaDorsal">
+            </div>
+            <div class="span-all">
+              <label>Cifra Oficial en Cancha</label>
+              <input type="text" [(ngModel)]="destacadaEstadistica">
+            </div>
+          </div>
+        </div>
+
+        <div class="edit-field">
+          <label>Pie de Foto (Caption sin emojis)</label>
+          <textarea rows="5" [(ngModel)]="caption" placeholder="Redacción para Instagram..."></textarea>
+        </div>
+
+        <div class="edit-field">
+          <label>Dato Clave / Highlight</label>
+          <input type="text" [(ngModel)]="datoClave" placeholder="Dato destacado...">
+        </div>
+      </div>
+
+      <div class="edit-modal-footer">
+        <button type="button" class="btn-modal-done" (click)="closeEditModal()">
+          Guardar y Actualizar Lámina
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

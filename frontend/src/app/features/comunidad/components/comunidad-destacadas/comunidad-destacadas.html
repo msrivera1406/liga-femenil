@@ -1,0 +1,47 @@
+<!-- SECCIÓN 3: JUGADORAS DESTACADAS (Con fondo_destacadas.jpeg) -->
+<section class="section-destacadas-wrapper" id="jugadoras-destacadas">
+  <div class="destacadas-bg-overlay"></div>
+  <div class="container relative-z">
+    <!-- Encabezado con píldora blanca fiel al boceto -->
+    <div class="section-pill-header">
+      <span class="pill-title-tag">JUGADORAS DESTACADAS:</span>
+    </div>
+
+    <!-- Cuadrícula con fotos circulares discretas en tamaño (Fiel al boceto del usuario) -->
+    <div class="destacadas-discreet-grid">
+      <article class="destacada-pedestal" *ngFor="let jd of jugadorasDestacadas">
+        <!-- 1. Píldora de distinción superior (Como en el boceto) -->
+        <div class="award-pill-badge">
+          <span class="award-icon">{{ jd.badgeIcon }}</span>
+          <span class="award-name">{{ jd.premio }}</span>
+        </div>
+
+        <!-- 2. Foto circular discreta en tamaño -->
+        <div class="avatar-circle-wrapper">
+          <img 
+            [src]="jd.fotoUrl" 
+            [alt]="jd.jugadora" 
+            class="avatar-circle-img" 
+            loading="lazy" 
+            decoding="async" 
+          />
+          <span class="avatar-dorsal-chip" [title]="'Dorsal #' + jd.dorsal">#{{ jd.dorsal }}</span>
+        </div>
+
+        <!-- 3. Información legible y compacta de la jugadora -->
+        <div class="player-compact-card">
+          <h3 class="player-name">{{ jd.jugadora }}</h3>
+          <div class="player-team-chip">
+            <img [src]="jd.escudoEquipo" [alt]="jd.equipo" class="mini-crest" loading="lazy" decoding="async" />
+            <span>{{ jd.equipo }}</span>
+          </div>
+
+          <div class="player-stat-box">
+            <span class="stat-headline">{{ jd.metricaPrincipal }}</span>
+            <p class="stat-subtext">{{ jd.detalle }}</p>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>

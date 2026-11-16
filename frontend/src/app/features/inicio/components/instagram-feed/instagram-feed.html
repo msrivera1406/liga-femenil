@@ -1,0 +1,92 @@
+<!-- 6. INSTAGRAM FEED EN VIVO -->
+<section class="instagram-feed-section" id="comunidad" *ngIf="instagramPosts$ | async as igPosts">
+  <div class="container">
+    <div class="ig-section-header">
+      <div class="ig-header-left">
+        <div class="ig-live-tag">
+          <span class="live-dot"></span>
+          <span>COMUNIDAD EN TIEMPO REAL</span>
+        </div>
+        <h2 class="ig-section-title">Síguenos en la Cancha y en Redes</h2>
+        <p class="ig-section-subtitle">
+          Revive los mejores goles, fotos de las jornadas dominicales, anuncios y la vibra de nuestra comunidad en CDMX.
+        </p>
+      </div>
+
+      <div class="ig-header-right">
+        <a href="https://www.instagram.com/liga_fut_mujeres_diversas_mex/" target="_blank" rel="noopener noreferrer" class="ig-profile-badge" title="Visitar perfil oficial">
+          <div class="ig-gradient-ring">
+            <svg class="ig-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+            </svg>
+          </div>
+          <div class="ig-profile-info">
+            <div class="ig-handle-line">
+              <span class="ig-handle">&#64;liga_fut_mujeres_diversas_mex</span>
+              <span class="ig-check" title="Cuenta Oficial Verificada">✓</span>
+            </div>
+            <span class="ig-cta-sub">620+ seguidoras · Ver perfil ↗</span>
+          </div>
+        </a>
+
+        <div class="ig-nav-arrows">
+          <button type="button" class="ig-nav-btn" (click)="scrollIg('left')" aria-label="Anterior publicación">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <button type="button" class="ig-nav-btn" (click)="scrollIg('right')" aria-label="Siguiente publicación">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scrollable Track / Carousel -->
+    <div class="ig-feed-track" #igTrack>
+      <article class="ig-post-card" *ngFor="let post of igPosts">
+        <div class="ig-card-media-wrapper">
+          <img [src]="post.media_url" [alt]="post.caption" class="ig-card-img" loading="lazy" />
+
+          <!-- Media type badge (Reel or Album) -->
+          <div class="ig-media-badge" *ngIf="post.media_type === 'VIDEO'" title="Video / Reel">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+          <div class="ig-media-badge" *ngIf="post.media_type === 'CAROUSEL_ALBUM'" title="Galería / Álbum">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/></svg>
+          </div>
+
+          <!-- Overlay on hover -->
+          <a [href]="post.permalink" target="_blank" rel="noopener noreferrer" class="ig-card-overlay">
+            <div class="ig-overlay-top">
+              <span class="ig-logo-stamp">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+              </span>
+              <span class="ig-post-date">{{ post.timestamp | date:'d MMM' }}</span>
+            </div>
+
+            <p class="ig-overlay-caption">{{ post.caption }}</p>
+
+            <div class="ig-overlay-metrics">
+              <span class="ig-metric" *ngIf="post.likes_count">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                {{ post.likes_count }}
+              </span>
+              <span class="ig-metric" *ngIf="post.comments_count">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.99 4c0-1.1-.89-2-1.99-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h14l4 4-.01-18zM18 14H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+                {{ post.comments_count }}
+              </span>
+              <span class="ig-open-link">Ver post ↗</span>
+            </div>
+          </a>
+        </div>
+      </article>
+    </div>
+
+    <!-- Bottom pill / call to action -->
+    <div class="ig-feed-footer">
+      <a href="https://www.instagram.com/liga_fut_mujeres_diversas_mex/" target="_blank" rel="noopener noreferrer" class="ig-follow-pill">
+        <span>Ver todas las publicaciones y fotos en &#64;liga_fut_mujeres_diversas_mex</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </a>
+    </div>
+  </div>
+</section>

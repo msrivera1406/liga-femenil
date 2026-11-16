@@ -1,0 +1,405 @@
+<div class="jornadas-page">
+  <!-- 1. ENCABEZADO EDITORIAL & SELECTOR RÁPIDO -->
+  <header class="jornadas-hero">
+    <div class="container">
+      <div class="hero-top-row">
+        <div>
+          <div class="hero-badge">
+            <span class="badge-icon">⚽</span>
+            <span>CALENDARIO OFICIAL · APERTURA 2026</span>
+          </div>
+          <h1 class="jornadas-main-title">
+            Jornadas & <span class="gradient-text">Resultados</span>
+          </h1>
+          <p class="jornadas-subtitle">
+            Goles, marcadores y partidos definidos en muerte súbita de penales.
+          </p>
+        </div>
+
+        <button 
+          type="button" 
+          class="btn-back-actual" 
+          *ngIf="!isViewingActual()" 
+          (click)="goToActual()"
+          title="Regresar a la jornada de este domingo"
+        >
+          <span class="actual-star">★</span>
+          <span>Ir a Jornada Actual (J{{ JORNADA_ACTUAL_NUMERO }})</span>
+        </button>
+      </div>
+
+      <!-- Barra de píldoras rápidas por jornada -->
+      <nav class="jornadas-pills-bar" aria-label="Navegación de jornadas">
+        <button
+          type="button"
+          class="jornada-pill-btn"
+          *ngFor="let j of jornadas(); let idx = index"
+          [class.active]="currentIndex() === idx"
+          [class.is-actual]="j.numero_jornada === JORNADA_ACTUAL_NUMERO"
+          (click)="goToJornada(idx)"
+        >
+          <span class="pill-num">J{{ j.numero_jornada }}</span>
+          <span class="pill-dot" *ngIf="j.numero_jornada === JORNADA_ACTUAL_NUMERO">Actual</span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- 2. STAGE DEL TAMBOR VERTICAL 3D (DRUM WHEEL) -->
+  <main class="drum-container container" *ngIf="currentJornada() as current">
+    <div class="drum-wheel-stage">
+
+      <!-- A) FILA SUPERIOR: JORNADA ANTERIOR (VISTA PREVIA ATENUADA) -->
+      <section 
+        class="drum-row drum-row-prev" 
+        *ngIf="prevJornada() as prevJ" 
+        (click)="goPrev()"
+        title="Haz clic para subir a la Jornada {{ prevJ.numero_jornada }}"
+      >
+        <div class="drum-row-header">
+          <div class="drum-jornada-tag">
+            <span class="tag-title">Jornada {{ prevJ.numero_jornada }}</span>
+            <span class="tag-hint">▲ Subir</span>
+          </div>
+          <span class="drum-date-hint">{{ formatFechaLarga(prevJ.fecha_domingo) }}</span>
+        </div>
+
+        <div class="drum-cards-preview-grid">
+          <div class="preview-mini-card" *ngFor="let p of getThreePreviewMatches(prevJ)">
+            <div class="mini-team local">
+              <img [src]="p.equipo_local?.escudo_url" [alt]="p.equipo_local?.nombre" class="mini-crest" loading="lazy" decoding="async" />
+              <span class="mini-name">{{ p.equipo_local?.nombre }}</span>
+            </div>
+
+            <div class="mini-score-center">
+              <ng-container *ngIf="p.estado === 'finalizado'">
+                <span class="mini-score">{{ p.goles_local }} - {{ p.goles_visitante }}</span>
+                <span class="mini-pen-pill" *ngIf="p.empate_minuto_18">pen.</span>
+              </ng-container>
+              <ng-container *ngIf="p.estado !== 'finalizado'">
+                <span class="mini-vs">VS</span>
+                <span class="mini-time">{{ p.horario }}</span>
+              </ng-container>
+            </div>
+
+            <div class="mini-team away">
+              <img [src]="p.equipo_visitante?.escudo_url" [alt]="p.equipo_visitante?.nombre" class="mini-crest" loading="lazy" decoding="async" />
+              <span class="mini-name">{{ p.equipo_visitante?.nombre }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- B) FILA CENTRAL: JORNADA ACTUAL / EN FOCO + BOTONES GRANDES A LA DERECHA -->
+      <div class="active-stage-row">
+        <section class="drum-row drum-row-active">
+          <!-- Cabecera exclusiva para móvil: flechas tradicionales en la parte superior -->
+          <div class="mobile-jornada-nav-bar">
+            <button 
+              type="button" 
+              class="mobile-nav-arrow prev"
+              [disabled]="isFirstJornada()"
+              (click)="goPrev()"
+              aria-label="Jornada anterior"
+              [title]="isFirstJornada() ? 'Primera jornada alcanzada' : 'Ir a la jornada anterior'"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+              <span>Ant.</span>
+            </button>
+
+            <div class="mobile-jornada-center">
+              <div class="mobile-jornada-title-row">
+                <span class="mobile-j-name">Jornada {{ current.numero_jornada }}</span>
+                <span class="badge-actual-chip" *ngIf="current.numero_jornada === JORNADA_ACTUAL_NUMERO">
+                  <span class="pulse-green"></span>
+                  <span>Actual</span>
+                </span>
+                <span class="badge-status-chip" *ngIf="current.numero_jornada < JORNADA_ACTUAL_NUMERO">Finalizada</span>
+                <span class="badge-status-chip future" *ngIf="current.numero_jornada > JORNADA_ACTUAL_NUMERO">Próxima</span>
+              </div>
+              <span class="mobile-j-date">{{ formatFechaLarga(current.fecha_domingo) }}</span>
+            </div>
+
+            <button 
+              type="button" 
+              class="mobile-nav-arrow next"
+              [disabled]="isLastJornada()"
+              (click)="goNext()"
+              aria-label="Jornada siguiente"
+              [title]="isLastJornada() ? 'Última jornada alcanzada' : 'Ir a la jornada siguiente'"
+            >
+              <span>Sig.</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+
+          <!-- Cabecera de la jornada en foco (Escritorio) -->
+          <div class="active-jornada-header">
+            <div class="active-tag-group">
+              <div class="active-jornada-badge">
+                <span class="badge-label">Jornada {{ current.numero_jornada }}</span>
+                <span class="badge-actual-chip" *ngIf="current.numero_jornada === JORNADA_ACTUAL_NUMERO">
+                  <span class="pulse-green"></span>
+                  <span>Actual</span>
+                </span>
+                <span class="badge-status-chip" *ngIf="current.numero_jornada < JORNADA_ACTUAL_NUMERO">
+                  Finalizada
+                </span>
+                <span class="badge-status-chip future" *ngIf="current.numero_jornada > JORNADA_ACTUAL_NUMERO">
+                  Próxima
+                </span>
+              </div>
+
+              <span class="active-full-date">{{ formatFechaLarga(current.fecha_domingo) }}</span>
+            </div>
+          </div>
+
+          <!-- PESTAÑAS 3 Y 3 PARA MÓVIL (SÓLO VISIBLES EN RESPONSIVE) -->
+          <div class="mobile-matches-tabs" *ngIf="current.partidos && current.partidos.length > 3">
+            <button 
+              type="button" 
+              class="mobile-tab-btn" 
+              [class.active]="mobileMatchTab() === 'first'"
+              (click)="setMobileMatchTab('first')"
+            >
+              <span>Partidos 1 - 3</span>
+            </button>
+            <button 
+              type="button" 
+              class="mobile-tab-btn" 
+              [class.active]="mobileMatchTab() === 'second'"
+              (click)="setMobileMatchTab('second')"
+            >
+              <span>Partidos 4 - 6</span>
+            </button>
+            <button 
+              type="button" 
+              class="mobile-tab-btn tab-all" 
+              [class.active]="mobileMatchTab() === 'all'"
+              (click)="setMobileMatchTab('all')"
+            >
+              <span>Todos (6)</span>
+            </button>
+          </div>
+
+          <!-- Grid de los 6 partidos (3 columnas por fila, coincidiendo con el boceto) -->
+          <div 
+            class="active-matches-grid"
+            [class.filter-first]="mobileMatchTab() === 'first'"
+            [class.filter-second]="mobileMatchTab() === 'second'"
+          >
+            <article 
+              class="match-card" 
+              *ngFor="let match of current.partidos; let mIdx = index"
+              [class.batch-1]="mIdx < 3"
+              [class.batch-2]="mIdx >= 3"
+              (click)="match.incidencias && match.incidencias.length > 0 ? openMatchModal(match) : null"
+              [class.clickable]="match.incidencias && match.incidencias.length > 0"
+            >
+              <!-- Header de la tarjeta: Horario, cancha y estado -->
+              <div class="card-meta-bar">
+                <span class="meta-time-cancha">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  {{ match.horario }} hrs · {{ match.cancha }}
+                </span>
+
+                <span class="status-pill status-final" *ngIf="match.estado === 'finalizado'">Finalizado</span>
+                <span class="status-pill status-live" *ngIf="match.estado === 'en_juego'">
+                  <span class="live-dot"></span> EN VIVO
+                </span>
+                <span class="status-pill status-prog" *ngIf="match.estado === 'programado'">Programado</span>
+              </div>
+
+              <!-- Cuerpo del enfrentamiento -->
+              <div class="card-teams-body">
+                <!-- Equipo Local -->
+                <div class="team-col local" [class.winner]="match.ganador_id === match.equipo_local_id">
+                  <div class="crest-wrapper">
+                    <img [src]="match.equipo_local?.escudo_url" [alt]="match.equipo_local?.nombre" class="team-crest" loading="lazy" decoding="async" />
+                  </div>
+                  <span class="team-name">{{ match.equipo_local?.nombre }}</span>
+                </div>
+
+                <!-- Centro: Marcador o VS -->
+                <div class="score-center-col">
+                  <ng-container *ngIf="match.estado === 'finalizado'">
+                    <div class="score-numbers">
+                      <span [class.lead]="match.goles_local > match.goles_visitante">{{ match.goles_local }}</span>
+                      <span class="score-divider">-</span>
+                      <span [class.lead]="match.goles_visitante > match.goles_local">{{ match.goles_visitante }}</span>
+                    </div>
+
+                    <!-- Badge de penales en caso de empate al minuto 18 -->
+                    <div class="penalties-badge" *ngIf="match.empate_minuto_18" title="Muerte súbita de penales tras empate">
+                      <span>Penales: {{ match.penales_local }} - {{ match.penales_visitante }}</span>
+                    </div>
+                  </ng-container>
+
+                  <ng-container *ngIf="match.estado !== 'finalizado'">
+                    <span class="vs-label">VS</span>
+                    <span class="ready-badge">Por Jugar</span>
+                  </ng-container>
+                </div>
+
+                <!-- Equipo Visitante -->
+                <div class="team-col away" [class.winner]="match.ganador_id === match.equipo_visitante_id">
+                  <div class="crest-wrapper">
+                    <img [src]="match.equipo_visitante?.escudo_url" [alt]="match.equipo_visitante?.nombre" class="team-crest" loading="lazy" decoding="async" />
+                  </div>
+                  <span class="team-name">{{ match.equipo_visitante?.nombre }}</span>
+                </div>
+              </div>
+
+              <!-- Footer de la tarjeta con botón de incidencias si existen -->
+              <div class="card-footer" *ngIf="match.incidencias && match.incidencias.length > 0">
+                <span class="view-incidences-link">
+                  <span>Ver goles e incidencias ({{ match.incidencias.length }})</span>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </span>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <!-- BOTONES A LA DERECHA DE LA TARJETA EN MÁS GRANDE -->
+        <aside class="drum-side-controls" aria-label="Cambiar de jornada">
+          <button 
+            type="button" 
+            class="side-step-btn btn-prev"
+            [disabled]="isFirstJornada()"
+            (click)="goPrev()"
+            aria-label="Jornada anterior"
+            [title]="isFirstJornada() ? 'Primera jornada alcanzada' : 'Ver jornada anterior'"
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+            <span class="side-btn-tag" *ngIf="prevJornada() as pj">J{{ pj.numero_jornada }}</span>
+            <span class="side-btn-tag disabled-tag" *ngIf="isFirstJornada()">—</span>
+          </button>
+
+          <div class="side-indicator-pill" title="Jornada {{ current.numero_jornada }} de {{ jornadas().length }}">
+            <span class="ind-curr">J{{ current.numero_jornada }}</span>
+            <span class="ind-total">/ {{ jornadas().length }}</span>
+          </div>
+
+          <button 
+            type="button" 
+            class="side-step-btn btn-next"
+            [disabled]="isLastJornada()"
+            (click)="goNext()"
+            aria-label="Jornada siguiente"
+            [title]="isLastJornada() ? 'Última jornada alcanzada' : 'Ver jornada siguiente'"
+          >
+            <span class="side-btn-tag" *ngIf="nextJornada() as nj">J{{ nj.numero_jornada }}</span>
+            <span class="side-btn-tag disabled-tag" *ngIf="isLastJornada()">—</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </aside>
+      </div>
+
+      <!-- C) FILA INFERIOR: JORNADA SIGUIENTE (VISTA PREVIA ATENUADA) -->
+      <section 
+        class="drum-row drum-row-next" 
+        *ngIf="nextJornada() as nextJ" 
+        (click)="goNext()"
+        title="Haz clic para bajar a la Jornada {{ nextJ.numero_jornada }}"
+      >
+        <div class="drum-row-header">
+          <div class="drum-jornada-tag">
+            <span class="tag-title">Jornada {{ nextJ.numero_jornada }}</span>
+            <span class="tag-hint">▼ Bajar</span>
+          </div>
+          <span class="drum-date-hint">{{ formatFechaLarga(nextJ.fecha_domingo) }}</span>
+        </div>
+
+        <div class="drum-cards-preview-grid">
+          <div class="preview-mini-card" *ngFor="let p of getThreePreviewMatches(nextJ)">
+            <div class="mini-team local">
+              <img [src]="p.equipo_local?.escudo_url" [alt]="p.equipo_local?.nombre" class="mini-crest" loading="lazy" decoding="async" />
+              <span class="mini-name">{{ p.equipo_local?.nombre }}</span>
+            </div>
+
+            <div class="mini-score-center">
+              <ng-container *ngIf="p.estado === 'finalizado'">
+                <span class="mini-score">{{ p.goles_local }} - {{ p.goles_visitante }}</span>
+              </ng-container>
+              <ng-container *ngIf="p.estado !== 'finalizado'">
+                <span class="mini-vs">VS</span>
+                <span class="mini-time">{{ p.horario }}</span>
+              </ng-container>
+            </div>
+
+            <div class="mini-team away">
+              <img [src]="p.equipo_visitante?.escudo_url" [alt]="p.equipo_visitante?.nombre" class="mini-crest" loading="lazy" decoding="async" />
+              <span class="mini-name">{{ p.equipo_visitante?.nombre }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- 3. MODAL DE INCIDENCIAS & DETALLES DEL PARTIDO -->
+  <div class="match-modal-backdrop" *ngIf="selectedMatch() as match" (click)="closeMatchModal()">
+    <div class="match-modal-card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="modal-pre-tag">ACTA OFICIAL DEL ENCUENTRO</span>
+          <h3 class="modal-title">{{ match.equipo_local?.nombre }} vs {{ match.equipo_visitante?.nombre }}</h3>
+        </div>
+        <button type="button" class="btn-close-modal" (click)="closeMatchModal()" aria-label="Cerrar detalles">✕</button>
+      </div>
+
+      <!-- Marcador Principal -->
+      <div class="modal-score-banner">
+        <div class="modal-team-block">
+          <img [src]="match.equipo_local?.escudo_url" [alt]="match.equipo_local?.nombre" class="modal-crest" loading="lazy" decoding="async" />
+          <span class="modal-team-name">{{ match.equipo_local?.nombre }}</span>
+        </div>
+
+        <div class="modal-score-box">
+          <span class="modal-big-score">{{ match.goles_local }} - {{ match.goles_visitante }}</span>
+          <span class="modal-penalties" *ngIf="match.empate_minuto_18">
+            Definido en penales: {{ match.penales_local }} - {{ match.penales_visitante }}
+          </span>
+          <span class="modal-cancha-sub">{{ match.cancha }} · {{ match.horario }} hrs</span>
+        </div>
+
+        <div class="modal-team-block">
+          <img [src]="match.equipo_visitante?.escudo_url" [alt]="match.equipo_visitante?.nombre" class="modal-crest" loading="lazy" decoding="async" />
+          <span class="modal-team-name">{{ match.equipo_visitante?.nombre }}</span>
+        </div>
+      </div>
+
+      <!-- Lista de Incidencias -->
+      <div class="modal-incidences-body" *ngIf="match.incidencias && match.incidencias.length > 0">
+        <h4 class="incidences-heading">Minuto a Minuto & Goles</h4>
+        <ul class="incidences-list">
+          <li class="incidence-item" *ngFor="let inc of match.incidencias">
+            <span class="inc-icon" *ngIf="inc.tipo === 'gol'">⚽</span>
+            <span class="inc-icon" *ngIf="inc.tipo === 'tarjeta_amarilla'">🟨</span>
+            <span class="inc-icon" *ngIf="inc.tipo === 'tarjeta_roja'">🟥</span>
+            <span class="inc-minute">{{ inc.minuto }}'</span>
+            <span class="inc-player">{{ inc.nombre_jugadora }}</span>
+            <span class="inc-team">({{ inc.nombre_equipo }})</span>
+          </li>
+        </ul>
+      </div>
+
+      <div class="modal-notes" *ngIf="match.notas_mesa">
+        <span class="notes-label">Notas de mesa de control:</span>
+        <p class="notes-text">{{ match.notas_mesa }}</p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-modal-close" (click)="closeMatchModal()">Cerrar Acta</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. FOOTER EDITORIAL (Lazy loading al entrar en viewport) -->
+  @defer (on viewport) {
+    <app-landing-footer></app-landing-footer>
+  } @placeholder {
+    <div class="footer-lazy-placeholder"></div>
+  }
+</div>

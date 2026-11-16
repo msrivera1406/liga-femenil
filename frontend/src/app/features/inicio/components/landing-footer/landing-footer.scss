@@ -1,0 +1,102 @@
+@use 'styles/variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+// 7. FOOTER EDITORIAL
+.app-footer {
+  background: #FAF7F2;
+  border-top: $border-subtle;
+  padding: 48px 0 0;
+}
+
+.footer-container {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 36px;
+  padding-bottom: 40px;
+
+  @media (min-width: 768px) {
+    grid-template-columns: 1.5fr 1fr 1fr;
+  }
+}
+
+.footer-brand-col {
+  .footer-brand-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    .footer-logo-img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      filter: drop-shadow(0 2px 4px rgba(60, 45, 30, 0.1));
+    }
+  }
+
+  .footer-title {
+    font-family: $font-display;
+    font-weight: 700;
+    font-size: 15px;
+    color: #2E2724;
+    display: block;
+    line-height: 1.25;
+  }
+
+  .footer-desc {
+    font-size: 13px;
+    color: #7A726B;
+    line-height: 1.6;
+  }
+}
+
+.footer-links-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  .footer-col-title {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #8F6F33;
+    margin-bottom: 4px;
+  }
+
+  a,
+  span {
+    font-size: 13px;
+    color: #635A53;
+    transition: color 0.2s ease;
+  }
+
+  a:hover {
+    color: #D96552;
+  }
+}
+
+.footer-bottom {
+  border-top: $border-subtle;
+  padding: 18px 0;
+  font-size: 11px;
+  color: #A8A199;
+
+  .footer-bottom-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}

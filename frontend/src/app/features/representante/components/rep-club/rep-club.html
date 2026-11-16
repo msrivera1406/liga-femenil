@@ -1,0 +1,442 @@
+<div class="rep-club-container">
+  
+  <!-- Banner de Notificación de Éxito -->
+  <div class="rep-alert-toast success-toast" *ngIf="successMessage()" role="alert">
+    <div class="toast-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+        <polyline points="22 4 12 14.01 9 11.01"/>
+      </svg>
+    </div>
+    <div class="toast-content">
+      <strong>Operación exitosa</strong>
+      <span>{{ successMessage() }}</span>
+    </div>
+  </div>
+
+  <!-- Banner de Error -->
+  <div class="rep-alert-toast error-toast" *ngIf="errorMessage()" role="alert">
+    <div class="toast-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+    </div>
+    <div class="toast-content">
+      <strong>Atención</strong>
+      <span>{{ errorMessage() }}</span>
+    </div>
+  </div>
+
+  <!-- Barra de pestañas para navegación rápida en móvil y escritorio -->
+  <div class="rep-tabs-bar">
+    <button 
+      type="button" 
+      class="tab-btn" 
+      [class.active]="activeTab() === 'identidad'"
+      (click)="activeTab.set('identidad')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <span>Identidad & Escudo</span>
+    </button>
+
+    <button 
+      type="button" 
+      class="tab-btn" 
+      [class.active]="activeTab() === 'multimedia'"
+      (click)="activeTab.set('multimedia')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/>
+        <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/>
+        <circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>
+        <circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/>
+        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.563-2.512 5.563-5.563C22 6.5 17.5 2 12 2Z"/>
+      </svg>
+      <span>Colores de Juego</span>
+    </button>
+
+    <button 
+      type="button" 
+      class="tab-btn" 
+      [class.active]="activeTab() === 'contacto'"
+      (click)="activeTab.set('contacto')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="m22 8-6 4 6 4V8Z"/>
+        <rect x="2" y="6" width="14" height="12" rx="2"/>
+      </svg>
+      <span>Video & Contacto</span>
+    </button>
+  </div>
+
+  <!-- Layout dividido: Formulario oficial + Credencial en vivo -->
+  <div class="rep-split-grid">
+    
+    <!-- Columna Izquierda: Formulario interactivo -->
+    <div class="form-column">
+      
+      <!-- ============================================== -->
+      <!-- PESTAÑA 1: IDENTIDAD & ESCUDO                  -->
+      <!-- ============================================== -->
+      <section class="tab-pane-content" *ngIf="activeTab() === 'identidad'">
+        <div class="section-card-panel">
+          <div class="panel-header">
+            <h4 class="panel-title">Nombre Oficial del Equipo</h4>
+            <p class="panel-subtitle">Este nombre figurará en tablas de posiciones, cédulas arbitrales y redes oficiales.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="nombreClub" class="form-label">
+              <span>Nombre representativo</span>
+              <span class="required-star">*</span>
+            </label>
+            <div class="input-with-icon">
+              <span class="input-icon">⚽</span>
+              <input 
+                id="nombreClub"
+                type="text" 
+                class="form-control" 
+                [(ngModel)]="nombre" 
+                placeholder="Ej. Amazonas CDMX"
+                maxlength="50"
+                required />
+            </div>
+            <span class="input-hint">Máximo 50 caracteres. Mantén el nombre oficial registrado.</span>
+          </div>
+        </div>
+
+        <div class="section-card-panel">
+          <div class="panel-header">
+            <h4 class="panel-title">Escudo Oficial de Juego</h4>
+            <p class="panel-subtitle">El escudo representará a tu club en el portal, transmisiones y gráficas de partidos.</p>
+          </div>
+
+          <!-- Selector visual del escudo con Avatar Preview -->
+          <div class="crest-uploader-layout">
+            <div class="crest-avatar-preview">
+              <img *ngIf="escudoUrl" [src]="escudoUrl" alt="Escudo del club" class="crest-img" />
+              <div *ngIf="!escudoUrl" class="crest-placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+                <span>Sin Escudo</span>
+              </div>
+            </div>
+
+            <div class="crest-upload-controls">
+              <label class="btn-file-upload">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/>
+                  <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <span>Subir imagen desde dispositivo</span>
+                <input type="file" accept="image/*" (change)="onEscudoFileSelected($event)" class="visually-hidden" />
+              </label>
+
+              <div class="url-input-wrap">
+                <span class="sub-label">O ingresa un enlace web directo:</span>
+                <div class="input-with-icon">
+                  <span class="input-icon">🔗</span>
+                  <input 
+                    type="url" 
+                    class="form-control" 
+                    [(ngModel)]="escudoUrl" 
+                    placeholder="https://ejemplo.com/escudo.png" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Presets rápidos de la liga -->
+          <div class="crest-presets-strip">
+            <span class="presets-label">Selección rápida de prueba:</span>
+            <div class="presets-chips-row">
+              <button 
+                *ngFor="let p of presetEscudos"
+                type="button" 
+                class="chip-preset-escudo"
+                (click)="selectPresetEscudo(p.url)"
+                [class.selected]="escudoUrl === p.url">
+                <img [src]="p.url" [alt]="p.label" class="mini-crest" />
+                <span>{{ p.label }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- PESTAÑA 2: COLORES DE JUEGO                    -->
+      <!-- ============================================== -->
+      <section class="tab-pane-content" *ngIf="activeTab() === 'multimedia'">
+        <div class="section-card-panel">
+          <div class="panel-header">
+            <h4 class="panel-title">Colores Oficiales de Indumentaria</h4>
+            <p class="panel-subtitle">Define los colores principales de tus uniformes para evitar coincidencias con rivales.</p>
+          </div>
+
+          <div class="colors-selectors-grid">
+            
+            <!-- Color Local (Principal) -->
+            <div class="color-picker-box">
+              <div class="color-badge-header">
+                <span class="color-dot" [style.background-color]="colorPrimario"></span>
+                <div>
+                  <h5 class="color-title">Uniforme Local</h5>
+                  <span class="color-desc">Color principal del club</span>
+                </div>
+              </div>
+
+              <div class="color-input-combo">
+                <input type="color" class="color-native-input" [(ngModel)]="colorPrimario" />
+                <input type="text" class="color-hex-input" [(ngModel)]="colorPrimario" maxlength="7" />
+              </div>
+
+              <!-- Paleta predefinida -->
+              <div class="color-swatches-row">
+                <button 
+                  *ngFor="let c of colorPresets"
+                  type="button" 
+                  class="swatch-btn" 
+                  [style.background-color]="c.hex"
+                  [title]="c.name"
+                  [class.active]="colorPrimario.toUpperCase() === c.hex.toUpperCase()"
+                  (click)="selectColorPrimario(c.hex)">
+                </button>
+              </div>
+            </div>
+
+            <!-- Color Visitante (Secundario) -->
+            <div class="color-picker-box">
+              <div class="color-badge-header">
+                <span class="color-dot" [style.background-color]="colorSecundario"></span>
+                <div>
+                  <h5 class="color-title">Uniforme Visitante</h5>
+                  <span class="color-desc">Alternativo de reserva</span>
+                </div>
+              </div>
+
+              <div class="color-input-combo">
+                <input type="color" class="color-native-input" [(ngModel)]="colorSecundario" />
+                <input type="text" class="color-hex-input" [(ngModel)]="colorSecundario" maxlength="7" />
+              </div>
+
+              <!-- Paleta predefinida -->
+              <div class="color-swatches-row">
+                <button 
+                  *ngFor="let c of colorPresets"
+                  type="button" 
+                  class="swatch-btn" 
+                  [style.background-color]="c.hex"
+                  [title]="c.name"
+                  [class.active]="colorSecundario.toUpperCase() === c.hex.toUpperCase()"
+                  (click)="selectColorSecundario(c.hex)">
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Vista previa de franja de colores combinados -->
+          <div class="colors-banner-preview">
+            <span class="preview-tag">Combinación de camiseta:</span>
+            <div class="jersey-stripe-preview" [style.background]="'linear-gradient(135deg, ' + colorPrimario + ' 50%, ' + colorSecundario + ' 50%)'">
+              <span class="stripe-label">{{ nombre || 'Tu Club' }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- PESTAÑA 3: VIDEO & CONTACTO                    -->
+      <!-- ============================================== -->
+      <section class="tab-pane-content" *ngIf="activeTab() === 'contacto'">
+        <div class="section-card-panel">
+          <div class="panel-header">
+            <h4 class="panel-title">Video de Presentación Oficial</h4>
+            <p class="panel-subtitle">Enlace a video destacado de jugadas, goles o presentación institucional.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="videoUrl" class="form-label">
+              <span>URL de YouTube o Vimeo</span>
+            </label>
+            <div class="input-with-icon">
+              <span class="input-icon">🎬</span>
+              <input 
+                id="videoUrl"
+                type="url" 
+                class="form-control" 
+                [(ngModel)]="videoUrl" 
+                placeholder="https://www.youtube.com/watch?v=..." />
+            </div>
+            <span class="input-hint">Aparecerá en la sección de clubes de la página de inicio de la liga.</span>
+          </div>
+        </div>
+
+        <div class="section-card-panel">
+          <div class="panel-header">
+            <h4 class="panel-title">Datos de Contacto Oficial</h4>
+            <p class="panel-subtitle">Información administrativa de la representante del equipo ante la mesa de control.</p>
+          </div>
+
+          <div class="form-grid-two">
+            <div class="form-group">
+              <label for="repNombre" class="form-label">Representante oficial</label>
+              <div class="input-with-icon">
+                <span class="input-icon">👤</span>
+                <input 
+                  id="repNombre"
+                  type="text" 
+                  class="form-control" 
+                  [(ngModel)]="representanteNombre" 
+                  placeholder="Nombre y cargo" />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="repTel" class="form-label">Teléfono / WhatsApp</label>
+              <div class="input-with-icon">
+                <span class="input-icon">📱</span>
+                <input 
+                  id="repTel"
+                  type="tel" 
+                  class="form-control" 
+                  [(ngModel)]="contactoTelefono" 
+                  placeholder="55 0000 0000" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="repIg" class="form-label">Instagram del Club</label>
+            <div class="input-with-icon">
+              <span class="input-icon">📸</span>
+              <input 
+                id="repIg"
+                type="text" 
+                class="form-control" 
+                [(ngModel)]="instagramHandle" 
+                placeholder="@club_oficial" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Columna Derecha: Ficha Oficial / Credencial en Vivo (Live Card) -->
+    <div class="preview-column">
+      <div class="official-credential-card">
+        <div class="credential-ribbon">
+          <span class="ribbon-text">FICHA OFICIAL AFILIADA</span>
+          <span class="ribbon-season">APERTURA 2026</span>
+        </div>
+
+        <div class="credential-body">
+          
+          <!-- Escudo Grande -->
+          <div class="credential-crest-wrap">
+            <div class="crest-halo" [style.border-color]="colorPrimario">
+              <img *ngIf="escudoUrl" [src]="escudoUrl" [alt]="nombre" class="credential-crest-img" />
+              <div *ngIf="!escudoUrl" class="credential-crest-placeholder">
+                ⚽
+              </div>
+            </div>
+          </div>
+
+          <!-- Nombre y Sello -->
+          <h3 class="credential-club-title">{{ nombre || 'Nombre de tu Club' }}</h3>
+          <span class="credential-badge-verified">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="20 6 9 17 4 12"/>
+            </svg>
+            <span>Club Registrado en Federación</span>
+          </span>
+
+          <!-- Colores Oficiales en la Credencial -->
+          <div class="credential-colors-bar">
+            <span class="colors-label">Kit Oficial:</span>
+            <div class="color-chips-group">
+              <span class="color-chip-pill" [style.background-color]="colorPrimario" title="Local">Local</span>
+              <span class="color-chip-pill" [style.background-color]="colorSecundario" title="Visita">Visita</span>
+            </div>
+          </div>
+
+          <!-- Resumen Deportivo del Club -->
+          <div class="credential-stats-grid">
+            <div class="cred-stat-cell">
+              <span class="c-label">POSICIÓN</span>
+              <span class="c-val gold">#{{ posicionTabla?.posicion || '1' }}</span>
+            </div>
+            <div class="cred-stat-cell">
+              <span class="c-label">PUNTOS</span>
+              <span class="c-val emerald">{{ posicionTabla?.pts ?? '12' }} PTS</span>
+            </div>
+            <div class="cred-stat-cell">
+              <span class="c-label">PARTIDOS</span>
+              <span class="c-val">{{ posicionTabla?.pj ?? '4' }} PJ</span>
+            </div>
+            <div class="cred-stat-cell">
+              <span class="c-label">DIF. GOLES</span>
+              <span class="c-val">{{ (posicionTabla?.dg && posicionTabla!.dg > 0) ? '+' + posicionTabla?.dg : (posicionTabla?.dg ?? '+11') }}</span>
+            </div>
+          </div>
+
+          <!-- Acceso rápido a Jugadoras del Plantel -->
+          <div class="credential-roster-cta" (click)="onIrAJugadoras()">
+            <div class="roster-cta-info">
+              <span class="cta-title">Plantel Oficial</span>
+              <span class="cta-sub">{{ totalJugadoras }} jugadoras inscritas</span>
+            </div>
+            <button type="button" class="btn-roster-arrow" aria-label="Ver jugadoras">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="9 18 15 12 9 6"/>
+              </svg>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Barra Inferior de Acciones (Guardar / Cancelar) -->
+  <div class="rep-modal-footer-bar">
+    <div class="footer-left-info">
+      <span class="footer-team-indicator">
+        Editando: <strong>{{ nombre || 'Tu Club' }}</strong>
+      </span>
+    </div>
+
+    <div class="footer-actions-group">
+      <button 
+        type="button" 
+        class="btn-action-cancel" 
+        (click)="onCerrar()" 
+        [disabled]="isSaving()">
+        <span>Cerrar</span>
+      </button>
+
+      <button 
+        type="button" 
+        class="btn-action-save" 
+        (click)="guardarCambios()" 
+        [disabled]="isSaving() || !nombre.trim()">
+        <span *ngIf="!isSaving()" class="btn-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+            <polyline points="17 21 17 13 7 13 7 21"/>
+            <polyline points="7 3 7 8 15 8"/>
+          </svg>
+        </span>
+        <span *ngIf="isSaving()" class="spinner-mini"></span>
+        <span>{{ isSaving() ? 'Guardando cambios...' : 'Guardar Ficha Oficial' }}</span>
+      </button>
+    </div>
+  </div>
+
+</div>

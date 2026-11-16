@@ -1,0 +1,525 @@
+<div class="admin-dashboard-page">
+  <!-- Fondo oficial del panel con fondo_admin.jpeg -->
+  <div class="admin-bg-wallpaper"></div>
+  <div class="admin-bg-overlay"></div>
+
+  <div class="admin-main-container relative-z">
+    <!-- 1. NAVBAR FLOTANTE (Logo, Título, ¡Bienvenido Administrador!, Dashboard, Cerrar Sesión) -->
+    <header class="admin-navbar-capsule">
+      <div class="nav-brand-left">
+        <div class="nav-logo-circle">
+          <img src="/images/logo.png" alt="Liga Femenil" class="nav-logo-img" />
+        </div>
+        <div class="nav-headings">
+          <span class="nav-portal-tag">PORTAL OFICIAL</span>
+          <h2 class="nav-title">Panel de Administración</h2>
+        </div>
+      </div>
+
+      <!-- Centro: Mensaje de bienvenida en la navbar flotante -->
+      <div class="nav-center-welcome">
+        <span class="welcome-center-text">¡Bienvenido Administrador!</span>
+      </div>
+
+      <div class="nav-actions-right">
+        <span class="nav-link-pill active">
+          <span class="pill-dot"></span>
+          <span>Dashboard</span>
+        </span>
+        <button type="button" class="btn-nav-logout" (click)="onLogout()" title="Cerrar sesión y salir">
+          <span>Cerrar sesión</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+            <polyline points="16 17 21 12 16 7"/>
+            <line x1="21" y1="12" x2="9" y2="12"/>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- 3. FILA DE RESUMEN: TABLA DE POSICIONES & PRÓXIMA JORNADA (2 Tarjetas) -->
+    <section class="admin-overview-grid">
+      <!-- Tarjeta 1: Resumen Tabla de Posiciones -->
+      <article class="overview-card standings-overview-card">
+        <div class="card-top-bar">
+          <div class="title-with-icon">
+            <span class="card-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                <path d="M4 22h16"/>
+                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+              </svg>
+            </span>
+            <div>
+              <h3 class="card-heading">Resumen Tabla de Posiciones</h3>
+              <span class="card-sub-hint">Apertura 2026 · Top de la liga</span>
+            </div>
+          </div>
+          <span class="badge-tag-mini">11 Clubes</span>
+        </div>
+
+        <div class="standings-mini-table-wrapper" *ngIf="topPosiciones().length > 0; else loadingPosiciones">
+          <table class="standings-mini-table">
+            <thead>
+              <tr>
+                <th class="col-pos">#</th>
+                <th class="col-club">Club</th>
+                <th class="col-stat">PJ</th>
+                <th class="col-stat">DG</th>
+                <th class="col-pts">PTS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let pos of topPosiciones()">
+                <td class="col-pos">
+                  <span class="pos-badge" [class.leader]="pos.posicion === 1">
+                    {{ pos.posicion }}
+                  </span>
+                </td>
+                <td class="col-club">
+                  <div class="club-chip-mini">
+                    <img *ngIf="pos.escudo_url" [src]="pos.escudo_url" [alt]="pos.nombre_equipo" class="club-crest-mini" />
+                    <span class="club-name-mini">{{ pos.nombre_equipo }}</span>
+                  </div>
+                </td>
+                <td class="col-stat">{{ pos.pj }}</td>
+                <td class="col-stat" [ngClass]="{'dg-pos': pos.dg > 0, 'dg-neg': pos.dg < 0}">
+                  {{ pos.dg > 0 ? '+' + pos.dg : pos.dg }}
+                </td>
+                <td class="col-pts">
+                  <span class="pts-pill-mini">{{ pos.pts }}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <ng-template #loadingPosiciones>
+          <div class="widget-loading-pulse">Cargando tabla de posiciones...</div>
+        </ng-template>
+      </article>
+
+      <!-- Tarjeta 2: Carrusel de partidos de la próxima jornada (con autoplay y pausa al hover) -->
+      <article class="overview-card matches-overview-card" (mouseenter)="pauseCarousel()" (mouseleave)="resumeCarousel()" (touchstart)="pauseCarousel()" (touchend)="resumeCarousel()">
+        <div class="card-top-bar">
+          <div class="title-with-icon">
+            <span class="card-icon-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+              </svg>
+            </span>
+            <div>
+              <h3 class="card-heading">Carrusel de partidos de la próxima jornada</h3>
+              <span class="card-sub-hint">
+                {{ proximaJornada() ? 'Jornada ' + proximaJornada()?.numero_jornada + ' · ' + proximaJornada()?.fecha_domingo : 'Próximo Domingo' }}
+              </span>
+            </div>
+          </div>
+          <!-- Controles del carrusel continuo -->
+          <div class="carousel-nav-arrows" *ngIf="partidosProximos().length > 1">
+            <button type="button" class="btn-arrow" (click)="prevMatch()" aria-label="Partido anterior">‹</button>
+            <span class="carousel-counter">{{ currentMatchIndex() + 1 }} / {{ partidosProximos().length }}</span>
+            <button type="button" class="btn-arrow" (click)="nextMatch()" aria-label="Siguiente partido">›</button>
+          </div>
+        </div>
+
+        <div class="matches-carousel-viewport" *ngIf="currentMatch() as match; else loadingMatch">
+          <div class="match-slide-card">
+            <!-- Info de horario y cancha -->
+            <div class="match-meta-pill">
+              <span class="meta-time">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                {{ match.horario }}
+              </span>
+              <span class="meta-separator">•</span>
+              <span class="meta-venue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                {{ match.cancha }}
+              </span>
+            </div>
+
+            <!-- Enfrentamiento visual -->
+            <div class="teams-versus-row">
+              <div class="team-side local">
+                <img *ngIf="match.equipo_local?.escudo_url" [src]="match.equipo_local?.escudo_url" [alt]="match.equipo_local?.nombre" class="match-crest" />
+                <span class="match-team-name">{{ match.equipo_local?.nombre }}</span>
+                <span class="match-role-tag">Local</span>
+              </div>
+
+              <div class="versus-center-circle">
+                <span class="vs-text">VS</span>
+              </div>
+
+              <div class="team-side visitante">
+                <img *ngIf="match.equipo_visitante?.escudo_url" [src]="match.equipo_visitante?.escudo_url" [alt]="match.equipo_visitante?.nombre" class="match-crest" />
+                <span class="match-team-name">{{ match.equipo_visitante?.nombre }}</span>
+                <span class="match-role-tag">Visita</span>
+              </div>
+            </div>
+
+            <div class="match-footer-action">
+              <button type="button" class="btn-quick-record" (click)="openModal('registrar-partido', match)">
+                <span>Registrar Cédula de este Partido</span>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <ng-template #loadingMatch>
+          <div class="widget-loading-pulse">Cargando partidos de la jornada...</div>
+        </ng-template>
+      </article>
+    </section>
+
+    <!-- 4. PANEL DE SERVICIOS CON TABS FILTRADORAS (Desktop top tabs + Mobile bottom dock) -->
+    <section class="admin-services-filter-section">
+      <!-- Barra superior para Desktop -->
+      <div class="services-filter-header desktop-only">
+        <div class="category-tabs-capsule">
+          <button 
+            type="button" 
+            class="category-tab-btn" 
+            [class.active]="activeCategory() === 'todos'"
+            (click)="setCategory('todos')">
+            <svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+            <span class="tab-title">Todos</span>
+            <span class="tab-badge">{{ categoryCounts().todos }}</span>
+          </button>
+
+          <button 
+            type="button" 
+            class="category-tab-btn" 
+            [class.active]="activeCategory() === 'torneo'"
+            (click)="setCategory('torneo')">
+            <svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polygon points="12 6 15.5 8.5 14 12.5 10 12.5 8.5 8.5 12 6"/>
+              <line x1="12" y1="2" x2="12" y2="6"/>
+              <line x1="12" y1="12.5" x2="12" y2="22"/>
+              <line x1="2" y1="12" x2="6.5" y2="10.5"/>
+              <line x1="22" y1="12" x2="17.5" y2="10.5"/>
+            </svg>
+            <span class="tab-title">Torneo y Cancha</span>
+            <span class="tab-badge">{{ categoryCounts().torneo }}</span>
+          </button>
+
+          <button 
+            type="button" 
+            class="category-tab-btn" 
+            [class.active]="activeCategory() === 'comunidad'"
+            (click)="setCategory('comunidad')">
+            <svg class="tab-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span class="tab-title">Servicios & Comunidad</span>
+            <span class="tab-badge">{{ categoryCounts().comunidad }}</span>
+          </button>
+        </div>
+
+        <div class="category-context-note">
+          <span *ngIf="activeCategory() === 'todos'">Explora los 6 módulos de administración</span>
+          <span *ngIf="activeCategory() === 'torneo'">4 herramientas para la gestión del torneo y partidos</span>
+          <span *ngIf="activeCategory() === 'comunidad'">2 herramientas para staff de entrenadores y redes</span>
+        </div>
+      </div>
+
+      <!-- Barra de contexto compacta para Mobile (evita cualquier desbordamiento horizontal) -->
+      <div class="services-filter-header-mobile mobile-only">
+        <span class="mobile-filter-tag">MÓDULOS DEL PANEL</span>
+        <span class="mobile-filter-badge" *ngIf="activeCategory() === 'todos'">Todos (6)</span>
+        <span class="mobile-filter-badge" *ngIf="activeCategory() === 'torneo'">Torneo y Cancha (4)</span>
+        <span class="mobile-filter-badge" *ngIf="activeCategory() === 'comunidad'">Servicios & Comunidad (2)</span>
+      </div>
+
+      <!-- Rejilla Dinámica de Servicios Filtrados -->
+      <div class="services-grid dynamic-grid">
+        <article 
+          *ngFor="let s of filteredServices()" 
+          class="service-card" 
+          [attr.data-cat]="s.category"
+          (click)="openModal(s.id)" 
+          tabindex="0" 
+          role="button" 
+          (keydown.enter)="openModal(s.id)">
+          
+          <div class="service-card-top-row">
+            <div class="service-icon-wrap" [ngClass]="s.iconClass">
+              <!-- SVG Registrar Partido -->
+              <svg *ngIf="s.id === 'registrar-partido'" class="service-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <polygon points="12 6 15.5 8.5 14 12.5 10 12.5 8.5 8.5 12 6"/>
+                <line x1="12" y1="2" x2="12" y2="6"/>
+                <line x1="12" y1="12.5" x2="12" y2="22"/>
+                <line x1="2" y1="12" x2="6.5" y2="10.5"/>
+                <line x1="22" y1="12" x2="17.5" y2="10.5"/>
+              </svg>
+
+              <!-- SVG Programar Calendario -->
+              <svg *ngIf="s.id === 'programar-calendario'" class="service-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+                <path d="M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/>
+              </svg>
+
+              <!-- SVG Equipos -->
+              <svg *ngIf="s.id === 'equipos'" class="service-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="M12 6v12"/>
+                <path d="M8 10h8"/>
+              </svg>
+
+              <!-- SVG Jugadoras -->
+              <svg *ngIf="s.id === 'jugadoras'" class="service-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+              </svg>
+
+              <!-- SVG Entrenadores -->
+              <svg *ngIf="s.id === 'entrenadores'" class="service-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 4v16M18 4v16M2 8v8M22 8v8M6 12h12"/>
+              </svg>
+
+              <!-- SVG Generador IG -->
+              <svg *ngIf="s.id === 'generador-ig'" class="service-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+              </svg>
+            </div>
+
+            <span class="service-cat-pill" [class.cat-torneo]="s.category === 'torneo'" [class.cat-comunidad]="s.category === 'comunidad'">
+              {{ s.categoryLabel }}
+            </span>
+          </div>
+
+          <h3 class="service-card-title">{{ s.title }}</h3>
+          <p class="service-card-desc">{{ s.desc }}</p>
+
+          <div class="service-action-link">
+            <span>Acceder al Servicio</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </div>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <!-- Barra flotante inferior para Mobile (Estilo App Dock como en la landing page) -->
+  <nav class="admin-bottom-dock mobile-only" aria-label="Filtro de módulos móvil">
+    <div class="dock-pill">
+      <button 
+        type="button" 
+        class="dock-tab" 
+        [class.active]="activeCategory() === 'todos'"
+        (click)="setCategory('todos')">
+        <div class="dock-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+          </svg>
+        </div>
+        <span class="dock-label">Todos</span>
+        <span class="dock-badge">{{ categoryCounts().todos }}</span>
+      </button>
+
+      <button 
+        type="button" 
+        class="dock-tab" 
+        [class.active]="activeCategory() === 'torneo'"
+        (click)="setCategory('torneo')">
+        <div class="dock-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polygon points="12 6 15.5 8.5 14 12.5 10 12.5 8.5 8.5 12 6"/>
+            <line x1="12" y1="2" x2="12" y2="6"/>
+            <line x1="12" y1="12.5" x2="12" y2="22"/>
+            <line x1="2" y1="12" x2="6.5" y2="10.5"/>
+            <line x1="22" y1="12" x2="17.5" y2="10.5"/>
+          </svg>
+        </div>
+        <span class="dock-label">Torneo</span>
+        <span class="dock-badge">{{ categoryCounts().torneo }}</span>
+      </button>
+
+      <button 
+        type="button" 
+        class="dock-tab" 
+        [class.active]="activeCategory() === 'comunidad'"
+        (click)="setCategory('comunidad')">
+        <div class="dock-icon-wrapper">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <span class="dock-label">Comunidad</span>
+        <span class="dock-badge">{{ categoryCounts().comunidad }}</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ========================================== -->
+  <!-- MODAL DINÁMICO DE SERVICIOS                -->
+  <!-- ========================================== -->
+  <div class="admin-modal-backdrop" *ngIf="activeModal()" (click)="closeModal()">
+    <div class="admin-modal-card" [class.modal-wide-split]="activeModal() === 'registrar-partido' || activeModal() === 'programar-calendario' || activeModal() === 'equipos' || activeModal() === 'jugadoras' || activeModal() === 'entrenadores'" (click)="$event.stopPropagation()">
+      <!-- Cabecera del modal -->
+      <div class="modal-header-row">
+        <div class="modal-title-group">
+          <div class="modal-header-icon-wrap" [ngClass]="'icon-' + activeModal()">
+            <svg *ngIf="activeModal() === 'registrar-partido'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polygon points="12 6 15.5 8.5 14 12.5 10 12.5 8.5 8.5 12 6"/>
+              <line x1="12" y1="2" x2="12" y2="6"/>
+              <line x1="12" y1="12.5" x2="12" y2="22"/>
+              <line x1="2" y1="12" x2="6.5" y2="10.5"/>
+              <line x1="22" y1="12" x2="17.5" y2="10.5"/>
+            </svg>
+            <svg *ngIf="activeModal() === 'programar-calendario'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            <svg *ngIf="activeModal() === 'equipos'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="M12 6v12"/>
+              <path d="M8 10h8"/>
+            </svg>
+            <svg *ngIf="activeModal() === 'jugadoras'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+            </svg>
+            <svg *ngIf="activeModal() === 'entrenadores'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M6 4v16M18 4v16M2 8v8M22 8v8M6 12h12"/>
+            </svg>
+            <svg *ngIf="activeModal() === 'generador-ig'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+            </svg>
+          </div>
+          <div>
+            <h2 class="modal-main-title">{{ currentModalData()?.title }}</h2>
+            <p class="modal-main-desc">{{ currentModalData()?.desc }}</p>
+          </div>
+        </div>
+
+        <button type="button" class="btn-close-modal" (click)="closeModal()" aria-label="Cerrar modal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Cuerpo del modal interactivo -->
+      <div class="modal-workspace-body">
+        
+        <!-- Vista Servicio 1: Registrar Partido (Lazy loaded) -->
+        @defer (when activeModal() === 'registrar-partido') {
+          @if (activeModal() === 'registrar-partido') {
+            <app-admin-registrar-partido 
+              [initialMatchId]="selectedInitialMatchId()" 
+              (cerrar)="closeModal()" 
+              (actaGuardada)="cargarDatosDashboard()">
+            </app-admin-registrar-partido>
+          }
+        } @loading (minimum 150ms) {
+          <div class="service-pane-loading" *ngIf="activeModal() === 'registrar-partido'">
+            <div class="loading-spinner"></div>
+            <span>Cargando mesa de control...</span>
+          </div>
+        }
+
+        <!-- Vista Servicio 2: Programar Calendario (Lazy loaded) -->
+        @defer (when activeModal() === 'programar-calendario') {
+          @if (activeModal() === 'programar-calendario') {
+            <app-admin-programar-calendario 
+              (cerrar)="closeModal()" 
+              (calendarioGuardado)="cargarDatosDashboard()">
+            </app-admin-programar-calendario>
+          }
+        } @loading (minimum 150ms) {
+          <div class="service-pane-loading" *ngIf="activeModal() === 'programar-calendario'">
+            <div class="loading-spinner"></div>
+            <span>Cargando fixture del torneo...</span>
+          </div>
+        }
+
+        <!-- Vista Servicio 3: Equipos (Lazy loaded) -->
+        @defer (when activeModal() === 'equipos') {
+          @if (activeModal() === 'equipos') {
+            <app-admin-equipos 
+              (cerrar)="closeModal()" 
+              (irAJugadoras)="openModal('jugadoras')">
+            </app-admin-equipos>
+          }
+        } @loading (minimum 150ms) {
+          <div class="service-pane-loading" *ngIf="activeModal() === 'equipos'">
+            <div class="loading-spinner"></div>
+            <span>Cargando clubes oficiales...</span>
+          </div>
+        }
+
+        <!-- Vista Servicio 4: Jugadoras (Lazy loaded) -->
+        @defer (when activeModal() === 'jugadoras') {
+          @if (activeModal() === 'jugadoras') {
+            <app-admin-jugadoras 
+              (cerrar)="closeModal()">
+            </app-admin-jugadoras>
+          }
+        } @loading (minimum 150ms) {
+          <div class="service-pane-loading" *ngIf="activeModal() === 'jugadoras'">
+            <div class="loading-spinner"></div>
+            <span>Cargando padrón de jugadoras...</span>
+          </div>
+        }
+
+        <!-- Vista Servicio 5: Entrenadores -->
+        @defer (when activeModal() === 'entrenadores') {
+          <app-admin-entrenadores *ngIf="activeModal() === 'entrenadores'"></app-admin-entrenadores>
+        } @loading (minimum 150ms) {
+          <div class="service-pane-loading" *ngIf="activeModal() === 'entrenadores'">
+            <div class="loading-spinner"></div>
+            <span>Cargando catálogo de entrenadores...</span>
+          </div>
+        }
+
+        <!-- Vista Servicio 6: Generador de Contenido IG -->
+        <app-admin-generador-ig
+          *ngIf="activeModal() === 'generador-ig'">
+        </app-admin-generador-ig>
+
+      </div>
+
+      <!-- Footer del modal -->
+      <div class="modal-footer-row">
+        <button type="button" class="btn-modal-cancel" (click)="closeModal()">Cerrar Ventana</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,249 @@
+        <div class="service-pane pane-equipos">
+          
+          <!-- Toast de éxito -->
+          <div class="registration-toast-success" *ngIf="teamSuccessToast()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            <span>{{ teamSuccessToast() }}</span>
+          </div>
+
+          <!-- Barra superior de gestión de equipos -->
+          <div class="teams-top-toolbar">
+            <div class="teams-stats-info">
+              <span class="teams-count-badge">
+                <strong>{{ equiposList().length }}</strong> Clubes Oficiales
+              </span>
+              <span class="teams-meta-sub">Torneo Apertura 2026 · Liga de Fútbol Femenil</span>
+            </div>
+
+            <div class="teams-toolbar-actions">
+              <!-- Buscador de equipos en tiempo real -->
+              <div class="teams-search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input 
+                  type="text" 
+                  [ngModel]="equiposSearchQuery()" 
+                  (ngModelChange)="equiposSearchQuery.set($event)" 
+                  placeholder="Buscar club por nombre..." 
+                  class="teams-search-input" />
+                <button 
+                  *ngIf="equiposSearchQuery()" 
+                  type="button" 
+                  class="btn-clear-search" 
+                  (click)="equiposSearchQuery.set('')">✕</button>
+              </div>
+
+              <!-- Botón Añadir Nuevo Club -->
+              <button type="button" class="btn-add-club-primary" (click)="openCreateTeamModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+                <span>Añadir Nuevo Club</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- CUADRÍCULA DE CLUBES -->
+          <div class="teams-cards-grid">
+            
+            <!-- Tarjeta 1: Botón Crear Nuevo Club (Estilo Wireframe con Círculo + Grande) -->
+            <div class="team-card-item card-create-new-team" (click)="openCreateTeamModal()">
+              <div class="create-circle-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <line x1="12" y1="5" x2="12" y2="19"/>
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                </svg>
+              </div>
+              <strong class="create-title">Registrar Nuevo Club</strong>
+              <p class="create-sub">Asigna escudo, nombre y detalles oficiales del equipo</p>
+            </div>
+
+            <!-- Tarjetas de Equipos Existentes -->
+            <div 
+              *ngFor="let eq of filteredEquipos()" 
+              class="team-card-item team-club-card">
+              
+              <!-- Escudo Principal -->
+              <div class="club-crest-container">
+                <img *ngIf="eq.escudo_url" [src]="eq.escudo_url" [alt]="eq.nombre" class="club-crest-img" />
+                <div *ngIf="!eq.escudo_url" class="club-crest-placeholder">
+                  {{ eq.nombre.substring(0, 2).toUpperCase() }}
+                </div>
+              </div>
+
+              <!-- Nombre y Detalles -->
+              <div class="club-info-block">
+                <h4 class="club-name" [title]="eq.nombre">{{ eq.nombre }}</h4>
+                <div class="club-meta-chips">
+                  <span class="chip-roster-count" (click)="openRosterPreview(eq)" title="Ver jugadoras registradas">
+                    👥 {{ eq.total_jugadoras || 11 }} jugadoras
+                  </span>
+                  <span class="chip-status-active">Oficial</span>
+                </div>
+              </div>
+
+              <!-- Botones de Acción: Ver Plantel, Editar, Eliminar -->
+              <div class="club-actions-footer">
+                <button type="button" class="btn-club-action btn-view-roster" (click)="openRosterPreview(eq)" title="Ver plantilla del club">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                  </svg>
+                  <span>Plantel</span>
+                </button>
+
+                <button type="button" class="btn-club-action btn-edit-club" (click)="openEditTeamModal(eq)" title="Editar club">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                  </svg>
+                  <span>Editar</span>
+                </button>
+
+                <button type="button" class="btn-club-action btn-delete-club" (click)="openDeleteTeamConfirm(eq)" title="Dar de baja club">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3 6 5 6 21 6"/>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                  </svg>
+                </button>
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Diálogo Emergente: Crear / Editar Equipo -->
+          <div class="team-subdialog-backdrop" *ngIf="showTeamFormModal()" (click)="closeTeamFormModal()">
+            <div class="team-subdialog-card" (click)="$event.stopPropagation()">
+              <div class="subdialog-header">
+                <div class="subdialog-title-group">
+                  <span class="subdialog-icon">🛡️</span>
+                  <h4>{{ isEditingTeam() ? 'Editar Club Oficial' : 'Registrar Nuevo Club' }}</h4>
+                </div>
+                <button type="button" class="btn-subdialog-close" (click)="closeTeamFormModal()">✕</button>
+              </div>
+
+              <div class="subdialog-body">
+                <!-- Previsualización en vivo del escudo -->
+                <div class="crest-preview-uploader">
+                  <div class="preview-crest-circle">
+                    <img *ngIf="teamFormEscudoUrl" [src]="teamFormEscudoUrl" alt="Escudo preview" class="preview-img" (error)="teamFormEscudoUrl = ''" />
+                    <span *ngIf="!teamFormEscudoUrl" class="preview-fallback">
+                      {{ teamFormNombre ? teamFormNombre.substring(0, 2).toUpperCase() : 'LOGO' }}
+                    </span>
+                  </div>
+                  <div class="preview-info-text">
+                    <strong>Escudo Oficial del Club</strong>
+                    <p>Pega el enlace URL o usa una imagen representativa para la cédula y la web.</p>
+                  </div>
+                </div>
+
+                <!-- Input Nombre del Club -->
+                <div class="form-field-group">
+                  <label class="field-label">Nombre del Club:</label>
+                  <input 
+                    type="text" 
+                    [(ngModel)]="teamFormNombre" 
+                    placeholder="Ej. Amazonas CDMX" 
+                    class="styled-text-input" />
+                </div>
+
+                <!-- Input URL Escudo -->
+                <div class="form-field-group">
+                  <label class="field-label">URL del Escudo Oficial:</label>
+                  <input 
+                    type="text" 
+                    [(ngModel)]="teamFormEscudoUrl" 
+                    placeholder="https://ejemplo.com/escudo.png" 
+                    class="styled-text-input" />
+                </div>
+
+                <!-- Input Video URL -->
+                <div class="form-field-group">
+                  <label class="field-label">Video de Presentación / Highlights (Opcional):</label>
+                  <input 
+                    type="text" 
+                    [(ngModel)]="teamFormVideoUrl" 
+                    placeholder="https://youtube.com/... (opcional)" 
+                    class="styled-text-input" />
+                </div>
+              </div>
+
+              <div class="subdialog-footer">
+                <button type="button" class="btn-sub-cancel" (click)="closeTeamFormModal()">Cancelar</button>
+                <button 
+                  type="button" 
+                  class="btn-sub-confirm" 
+                  [disabled]="!teamFormNombre.trim() || teamIsSaving()" 
+                  (click)="guardarEquipoForm()">
+                  <span>{{ teamIsSaving() ? 'Guardando...' : (isEditingTeam() ? 'Actualizar Club' : 'Crear Club Oficial') }}</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Diálogo Emergente: Confirmar Eliminación -->
+          <div class="team-subdialog-backdrop" *ngIf="showDeleteTeamModal()" (click)="closeDeleteTeamModal()">
+            <div class="team-subdialog-card card-delete-confirm" (click)="$event.stopPropagation()">
+              <div class="delete-icon-warning">⚠️</div>
+              <h4 class="delete-title">¿Dar de baja al club "{{ teamToDelete()?.nombre }}"?</h4>
+              <p class="delete-desc">
+                Esta acción retirará al equipo del catálogo del torneo. Podrás volver a registrarlo en cualquier momento.
+              </p>
+              <div class="delete-actions-row">
+                <button type="button" class="btn-sub-cancel" (click)="closeDeleteTeamModal()">Cancelar</button>
+                <button type="button" class="btn-confirm-delete" (click)="confirmDeleteTeam()">Sí, dar de baja</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Diálogo Emergente: Ver Plantilla del Club (Preview Rápida) -->
+          <div class="team-subdialog-backdrop" *ngIf="showRosterPreviewModal()" (click)="closeRosterPreviewModal()">
+            <div class="team-subdialog-card card-roster-preview" (click)="$event.stopPropagation()">
+              <div class="subdialog-header">
+                <div class="subdialog-title-group">
+                  <img *ngIf="rosterPreviewTeam()?.escudo_url" [src]="rosterPreviewTeam()?.escudo_url" class="mini-crest-head" />
+                  <h4>Plantel de {{ rosterPreviewTeam()?.nombre }}</h4>
+                </div>
+                <button type="button" class="btn-subdialog-close" (click)="closeRosterPreviewModal()">✕</button>
+              </div>
+
+              <div class="subdialog-body roster-list-body">
+                <div *ngIf="rosterPreviewLoading()" class="roster-loading-state">
+                  Cargando jugadoras del club...
+                </div>
+
+                <div *ngIf="!rosterPreviewLoading() && rosterPreviewPlayers().length > 0" class="roster-players-grid">
+                  <div *ngFor="let j of rosterPreviewPlayers()" class="roster-player-chip">
+                    <div class="player-avatar-wrap">
+                      <img *ngIf="j.foto_url && j.autoriza_imagen" [src]="j.foto_url" [alt]="j.nombre_deportivo" class="player-avatar-img" />
+                      <div *ngIf="!j.foto_url || !j.autoriza_imagen" class="player-ghost-avatar" title="Ghost Player">
+                        👤
+                      </div>
+                    </div>
+                    <div class="player-chip-info">
+                      <span class="player-chip-dorsal">#{{ j.dorsal || '-' }}</span>
+                      <strong class="player-chip-name">{{ j.nombre_deportivo }}</strong>
+                      <span class="player-chip-pos">{{ j.posicion }}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div *ngIf="!rosterPreviewLoading() && rosterPreviewPlayers().length === 0" class="roster-empty-state">
+                  <p>Este club aún no tiene jugadoras registradas en su nómina oficial.</p>
+                </div>
+              </div>
+
+              <div class="subdialog-footer roster-footer">
+                <button type="button" class="btn-manage-roster-link" (click)="goToJugadorasPanel()">
+                  <span>Gestionar plantilla completa en módulo de Jugadoras ➔</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Vista Servicio 4: Jugadoras & Bolsa de Solicitudes -->

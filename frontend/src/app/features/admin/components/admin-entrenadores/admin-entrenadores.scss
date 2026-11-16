@@ -1,0 +1,1488 @@
+// ==============================================
+// VARIABLES & DESIGN TOKENS
+// ==============================================
+$font-display: 'Cinzel', serif;
+$font-body: 'Plus Jakarta Sans', sans-serif;
+
+.admin-entrenadores-wrapper {
+  position: relative;
+  width: 100%;
+
+  // ==============================================
+  // NOTIFICACIÓN TOAST FLOTANTE
+  // ==============================================
+  .entrenadores-toast {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    background: #165644;
+    color: #FFFFFF;
+    border-radius: 14px;
+    padding: 12px 20px;
+    box-shadow: 0 10px 30px rgba(22, 86, 68, 0.35);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    z-index: 9999;
+    animation: toastSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+
+    .toast-icon { font-size: 16px; }
+  }
+
+  // ==============================================
+  // TOOLBAR SUPERIOR
+  // ==============================================
+  .entrenadores-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+
+    .toolbar-left {
+      max-width: 580px;
+
+      .toolbar-tag-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(22, 86, 68, 0.08);
+        border: 1px solid rgba(22, 86, 68, 0.18);
+        border-radius: 999px;
+        padding: 3px 10px;
+        font-size: 11px;
+        font-weight: 800;
+        color: #165644;
+        margin-bottom: 6px;
+        letter-spacing: 0.3px;
+      }
+
+      .toolbar-title {
+        font-family: $font-display;
+        font-size: 22px;
+        font-weight: 900;
+        color: #2C2623;
+        margin: 0 0 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        .counter-badge {
+          background: #165644;
+          color: #FFFFFF;
+          font-family: $font-body;
+          font-size: 12px;
+          font-weight: 800;
+          padding: 2px 9px;
+          border-radius: 999px;
+        }
+      }
+
+      .toolbar-subtitle {
+        font-size: 12.5px;
+        color: #7A726B;
+        margin: 0;
+        line-height: 1.4;
+      }
+    }
+
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+
+      .search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        .search-svg {
+          position: absolute;
+          left: 12px;
+          width: 16px;
+          height: 16px;
+          color: #7A726B;
+          pointer-events: none;
+        }
+
+        .search-input {
+          height: 42px;
+          border-radius: 999px;
+          border: 1.5px solid rgba(46, 39, 36, 0.12);
+          background: #FFFFFF;
+          padding: 0 34px 0 36px;
+          font-family: $font-body;
+          font-size: 12.5px;
+          color: #2C2623;
+          width: 250px;
+          transition: all 0.2s ease;
+
+          &:focus {
+            outline: none;
+            border-color: #165644;
+            box-shadow: 0 0 0 3px rgba(22, 86, 68, 0.12);
+            width: 280px;
+          }
+
+          &::placeholder { color: #A09891; }
+        }
+
+        .btn-clear-search {
+          position: absolute;
+          right: 12px;
+          background: none;
+          border: none;
+          color: #7A726B;
+          cursor: pointer;
+          font-size: 12px;
+          padding: 2px;
+          &:hover { color: #2C2623; }
+        }
+      }
+
+      .btn-create-trainer {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 42px;
+        padding: 0 18px;
+        background: linear-gradient(135deg, #165644, #1E7059);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 999px;
+        font-family: $font-body;
+        font-size: 12.5px;
+        font-weight: 800;
+        cursor: pointer;
+        box-shadow: 0 4px 14px rgba(22, 86, 68, 0.22);
+        transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+
+        svg {
+          width: 16px;
+          height: 16px;
+          stroke: #FFFFFF;
+        }
+
+        &:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 20px rgba(22, 86, 68, 0.3);
+          background: linear-gradient(135deg, #1E7059, #25856B);
+        }
+      }
+    }
+  }
+
+  // ==============================================
+  // BARRA DE FILTROS SECUNDARIOS
+  // ==============================================
+  .entrenadores-subfilters-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: #FAF7F2;
+    border: 1px solid rgba(46, 39, 36, 0.07);
+    border-radius: 16px;
+    padding: 10px 16px;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      .filter-label {
+        font-size: 11.5px;
+        font-weight: 800;
+        color: #7A726B;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+        white-space: nowrap;
+      }
+    }
+
+    .status-pills {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      .status-pill {
+        border: 1px solid rgba(46, 39, 36, 0.1);
+        background: #FFFFFF;
+        border-radius: 999px;
+        padding: 5px 12px;
+        font-family: $font-body;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: #5D544D;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+
+        .dot-active {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #10B981;
+        }
+
+        .dot-paused {
+          width: 7px;
+          height: 7px;
+          border-radius: 50%;
+          background: #9CA3AF;
+        }
+
+        &:hover {
+          border-color: #165644;
+          color: #165644;
+        }
+
+        &.active {
+          background: #165644;
+          color: #FFFFFF;
+          border-color: #165644;
+          box-shadow: 0 2px 8px rgba(22, 86, 68, 0.2);
+
+          .dot-active, .dot-paused {
+            background: #FFFFFF;
+          }
+        }
+      }
+    }
+
+    .disciplines-filter-group {
+      .discipline-pills-scroll {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        overflow-x: auto;
+        max-width: 460px;
+        padding-bottom: 2px;
+
+        .disc-pill {
+          border: 1px solid rgba(46, 39, 36, 0.08);
+          background: #FFFFFF;
+          border-radius: 999px;
+          padding: 4px 10px;
+          font-size: 11px;
+          font-weight: 700;
+          color: #5D544D;
+          white-space: nowrap;
+          cursor: pointer;
+          transition: all 0.18s ease;
+
+          &:hover {
+            border-color: #165644;
+            color: #165644;
+          }
+
+          &.active {
+            background: #2C2623;
+            color: #FFFFFF;
+            border-color: #2C2623;
+          }
+        }
+      }
+    }
+  }
+
+  // ==============================================
+  // CUADRÍCULA DE TARJETAS
+  // ==============================================
+  .entrenadores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+
+    .entrenador-card-item {
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 16px 16px 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      min-height: 380px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.04);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    // Tarjeta Wireframe para Añadir
+    .card-create-new {
+      border: 2px dashed rgba(22, 86, 68, 0.3);
+      background: rgba(22, 86, 68, 0.02);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 24px 18px;
+      cursor: pointer;
+      min-height: 380px;
+
+      .create-circle {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #165644, #1E7059);
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 24px rgba(22, 86, 68, 0.25);
+        margin-bottom: 14px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+        svg {
+          width: 26px;
+          height: 26px;
+          stroke: #FFFFFF;
+        }
+      }
+
+      .create-title {
+        font-family: $font-display;
+        font-size: 16px;
+        font-weight: 800;
+        color: #165644;
+        margin-bottom: 6px;
+      }
+
+      .create-sub {
+        font-size: 11.5px;
+        color: #7A726B;
+        margin: 0;
+        line-height: 1.4;
+        max-width: 190px;
+      }
+
+      &:hover {
+        border-color: #165644;
+        background: rgba(22, 86, 68, 0.05);
+        transform: translateY(-4px);
+        box-shadow: 0 10px 26px rgba(22, 86, 68, 0.12);
+
+        .create-circle {
+          transform: scale(1.1) rotate(90deg);
+          background: linear-gradient(135deg, #1E7059, #25856B);
+        }
+      }
+    }
+
+    // Tarjeta de Entrenadora
+    .trainer-profile-card {
+      border: 1.5px solid rgba(46, 39, 36, 0.08);
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        border-color: rgba(22, 86, 68, 0.25);
+      }
+
+      &.is-paused {
+        opacity: 0.85;
+        border-color: rgba(156, 163, 175, 0.3);
+        background: #FCFAF8;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
+
+      // 1. Header de Tarjeta
+      .trainer-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 8px;
+
+        .header-status-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          font-size: 10.5px;
+          font-weight: 800;
+          padding: 2.5px 8px;
+          border-radius: 999px;
+
+          .status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+          }
+
+          &.is-active {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+            .status-dot { background: #10B981; }
+          }
+
+          &.is-paused {
+            background: rgba(156, 163, 175, 0.15);
+            color: #6B7280;
+            .status-dot { background: #9CA3AF; }
+          }
+        }
+
+        .header-price-badge {
+          font-family: $font-display;
+          font-size: 12.5px;
+          font-weight: 900;
+          color: #165644;
+          background: #FAF7F2;
+          border: 1px solid rgba(22, 86, 68, 0.15);
+          border-radius: 999px;
+          padding: 2.5px 8px;
+
+          .price-unit {
+            font-size: 10px;
+            font-weight: 700;
+            color: #7A726B;
+          }
+        }
+      }
+
+      // 2. Avatar Circular
+      .trainer-avatar-center {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 6px 0 10px;
+
+        .avatar-frame {
+          width: 82px;
+          height: 82px;
+          min-width: 82px;
+          min-height: 82px;
+          border-radius: 50%;
+          overflow: hidden;
+          background: #FAF7F2;
+          border: 3px solid #FFFFFF;
+          box-shadow: 0 4px 16px rgba(46, 39, 36, 0.12);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: transform 0.25s ease;
+
+          .avatar-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 20%;
+            display: block;
+            transition: transform 0.25s ease;
+          }
+
+          .fallback-avatar-visual {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FAF7F2, #E8E2D9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            .fallback-icon { font-size: 34px; }
+          }
+        }
+
+        &:hover .avatar-photo {
+          transform: scale(1.08);
+        }
+
+        .staff-verified-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 4px;
+          background: rgba(22, 86, 68, 0.08);
+          border: 1px solid rgba(22, 86, 68, 0.2);
+          border-radius: 999px;
+          padding: 2px 8px;
+          font-size: 10px;
+          font-weight: 800;
+          color: #165644;
+          margin-top: 6px;
+
+          .badge-icon {
+            width: 11px;
+            height: 11px;
+            color: #165644;
+          }
+        }
+      }
+
+      // 3. Bloque de Información
+      .trainer-info-block {
+        text-align: center;
+        margin-bottom: 12px;
+        flex: 1;
+
+        .trainer-name {
+          font-family: $font-display;
+          font-size: 16px;
+          font-weight: 800;
+          color: #2C2623;
+          margin: 0 0 4px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .trainer-zone-row {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          color: #7A726B;
+          font-size: 11px;
+          font-weight: 600;
+          margin-bottom: 8px;
+          max-width: 100%;
+
+          svg {
+            width: 12px;
+            height: 12px;
+            flex-shrink: 0;
+            color: #D94426;
+          }
+
+          .zone-text {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+
+        .trainer-disciplines-row {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          flex-wrap: wrap;
+          margin-bottom: 8px;
+
+          .discipline-tag {
+            background: #FAF7F2;
+            border: 1px solid rgba(46, 39, 36, 0.08);
+            border-radius: 6px;
+            padding: 2px 7px;
+            font-size: 10px;
+            font-weight: 700;
+            color: #4A423E;
+
+            &.more-tag {
+              background: rgba(22, 86, 68, 0.08);
+              color: #165644;
+              border-color: rgba(22, 86, 68, 0.2);
+            }
+          }
+        }
+
+        .trainer-bio-snip {
+          font-size: 11.5px;
+          color: #5D544D;
+          margin: 0 0 10px;
+          line-height: 1.4;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .trainer-schedule-chip {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 5px;
+          background: #FAF7F2;
+          border: 1px solid rgba(46, 39, 36, 0.06);
+          border-radius: 999px;
+          padding: 3px 10px;
+          font-size: 10.5px;
+          font-weight: 700;
+          color: #165644;
+          max-width: 100%;
+
+          svg {
+            width: 12px;
+            height: 12px;
+            color: #165644;
+            flex-shrink: 0;
+          }
+
+          span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+        }
+      }
+
+      // 4. Acciones al Pie
+      .trainer-card-actions {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding-top: 10px;
+        margin-top: auto;
+        border-top: 1px solid rgba(46, 39, 36, 0.06);
+
+        .btn-card-action {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          border: 1px solid rgba(46, 39, 36, 0.12);
+          background: #FAF7F2;
+          border-radius: 10px;
+          padding: 6px 8px;
+          font-family: $font-body;
+          font-size: 11px;
+          font-weight: 700;
+          color: #5D544D;
+          cursor: pointer;
+          transition: all 0.18s ease;
+          text-decoration: none;
+
+          svg {
+            width: 13px;
+            height: 13px;
+            stroke: currentColor;
+            fill: none;
+          }
+
+          &.btn-view-sheet {
+            flex: 1;
+            &:hover {
+              background: rgba(22, 86, 68, 0.09);
+              color: #165644;
+              border-color: #165644;
+            }
+          }
+
+          &.btn-whatsapp-action {
+            flex: 0 0 32px;
+            height: 32px;
+            padding: 0;
+            color: #25D366;
+            background: rgba(37, 211, 102, 0.08);
+            border-color: rgba(37, 211, 102, 0.25);
+
+            svg {
+              fill: currentColor;
+              width: 14px;
+              height: 14px;
+            }
+
+            &:hover {
+              background: #25D366;
+              color: #FFFFFF;
+              border-color: #25D366;
+              transform: translateY(-1px);
+            }
+          }
+
+          &.btn-toggle-state {
+            flex: 0 0 32px;
+            height: 32px;
+            padding: 0;
+            color: #7A726B;
+
+            &:hover {
+              background: rgba(46, 39, 36, 0.08);
+              color: #2C2623;
+            }
+
+            &.is-paused {
+              color: #10B981;
+              background: rgba(16, 185, 129, 0.08);
+              border-color: rgba(16, 185, 129, 0.25);
+            }
+          }
+
+          &.btn-edit {
+            flex: 0 0 32px;
+            height: 32px;
+            padding: 0;
+
+            &:hover {
+              background: rgba(46, 39, 36, 0.08);
+              color: #2C2623;
+              border-color: rgba(46, 39, 36, 0.25);
+            }
+          }
+
+          &.btn-delete {
+            flex: 0 0 32px;
+            height: 32px;
+            padding: 0;
+            color: #D94426;
+            background: rgba(217, 68, 38, 0.04);
+            border-color: rgba(217, 68, 38, 0.18);
+
+            &:hover {
+              background: rgba(217, 68, 38, 0.12);
+              color: #C03518;
+              border-color: #D94426;
+            }
+          }
+        }
+      }
+    }
+
+    // Estado Vacío
+    .entrenadores-empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 44px 20px;
+      background: #FAF7F2;
+      border: 1.5px dashed rgba(46, 39, 36, 0.12);
+      border-radius: 20px;
+
+      .empty-icon {
+        font-size: 42px;
+        margin-bottom: 12px;
+      }
+
+      h4 {
+        font-family: $font-display;
+        font-size: 16px;
+        font-weight: 800;
+        color: #2C2623;
+        margin: 0 0 6px;
+      }
+
+      p {
+        font-size: 12px;
+        color: #7A726B;
+        margin: 0;
+      }
+    }
+  }
+
+  // ==============================================
+  // SUB-MODALES (FORMULARIO, FICHA, ELIMINAR)
+  // ==============================================
+  .subdialog-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(18, 14, 12, 0.65);
+    backdrop-filter: blur(5px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeInSubdialog 0.22s ease-out;
+
+    .subdialog-card {
+      background: #FFFFFF;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 760px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+      border: 1.5px solid rgba(46, 39, 36, 0.1);
+      display: flex;
+      flex-direction: column;
+      animation: scaleInSubdialog 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+
+      // Header del Modal
+      .subdialog-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        padding: 20px 24px 16px;
+        border-bottom: 1px solid rgba(46, 39, 36, 0.08);
+
+        .header-text {
+          .subdialog-badge {
+            font-size: 10.5px;
+            font-weight: 800;
+            color: #165644;
+            background: rgba(22, 86, 68, 0.08);
+            padding: 2px 8px;
+            border-radius: 999px;
+            display: inline-block;
+            margin-bottom: 4px;
+          }
+
+          h4 {
+            font-family: $font-display;
+            font-size: 18px;
+            font-weight: 900;
+            color: #2C2623;
+            margin: 0;
+          }
+        }
+
+        .btn-sub-close {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          border: 1px solid rgba(46, 39, 36, 0.1);
+          background: #FAF7F2;
+          color: #7A726B;
+          cursor: pointer;
+          font-size: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.18s ease;
+
+          &:hover {
+            background: #2C2623;
+            color: #FFFFFF;
+          }
+        }
+      }
+
+      // Body del Modal
+      .subdialog-body {
+        padding: 20px 24px;
+        overflow-y: auto;
+
+        .form-section-title {
+          font-family: $font-display;
+          font-size: 12.5px;
+          font-weight: 900;
+          color: #165644;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          border-bottom: 1.5px solid rgba(22, 86, 68, 0.15);
+          padding-bottom: 5px;
+          margin: 14px 0 12px;
+
+          &:first-of-type { margin-top: 0; }
+        }
+
+        .form-grid-2cols {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 14px;
+          margin-bottom: 12px;
+        }
+
+        .form-field-group {
+          margin-bottom: 12px;
+
+          .field-label {
+            display: block;
+            font-size: 11.5px;
+            font-weight: 800;
+            color: #4A423E;
+            margin-bottom: 5px;
+          }
+
+          .styled-text-input {
+            width: 100%;
+            height: 40px;
+            border-radius: 10px;
+            border: 1.5px solid rgba(46, 39, 36, 0.12);
+            background: #FAF7F2;
+            padding: 0 12px;
+            font-family: $font-body;
+            font-size: 12px;
+            color: #2C2623;
+            transition: all 0.2s ease;
+
+            &:focus {
+              outline: none;
+              border-color: #165644;
+              background: #FFFFFF;
+              box-shadow: 0 0 0 3px rgba(22, 86, 68, 0.1);
+            }
+          }
+
+          textarea.styled-text-input {
+            height: auto;
+            padding: 10px 12px;
+            resize: vertical;
+          }
+
+          .field-help {
+            display: block;
+            font-size: 10.5px;
+            color: #7A726B;
+            margin-top: 4px;
+          }
+
+          .switch-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 8px 12px;
+            background: #FAF7F2;
+            border-radius: 10px;
+            border: 1.5px solid rgba(46, 39, 36, 0.1);
+
+            input[type="checkbox"] {
+              width: 16px;
+              height: 16px;
+              accent-color: #165644;
+              cursor: pointer;
+            }
+
+            .switch-text {
+              font-size: 12px;
+              color: #4A423E;
+            }
+          }
+        }
+
+        .photo-preview-group {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+
+          .photo-input-col {
+            flex: 1;
+          }
+
+          .photo-preview-box {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            border: 2px solid #165644;
+            overflow: hidden;
+            background: #FAF7F2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+
+            .live-avatar-preview {
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+            }
+
+            .live-avatar-placeholder {
+              font-size: 26px;
+            }
+          }
+        }
+
+        // Matriz de disponibilidad semanal
+        .agenda-helper-text {
+          font-size: 11.5px;
+          color: #7A726B;
+          margin: 0 0 10px;
+        }
+
+        .agenda-days-editor {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          background: #FAF7F2;
+          border-radius: 14px;
+          padding: 12px;
+
+          .day-editor-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 10px;
+            background: #FFFFFF;
+            border-radius: 10px;
+            border: 1px solid rgba(46, 39, 36, 0.08);
+            transition: all 0.2s ease;
+
+            &.is-inactive {
+              opacity: 0.65;
+              background: rgba(250, 247, 242, 0.6);
+            }
+
+            .day-check-col {
+              min-width: 95px;
+
+              .day-checkbox-label {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                cursor: pointer;
+
+                input[type="checkbox"] {
+                  accent-color: #165644;
+                  cursor: pointer;
+                }
+
+                .day-name {
+                  font-size: 12px;
+                  font-weight: 800;
+                  color: #2C2623;
+                }
+              }
+            }
+
+            .day-hours-col {
+              flex: 1;
+              display: flex;
+              align-items: center;
+              gap: 8px;
+
+              .day-hours-input {
+                flex: 1;
+                height: 34px;
+                font-size: 11.5px;
+              }
+
+              .quick-presets {
+                display: flex;
+                align-items: center;
+                gap: 4px;
+
+                .preset-btn {
+                  background: #FAF7F2;
+                  border: 1px solid rgba(46, 39, 36, 0.1);
+                  border-radius: 6px;
+                  padding: 4px 6px;
+                  font-size: 9.5px;
+                  font-weight: 700;
+                  color: #5D544D;
+                  cursor: pointer;
+                  white-space: nowrap;
+
+                  &:hover {
+                    background: #165644;
+                    color: #FFFFFF;
+                    border-color: #165644;
+                  }
+                }
+              }
+            }
+
+            .day-off-label {
+              font-size: 11px;
+              color: #9CA3AF;
+              font-style: italic;
+            }
+          }
+        }
+      }
+
+      // Footer del Modal
+      .subdialog-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 16px 24px;
+        border-top: 1px solid rgba(46, 39, 36, 0.08);
+        background: #FAF7F2;
+        border-radius: 0 0 24px 24px;
+
+        .btn-sub-cancel {
+          height: 38px;
+          padding: 0 16px;
+          border: 1px solid rgba(46, 39, 36, 0.14);
+          background: #FFFFFF;
+          border-radius: 10px;
+          font-family: $font-body;
+          font-size: 12px;
+          font-weight: 700;
+          color: #5D544D;
+          cursor: pointer;
+          transition: all 0.18s ease;
+
+          &:hover {
+            background: rgba(46, 39, 36, 0.06);
+            color: #2C2623;
+          }
+        }
+
+        .btn-sub-save {
+          height: 38px;
+          padding: 0 20px;
+          border: none;
+          background: linear-gradient(135deg, #165644, #1E7059);
+          border-radius: 10px;
+          font-family: $font-body;
+          font-size: 12px;
+          font-weight: 800;
+          color: #FFFFFF;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(22, 86, 68, 0.25);
+          transition: all 0.18s ease;
+
+          &:hover:not(:disabled) {
+            transform: translateY(-1px);
+            background: linear-gradient(135deg, #1E7059, #25856B);
+            box-shadow: 0 6px 16px rgba(22, 86, 68, 0.32);
+          }
+
+          &:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+          }
+        }
+      }
+    }
+
+    // Modal 2: Ficha Detallada
+    .detail-sheet-card {
+      max-width: 740px;
+
+      .detail-hero-box {
+        display: flex;
+        gap: 18px;
+        padding: 16px;
+        background: #FAF7F2;
+        border-radius: 18px;
+        border: 1px solid rgba(46, 39, 36, 0.08);
+        margin-bottom: 16px;
+
+        .hero-avatar {
+          width: 90px;
+          height: 90px;
+          border-radius: 50%;
+          overflow: hidden;
+          border: 3px solid #FFFFFF;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+          flex-shrink: 0;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+
+          .hero-avatar-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            background: #E8E2D9;
+          }
+        }
+
+        .hero-info {
+          flex: 1;
+
+          .hero-top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 6px;
+
+            .status-chip {
+              font-size: 10.5px;
+              font-weight: 800;
+              color: #9CA3AF;
+
+              &.active { color: #059669; }
+            }
+
+            .price-chip-highlight {
+              font-family: $font-display;
+              font-size: 13px;
+              font-weight: 900;
+              color: #165644;
+              background: #FFFFFF;
+              border: 1px solid rgba(22, 86, 68, 0.2);
+              border-radius: 999px;
+              padding: 2px 9px;
+            }
+          }
+
+          .hero-title {
+            font-family: $font-display;
+            font-size: 18px;
+            font-weight: 900;
+            color: #2C2623;
+            margin: 0 0 4px;
+          }
+
+          .hero-zone {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 11.5px;
+            color: #7A726B;
+            margin-bottom: 8px;
+
+            svg {
+              width: 12px;
+              height: 12px;
+              color: #D94426;
+            }
+          }
+
+          .hero-disciplines {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+
+            .hero-disc-tag {
+              background: #FFFFFF;
+              border: 1px solid rgba(46, 39, 36, 0.1);
+              border-radius: 6px;
+              padding: 2px 7px;
+              font-size: 10px;
+              font-weight: 700;
+              color: #4A423E;
+            }
+          }
+        }
+      }
+
+      .detail-section {
+        margin-bottom: 16px;
+
+        h5 {
+          font-family: $font-display;
+          font-size: 13px;
+          font-weight: 900;
+          color: #2C2623;
+          margin: 0 0 8px;
+        }
+
+        .detail-bio-text {
+          font-size: 12.5px;
+          color: #5D544D;
+          line-height: 1.5;
+          margin: 0;
+          background: #FAF7F2;
+          padding: 12px 14px;
+          border-radius: 12px;
+        }
+
+        .detail-schedule-table {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+          gap: 8px;
+
+          .schedule-day-card {
+            background: #FAF7F2;
+            border-radius: 10px;
+            padding: 8px 10px;
+            border: 1px solid rgba(46, 39, 36, 0.08);
+
+            &.is-day-active {
+              background: #FFFFFF;
+              border-color: rgba(22, 86, 68, 0.25);
+            }
+
+            .day-card-header {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              font-size: 11px;
+              margin-bottom: 5px;
+
+              strong { color: #2C2623; }
+
+              .day-status-pill {
+                font-size: 9px;
+                font-weight: 700;
+                color: #059669;
+              }
+            }
+
+            &.is-day-off .day-status-pill {
+              color: #9CA3AF;
+            }
+
+            .day-card-hours {
+              display: flex;
+              flex-direction: column;
+              gap: 3px;
+
+              .hour-badge {
+                background: rgba(22, 86, 68, 0.08);
+                color: #165644;
+                font-size: 9.5px;
+                font-weight: 700;
+                padding: 1px 5px;
+                border-radius: 4px;
+                text-align: center;
+              }
+
+              &.day-card-off {
+                font-size: 10px;
+                color: #9CA3AF;
+                font-style: italic;
+              }
+            }
+          }
+        }
+      }
+
+      .btn-whatsapp-direct {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        height: 38px;
+        padding: 0 16px;
+        background: #25D366;
+        color: #FFFFFF;
+        border-radius: 10px;
+        font-family: $font-body;
+        font-size: 12px;
+        font-weight: 800;
+        text-decoration: none;
+        box-shadow: 0 3px 10px rgba(37, 211, 102, 0.25);
+        transition: all 0.18s ease;
+
+        &:hover {
+          background: #20BA5A;
+          transform: translateY(-1px);
+        }
+      }
+    }
+
+    // Modal 3: Confirmación de Baja
+    .delete-confirm-card {
+      max-width: 440px;
+      text-align: center;
+      padding: 28px 24px;
+
+      .delete-icon-circle {
+        font-size: 40px;
+        margin-bottom: 12px;
+      }
+
+      h4 {
+        font-family: $font-display;
+        font-size: 18px;
+        font-weight: 900;
+        color: #2C2623;
+        margin: 0 0 8px;
+      }
+
+      .delete-confirm-text {
+        font-size: 12.5px;
+        color: #5D544D;
+        line-height: 1.5;
+        margin: 0 0 20px;
+      }
+
+      .delete-modal-actions {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+
+        .btn-sub-cancel {
+          height: 38px;
+          padding: 0 18px;
+          border: 1px solid rgba(46, 39, 36, 0.14);
+          background: #FFFFFF;
+          border-radius: 10px;
+          font-family: $font-body;
+          font-size: 12px;
+          font-weight: 700;
+          color: #5D544D;
+          cursor: pointer;
+          &:hover { background: rgba(46, 39, 36, 0.06); }
+        }
+
+        .btn-sub-delete-danger {
+          height: 38px;
+          padding: 0 20px;
+          border: none;
+          background: #D94426;
+          border-radius: 10px;
+          font-family: $font-body;
+          font-size: 12px;
+          font-weight: 800;
+          color: #FFFFFF;
+          cursor: pointer;
+          box-shadow: 0 4px 14px rgba(217, 68, 38, 0.3);
+          transition: all 0.18s ease;
+
+          &:hover {
+            background: #C03518;
+            transform: translateY(-1px);
+          }
+        }
+      }
+    }
+  }
+}
+
+// ==============================================
+// KEYFRAMES ANIMACIONES
+// ==============================================
+@keyframes fadeInSubdialog {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes scaleInSubdialog {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+@keyframes toastSlideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// ==============================================
+// RESPONSIVO
+// ==============================================
+@media (max-width: 768px) {
+  .admin-entrenadores-wrapper {
+    .entrenadores-toolbar {
+      flex-direction: column;
+      align-items: stretch;
+
+      .toolbar-actions {
+        flex-direction: column;
+        align-items: stretch;
+
+        .search-box .search-input {
+          width: 100%;
+          &:focus { width: 100%; }
+        }
+
+        .btn-create-trainer {
+          justify-content: center;
+        }
+      }
+    }
+
+    .entrenadores-subfilters-bar {
+      flex-direction: column;
+      align-items: stretch;
+
+      .filter-group {
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+
+        .status-pills, .discipline-pills-scroll {
+          width: 100%;
+          overflow-x: auto;
+          padding-bottom: 4px;
+        }
+      }
+    }
+
+    .entrenadores-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .subdialog-card {
+      .form-grid-2cols {
+        grid-template-columns: 1fr;
+      }
+    }
+  }
+}

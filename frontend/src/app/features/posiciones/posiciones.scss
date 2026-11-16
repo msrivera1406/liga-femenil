@@ -1,0 +1,756 @@
+@use 'styles/variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.posiciones-page {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  background-color: #FAF7F2;
+
+  // Fondo fotográfico con opacidad adecuada para mantener los colores vivos del estadio
+  &::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url('/images/fondo_posiciones.jpeg');
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.82;
+    filter: saturate(1.15) contrast(1.04);
+  }
+
+  // Gradiente atmosférico equilibrado para asegurar legibilidad manteniendo el color
+  &::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      rgba(250, 247, 242, 0.65) 0%,
+      rgba(250, 247, 242, 0.20) 25%,
+      rgba(250, 247, 242, 0.16) 60%,
+      rgba(250, 247, 242, 0.78) 100%
+    );
+    pointer-events: none;
+    z-index: 0;
+  }
+}
+
+.container {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 24px;
+  position: relative;
+  z-index: 1;
+}
+
+// 1. ENCABEZADO Y SELECTOR MODERNO DE TEMPORADAS
+.posiciones-hero {
+  position: relative;
+  z-index: 10;
+  padding: 104px 0 28px;
+  border-bottom: 1px solid rgba(46, 39, 36, 0.08);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.85) 0%,
+    rgba(255, 255, 255, 0.65) 75%,
+    rgba(255, 255, 255, 0.45) 100%
+  );
+  backdrop-filter: blur(10px);
+
+  .hero-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .hero-text-block {
+    max-width: 680px;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(155, 206, 193, 0.25);
+    border: 1px solid rgba(155, 206, 193, 0.55);
+    color: #165644;
+    font-size: 11.5px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: $radius-pill;
+    margin-bottom: 12px;
+
+    .badge-icon {
+      font-size: 13px;
+    }
+  }
+
+  .posiciones-main-title {
+    font-family: $font-display;
+    font-size: clamp(32px, 4.2vw, 48px);
+    font-weight: 800;
+    color: #2C2623;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    margin: 0 0 10px;
+
+    .gradient-text {
+      background: linear-gradient(135deg, #D96552 0%, #E65C40 40%, #1B5E4B 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  .posiciones-subtitle {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #5D544D;
+    margin: 0;
+  }
+
+  // Barra de Controles (Selector Temporada + Jornada Pill)
+  .season-controls-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 20;
+    flex-wrap: wrap;
+  }
+
+  // Wrapper del dropdown
+  .season-dropdown-wrapper {
+    position: relative;
+  }
+
+  // Botón selector moderno tipo pill
+  .season-pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: #FFFFFF;
+    border: 1.5px solid rgba(46, 39, 36, 0.14);
+    border-radius: 999px;
+    padding: 10px 18px;
+    color: #2C2623;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(46, 39, 36, 0.06);
+    transition: all 0.22s ease;
+
+    .calendar-icon {
+      width: 16px;
+      height: 16px;
+      color: #165644;
+    }
+
+    .season-btn-text {
+      letter-spacing: -0.01em;
+    }
+
+    .chevron-icon {
+      width: 14px;
+      height: 14px;
+      color: #7A726B;
+      transition: transform 0.22s ease;
+    }
+
+    &:hover {
+      border-color: #165644;
+      background: #FAF7F2;
+      box-shadow: 0 6px 18px rgba(22, 86, 68, 0.12);
+      transform: translateY(-1px);
+    }
+
+    &.open {
+      border-color: #165644;
+      background: #FFFFFF;
+      box-shadow: 0 8px 24px rgba(22, 86, 68, 0.16);
+
+      .chevron-icon {
+        transform: rotate(180deg);
+        color: #165644;
+      }
+    }
+  }
+
+  // Menú flotante desplegable
+  .season-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    min-width: 250px;
+    background: #FFFFFF;
+    border: 1.5px solid rgba(46, 39, 36, 0.12);
+    border-radius: 18px;
+    padding: 8px;
+    box-shadow: 0 16px 36px rgba(46, 39, 36, 0.14), 0 2px 6px rgba(0, 0, 0, 0.03);
+    backdrop-filter: blur(12px);
+    z-index: 50;
+    animation: dropdownFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+
+    .menu-header {
+      font-size: 10.5px;
+      font-weight: 800;
+      color: #7A726B;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 6px 12px 8px;
+      border-bottom: 1px solid rgba(46, 39, 36, 0.06);
+      margin-bottom: 4px;
+    }
+
+    .season-option-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: 12px;
+      border: none;
+      background: transparent;
+      color: #2C2623;
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.18s ease;
+
+      .option-info {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+
+        .opt-name {
+          font-size: 13px;
+          font-weight: 700;
+        }
+
+        .opt-sub {
+          font-size: 11px;
+          color: #7A726B;
+        }
+      }
+
+      .opt-badge {
+        font-size: 9.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        padding: 2px 7px;
+        border-radius: 999px;
+        background: rgba(22, 86, 68, 0.12);
+        color: #165644;
+      }
+
+      .opt-check {
+        font-size: 13px;
+        font-weight: 800;
+        color: #165644;
+        margin-left: 6px;
+      }
+
+      &:hover {
+        background: #FAF7F2;
+        color: #165644;
+      }
+
+      &.selected {
+        background: rgba(155, 206, 193, 0.22);
+        color: #165644;
+      }
+    }
+  }
+
+  // Píldora de Jornada
+  .jornada-pill-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1.5px solid rgba(155, 206, 193, 0.7);
+    border-radius: 999px;
+    padding: 10px 18px;
+    box-shadow: 0 4px 14px rgba(22, 86, 68, 0.08);
+
+    .jornada-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #00C853;
+      box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.7);
+      animation: pulseGreen 1.8s infinite;
+    }
+
+    .jornada-text {
+      font-size: 13px;
+      font-weight: 800;
+      color: #165644;
+      letter-spacing: -0.01em;
+    }
+  }
+}
+
+// 2. CONTENEDOR PRINCIPAL Y TARJETA EDITORIAL
+.standings-main-container {
+  padding: 36px 24px 60px;
+}
+
+.standings-card {
+  background: #FFFFFF;
+  border: 2px solid rgba(155, 206, 193, 0.65);
+  border-radius: 28px;
+  box-shadow: 0 16px 44px rgba(46, 39, 36, 0.08), 0 2px 6px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+
+  // Barra de Leyenda de Clasificación
+  .card-legend-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 18px 28px;
+    background: #FAF8F5;
+    border-bottom: 1px solid rgba(46, 39, 36, 0.08);
+
+    .legend-group {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        font-size: 12px;
+        color: #5D544D;
+
+        .legend-color-dot {
+          width: 9px;
+          height: 9px;
+          border-radius: 50%;
+
+          &.playoff-dot {
+            background: #165644;
+            box-shadow: 0 0 0 2px rgba(22, 86, 68, 0.25);
+          }
+
+          &.regular-dot {
+            background: #B5AEA8;
+          }
+        }
+
+        strong {
+          color: #2C2623;
+        }
+      }
+    }
+
+    .quick-stats-summary {
+      font-size: 12px;
+      color: #7A726B;
+
+      strong {
+        color: #165644;
+        font-weight: 800;
+      }
+    }
+  }
+
+  // Wrapper con scroll horizontal responsivo
+  .table-responsive-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  // Tabla
+  .standings-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    text-align: center;
+
+    th {
+      font-family: $font-display;
+      font-size: 12px;
+      font-weight: 800;
+      color: #6B625B;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 14px 16px;
+      background: #FAF8F5;
+      border-bottom: 2px solid rgba(46, 39, 36, 0.08);
+      white-space: nowrap;
+
+      &.th-pos {
+        width: 60px;
+      }
+
+      &.th-team {
+        text-align: left;
+        padding-left: 20px;
+        min-width: 220px;
+      }
+
+      &.th-stat {
+        width: 52px;
+      }
+
+      &.th-pts {
+        width: 72px;
+        color: #165644;
+      }
+
+      &.th-form {
+        width: 130px;
+      }
+    }
+
+    tbody tr.standings-row {
+      border-bottom: 1px solid rgba(46, 39, 36, 0.06);
+      transition: background-color 0.18s ease;
+
+      &:hover {
+        background-color: #F8F4EE;
+      }
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      // Zona de Liguilla (Top 4)
+      &.in-playoffs {
+        background-color: rgba(155, 206, 193, 0.04);
+
+        &:hover {
+          background-color: rgba(155, 206, 193, 0.12);
+        }
+      }
+
+      &.top-one {
+        background-color: rgba(255, 182, 166, 0.06);
+
+        &:hover {
+          background-color: rgba(255, 182, 166, 0.14);
+        }
+      }
+
+      td {
+        padding: 13px 16px;
+        vertical-align: middle;
+        white-space: nowrap;
+        color: #2E2724;
+
+        &.td-pos {
+          padding-left: 18px;
+
+          .rank-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            font-family: $font-display;
+            font-size: 13px;
+            font-weight: 800;
+            color: #5D544D;
+
+            &.rank-first {
+              background: linear-gradient(135deg, #FFB703 0%, #D96552 100%);
+              color: #FFFFFF;
+              box-shadow: 0 3px 8px rgba(217, 101, 82, 0.35);
+            }
+
+            &.rank-playoff {
+              background: rgba(22, 86, 68, 0.12);
+              color: #165644;
+              border: 1px solid rgba(22, 86, 68, 0.3);
+            }
+
+            &.rank-regular {
+              background: rgba(46, 39, 36, 0.05);
+              color: #7A726B;
+            }
+          }
+        }
+
+        &.td-team {
+          text-align: left;
+          padding-left: 20px;
+
+          .team-cell-wrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+
+            .crest-frame {
+              width: 32px;
+              height: 32px;
+              border-radius: 50%;
+              background: #FFFFFF;
+              border: 1.5px solid rgba(46, 39, 36, 0.1);
+              box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              overflow: hidden;
+              flex-shrink: 0;
+
+              .team-crest-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+              }
+            }
+
+            .team-full-name {
+              font-family: $font-display;
+              font-size: 14px;
+              font-weight: 700;
+              color: #2C2623;
+            }
+          }
+        }
+
+        &.td-stat {
+          font-weight: 600;
+          color: #4A423D;
+
+          &.td-dg {
+            font-weight: 700;
+
+            &.dg-positive {
+              color: #165644;
+            }
+
+            &.dg-negative {
+              color: #C53030;
+            }
+          }
+        }
+
+        &.td-pts {
+          .pts-badge-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            padding: 4px 8px;
+            border-radius: 999px;
+            background: #165644;
+            color: #FFFFFF;
+            font-family: $font-display;
+            font-size: 14px;
+            font-weight: 800;
+            box-shadow: 0 2px 6px rgba(22, 86, 68, 0.25);
+          }
+        }
+
+        &.td-form {
+          .form-bubbles-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+
+            .form-chip {
+              display: inline-flex;
+              align-items: center;
+              justify-content: center;
+              width: 22px;
+              height: 22px;
+              border-radius: 50%;
+              font-size: 10px;
+              font-weight: 800;
+              color: #FFFFFF;
+
+              &.form-win {
+                background: #10B981;
+                box-shadow: 0 1px 4px rgba(16, 185, 129, 0.35);
+              }
+
+              &.form-loss {
+                background: #EF4444;
+                box-shadow: 0 1px 4px rgba(239, 68, 68, 0.35);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // Pie de Tarjeta
+  .standings-card-footer {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 18px 28px;
+    background: #FAF8F5;
+    border-top: 1px solid rgba(46, 39, 36, 0.08);
+
+    .footer-note-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 11.5px;
+      line-height: 1.5;
+      color: #6B625B;
+
+      .note-bullet {
+        font-size: 12px;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      strong {
+        color: #2C2623;
+      }
+    }
+  }
+}
+
+// Placeholder del Footer diferido
+.footer-lazy-placeholder {
+  min-height: 140px;
+  width: 100%;
+}
+
+app-landing-footer {
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+// Animaciones
+@keyframes pulseGreen {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 200, 83, 0.7);
+  }
+  70% {
+    box-shadow: 0 0 0 7px rgba(0, 200, 83, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 200, 83, 0);
+  }
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+// Media Queries Responsive
+@media (max-width: 768px) {
+  // Despeje equilibrado de la navbar fija en móvil
+  .posiciones-hero {
+    padding: 86px 0 18px;
+
+    .hero-top-row {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .hero-badge {
+      font-size: 10.5px;
+      padding: 5px 12px;
+    }
+
+    .posiciones-main-title {
+      font-size: 28px;
+    }
+
+    .posiciones-subtitle {
+      font-size: 13.5px;
+    }
+
+    .season-controls-bar {
+      width: 100%;
+      justify-content: space-between;
+
+      .season-pill-btn,
+      .jornada-pill-tag {
+        padding: 8px 14px;
+        font-size: 12px;
+      }
+    }
+  }
+
+  // Contenedor principal con distancia simétrica y equilibrada
+  .standings-main-container {
+    padding: 24px 14px;
+  }
+
+  .standings-card {
+    border-radius: 20px;
+
+    .card-legend-header {
+      padding: 14px 16px;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    // Tabla con columna de equipo fija para lectura óptima al deslizar horizontalmente
+    .standings-table {
+      th.th-team,
+      td.td-team {
+        position: sticky;
+        left: 0;
+        background: #FFFFFF;
+        z-index: 5;
+        box-shadow: 4px 0 8px -2px rgba(0, 0, 0, 0.05);
+      }
+
+      th.th-team {
+        background: #FAF8F5;
+      }
+
+      th, td {
+        padding: 10px 10px;
+        font-size: 12px;
+      }
+
+      td.td-team .team-cell-wrap {
+        gap: 8px;
+
+        .crest-frame {
+          width: 26px;
+          height: 26px;
+        }
+
+        .team-full-name {
+          font-size: 12px;
+        }
+      }
+    }
+
+    .standings-card-footer {
+      padding: 14px 16px;
+      font-size: 11px;
+    }
+  }
+}

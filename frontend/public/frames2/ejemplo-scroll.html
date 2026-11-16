@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Secuencia con scroll</title>
+<style>
+  body { margin: 0; background: #0e0f1a; color: #fff; font-family: system-ui, sans-serif; }
+  .scroll-zone { height: 400vh; }               /* largo del recorrido de scroll */
+  .sticky { position: sticky; top: 0; height: 100vh; display: grid; place-items: center; }
+  canvas { width: 100vw; max-width: 1920px; aspect-ratio: 16 / 9; }
+</style>
+</head>
+<body>
+<section class="scroll-zone">
+  <div class="sticky"><canvas id="seq"></canvas></div>
+</section>
+<script>
+  // Coloca este archivo junto a las carpetas de frames.
+  // Pantallas grandes / retina usan 4K; el resto 1080p.
+  const TOTAL = 120;
+  const use4k = (window.innerWidth * window.devicePixelRatio) > 2200;
+  const FOLDER = use4k ? 'sin-fondo-4k-webp' : 'sin-fondo-1080p-webp';
+  const W = use4k ? 3840 : 1920, H = use4k ? 2160 : 1080;
+
+  const canvas = document.getElementById('seq');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.imageSmoothingQuality = 'high';
+
+  const src = i => `${FOLDER}/frame_${String(i).padStart(3, '0')}.webp`;
+  const frames = [];
+  let current = -1;
+  for (let i = 1; i <= TOTAL; i++) {
+    const img = new Image();
+    img.decoding = 'async';
+    img.src = src(i);
+    frames.push(img);
+  }
+
+  function draw(index) {
+    if (index === current) return;
+    const img = frames[index];
+    if (!img.complete) { img.onload = () => draw(index); return; }
+    current = index;
+    ctx.clearRect(0, 0, W, H);
+    ctx.drawImage(img, 0, 0, W, H);
+  }
+
+  function onScroll() {
+    const zone = document.querySelector('.scroll-zone');
+    const max = zone.offsetHeight - innerHeight;
+    const p = Math.min(Math.max((scrollY - zone.offsetTop) / max, 0), 1);
+    draw(Math.round(p * (TOTAL - 1)));
+  }
+
+  addEventListener('scroll', () => requestAnimationFrame(onScroll), { passive: true });
+  frames[0].onload = () => draw(0);
+</script>
+</body>
+</html>

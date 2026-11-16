@@ -1,0 +1,571 @@
+<div class="admin-entrenadores-wrapper">
+
+  <!-- ============================================== -->
+  <!-- NOTIFICACIÓN TOAST FLOTANTE                    -->
+  <!-- ============================================== -->
+  <div class="entrenadores-toast" *ngIf="toastMessage()">
+    <span class="toast-icon">✨</span>
+    <span class="toast-text">{{ toastMessage() }}</span>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- TOOLBAR SUPERIOR: FILTROS & ACCIONES           -->
+  <!-- ============================================== -->
+  <header class="entrenadores-toolbar">
+    <div class="toolbar-left">
+      <div class="toolbar-tag-badge">
+        <span class="tag-icon">⚡</span>
+        <span>Acondicionamiento Físico & Bienestar</span>
+      </div>
+      <h3 class="toolbar-title">
+        Staff Oficial de Entrenadores
+        <span class="counter-badge">{{ totalCount() }}</span>
+      </h3>
+      <p class="toolbar-subtitle">
+        Catálogo a domicilio y personalizado. Control de tarifas, zonas de cobertura CDMX y matriz horaria semanal.
+      </p>
+    </div>
+
+    <div class="toolbar-actions">
+      <!-- Buscador en tiempo real -->
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-svg">
+          <circle cx="11" cy="11" r="8"/>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input 
+          type="text" 
+          [ngModel]="searchQuery()" 
+          (ngModelChange)="searchQuery.set($event)"
+          placeholder="Buscar por nombre, zona o disciplina..." 
+          class="search-input" />
+        <button 
+          *ngIf="searchQuery()" 
+          type="button" 
+          class="btn-clear-search" 
+          (click)="searchQuery.set('')"
+          title="Limpiar búsqueda">✕</button>
+      </div>
+
+      <!-- Botón de alta -->
+      <button type="button" class="btn-create-trainer" (click)="openCreateModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        <span>Nueva Entrenadora</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================================== -->
+  <!-- BARRA DE FILTROS SECUNDARIOS                   -->
+  <!-- ============================================== -->
+  <div class="entrenadores-subfilters-bar">
+    <div class="filter-group">
+      <label class="filter-label">Estado:</label>
+      <div class="status-pills">
+        <button 
+          type="button" 
+          class="status-pill" 
+          [class.active]="statusFilter() === 'todos'" 
+          (click)="statusFilter.set('todos')">
+          Todos ({{ totalCount() }})
+        </button>
+        <button 
+          type="button" 
+          class="status-pill status-active" 
+          [class.active]="statusFilter() === 'activos'" 
+          (click)="statusFilter.set('activos')">
+          <span class="dot-active"></span> Activos ({{ activeCount() }})
+        </button>
+        <button 
+          type="button" 
+          class="status-pill status-paused" 
+          [class.active]="statusFilter() === 'pausados'" 
+          (click)="statusFilter.set('pausados')">
+          <span class="dot-paused"></span> Pausados ({{ pausedCount() }})
+        </button>
+      </div>
+    </div>
+
+    <!-- Chips de Disciplinas -->
+    <div class="filter-group disciplines-filter-group" *ngIf="disciplinasUnicas().length > 0">
+      <label class="filter-label">Disciplina:</label>
+      <div class="discipline-pills-scroll">
+        <button 
+          type="button" 
+          class="disc-pill" 
+          [class.active]="disciplinaFilter() === 'todas'" 
+          (click)="disciplinaFilter.set('todas')">
+          Todas
+        </button>
+        <button 
+          *ngFor="let d of disciplinasUnicas()" 
+          type="button" 
+          class="disc-pill" 
+          [class.active]="disciplinaFilter().toLowerCase() === d.toLowerCase()" 
+          (click)="disciplinaFilter.set(d)">
+          {{ d }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- CUADRÍCULA DE TARJETAS DE ENTRENADORES         -->
+  <!-- ============================================== -->
+  <div class="entrenadores-grid">
+
+    <!-- Tarjeta Wireframe para Añadir -->
+    <div class="entrenador-card-item card-create-new" (click)="openCreateModal()">
+      <div class="create-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <line x1="12" y1="5" x2="12" y2="19"/>
+          <line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+      </div>
+      <strong class="create-title">Dar de Alta Entrenador</strong>
+      <p class="create-sub">Añade perfil, foto, disciplinas, zonas CDMX y matriz horaria</p>
+    </div>
+
+    <!-- Tarjetas de Entrenadores Oficiales -->
+    <article 
+      *ngFor="let e of filteredEntrenadores()" 
+      class="entrenador-card-item trainer-profile-card"
+      [class.is-paused]="!e.activo">
+
+      <!-- Header de la Tarjeta: Badges & Estado -->
+      <div class="trainer-card-header">
+        <div class="header-status-badge" [class.is-active]="e.activo" [class.is-paused]="!e.activo">
+          <span class="status-dot"></span>
+          <span>{{ e.activo ? 'Visible en Web' : 'Pausada' }}</span>
+        </div>
+
+        <div class="header-price-badge">
+          ${{ e.precio_sesion }} <span class="price-unit">/ ses</span>
+        </div>
+      </div>
+
+      <!-- Avatar Centrado y Foto -->
+      <div class="trainer-avatar-center">
+        <div class="avatar-frame" [class.no-photo]="!e.foto_url">
+          <img *ngIf="e.foto_url" [src]="e.foto_url" [alt]="e.nombre_completo" class="avatar-photo" />
+          <div *ngIf="!e.foto_url" class="fallback-avatar-visual">
+            <span class="fallback-icon">🥊</span>
+          </div>
+        </div>
+
+        <div class="staff-verified-badge" title="Entrenadora verificada por la directiva de la liga">
+          <svg viewBox="0 0 24 24" fill="currentColor" class="badge-icon">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+          </svg>
+          <span>Staff Verificada</span>
+        </div>
+      </div>
+
+      <!-- Información Principal -->
+      <div class="trainer-info-block">
+        <h4 class="trainer-name" [title]="e.nombre_completo">{{ e.nombre_completo }}</h4>
+        
+        <div class="trainer-zone-row" [title]="'Zonas de cobertura: ' + e.zonas_cobertura">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          <span class="zone-text">{{ e.zonas_cobertura }}</span>
+        </div>
+
+        <!-- Chips de Disciplinas -->
+        <div class="trainer-disciplines-row">
+          <span class="discipline-tag" *ngFor="let disc of getDisciplinasList(e.disciplinas).slice(0, 3)">
+            {{ disc }}
+          </span>
+          <span class="discipline-tag more-tag" *ngIf="getDisciplinasList(e.disciplinas).length > 3">
+            +{{ getDisciplinasList(e.disciplinas).length - 3 }}
+          </span>
+        </div>
+
+        <!-- Bio resumida -->
+        <p class="trainer-bio-snip" [title]="e.bio">{{ e.bio }}</p>
+
+        <!-- Disponibilidad Resumida -->
+        <div class="trainer-schedule-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <polyline points="12 6 12 12 16 14"/>
+          </svg>
+          <span>{{ getDisponibilidadResumen(e) }}</span>
+        </div>
+      </div>
+
+      <!-- Pie de Tarjeta: Acciones del Staff -->
+      <div class="trainer-card-actions">
+        <!-- Ver Ficha y Agenda Semanal -->
+        <button 
+          type="button" 
+          class="btn-card-action btn-view-sheet" 
+          (click)="openDetailModal(e)" 
+          title="Ver perfil completo y matriz de horarios">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+          <span>Ficha & Horarios</span>
+        </button>
+
+        <!-- Test Enlace WhatsApp -->
+        <a 
+          [href]="getWhatsAppLink(e)" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="btn-card-action btn-whatsapp-action" 
+          [title]="'Abrir chat de WhatsApp con ' + e.nombre_completo">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.301-.15-1.782-.879-2.057-.98-.276-.1-.476-.15-.676.15-.199.301-.775.98-.95 1.18-.175.2-.351.225-.651.075s-1.268-.468-2.416-1.492c-.893-.797-1.496-1.782-1.672-2.082-.175-.3-.019-.462.131-.611.136-.134.301-.35.451-.525.15-.176.2-.3.301-.5.1-.2.05-.375-.025-.525-.075-.15-.676-1.628-.926-2.23-.244-.585-.492-.506-.676-.515-.175-.008-.376-.01-.576-.01-.2 0-.526.075-.802.375-.276.301-1.052 1.028-1.052 2.508 0 1.48 1.077 2.91 1.227 3.111.15.201 2.12 3.238 5.136 4.542.717.311 1.277.496 1.713.635.72.229 1.376.197 1.895.12.578-.087 1.782-.729 2.032-1.433.251-.703.251-1.306.176-1.432-.075-.126-.275-.201-.576-.351z"/>
+            <path d="M12 2C6.477 2 2 6.477 2 12c0 1.891.524 3.662 1.435 5.178L2 22l4.981-1.396A9.957 9.957 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18.2c-1.637 0-3.155-.494-4.423-1.341l-.317-.212-3.284.92.924-3.208-.233-.33A8.17 8.17 0 013.8 12c0-4.521 3.679-8.2 8.2-8.2 4.521 0 8.2 3.679 8.2 8.2 0 4.521-3.679 8.2-8.2 8.2z"/>
+          </svg>
+        </a>
+
+        <!-- Pausar / Activar Toggle -->
+        <button 
+          type="button" 
+          class="btn-card-action btn-toggle-state" 
+          [class.is-paused]="!e.activo" 
+          (click)="toggleActivo(e, $event)" 
+          [title]="e.activo ? 'Pausar entrenadora' : 'Activar entrenadora'">
+          <svg *ngIf="e.activo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="6" y="4" width="4" height="16"/>
+            <rect x="14" y="4" width="4" height="16"/>
+          </svg>
+          <svg *ngIf="!e.activo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="5 3 19 12 5 21 5 3"/>
+          </svg>
+        </button>
+
+        <!-- Editar -->
+        <button 
+          type="button" 
+          class="btn-card-action btn-edit" 
+          (click)="openEditModal(e)" 
+          title="Editar datos de la entrenadora">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+          </svg>
+        </button>
+
+        <!-- Eliminar -->
+        <button 
+          type="button" 
+          class="btn-card-action btn-delete" 
+          (click)="openDeleteConfirm(e)" 
+          title="Eliminar entrenadora del catálogo">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+          </svg>
+        </button>
+      </div>
+
+    </article>
+
+    <!-- Estado Vacío -->
+    <div *ngIf="filteredEntrenadores().length === 0" class="entrenadores-empty-state">
+      <div class="empty-icon">🥊</div>
+      <h4>No se encontraron entrenadores con los filtros aplicados</h4>
+      <p>Prueba limpiando la búsqueda o cambiando el filtro de estado/disciplina.</p>
+    </div>
+
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODAL 1: FORMULARIO CREAR / EDITAR ENTRENADOR  -->
+  <!-- ============================================== -->
+  <div class="subdialog-backdrop" *ngIf="showFormModal()">
+    <div class="subdialog-card form-dialog-card">
+      
+      <div class="subdialog-header">
+        <div class="header-text">
+          <span class="subdialog-badge">{{ isEditing() ? 'Edición de Perfil' : 'Alta de Nuevo Staff' }}</span>
+          <h4>{{ isEditing() ? 'Editar Perfil de Entrenadora' : 'Registrar Nueva Entrenadora' }}</h4>
+        </div>
+        <button type="button" class="btn-sub-close" (click)="closeFormModal()">✕</button>
+      </div>
+
+      <div class="subdialog-body">
+        
+        <!-- SECCIÓN 1: Identidad y Fotografía -->
+        <div class="form-section-title">
+          <span>1. Identidad y Fotografía</span>
+        </div>
+
+        <div class="form-grid-2cols">
+          <div class="form-field-group">
+            <label class="field-label">Nombre Completo y Apodo Deportivo: *</label>
+            <input 
+              type="text" 
+              [(ngModel)]="formNombreCompleto" 
+              placeholder="Ej. Mariana 'Ronda' Estrada" 
+              class="styled-text-input" />
+          </div>
+
+          <div class="form-field-group">
+            <label class="field-label">Tarifa por Sesión ($ MXN): *</label>
+            <input 
+              type="number" 
+              [(ngModel)]="formPrecioSesion" 
+              min="100" 
+              step="50" 
+              class="styled-text-input" />
+          </div>
+        </div>
+
+        <div class="form-grid-2cols">
+          <div class="form-field-group">
+            <label class="field-label">Teléfono Público / WhatsApp: *</label>
+            <input 
+              type="text" 
+              [(ngModel)]="formTelefonoPublico" 
+              placeholder="+52 55 1234 5678" 
+              class="styled-text-input" />
+            <span class="field-help">Se utilizará para generar el enlace directo de WhatsApp en la home page.</span>
+          </div>
+
+          <div class="form-field-group">
+            <label class="field-label">Estado de Visibilidad:</label>
+            <label class="checkbox-label switch-container">
+              <input type="checkbox" [(ngModel)]="formActivo" />
+              <span class="switch-text"><strong>Visible públicamente</strong> en la sección de servicios</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- URL de Foto con Previsualización en Vivo -->
+        <div class="form-field-group photo-preview-group">
+          <div class="photo-input-col">
+            <label class="field-label">URL de Fotografía de Perfil:</label>
+            <input 
+              type="text" 
+              [(ngModel)]="formFotoUrl" 
+              placeholder="https://images.unsplash.com/... o enlace CDN" 
+              class="styled-text-input" />
+            <span class="field-help">Recomendado: imagen cuadrada o retrato de alta calidad.</span>
+          </div>
+          <div class="photo-preview-box">
+            <img *ngIf="formFotoUrl" [src]="formFotoUrl" class="live-avatar-preview" />
+            <div *ngIf="!formFotoUrl" class="live-avatar-placeholder">🥊</div>
+          </div>
+        </div>
+
+        <!-- SECCIÓN 2: Especialidad y Cobertura -->
+        <div class="form-section-title">
+          <span>2. Especialidad & Zonas de Cobertura</span>
+        </div>
+
+        <div class="form-grid-2cols">
+          <div class="form-field-group">
+            <label class="field-label">Disciplinas Impartidas (separadas por coma): *</label>
+            <input 
+              type="text" 
+              [(ngModel)]="formDisciplinas" 
+              placeholder="Ej. Boxeo Defensivo, Funcional, Kickboxing" 
+              class="styled-text-input" />
+          </div>
+
+          <div class="form-field-group">
+            <label class="field-label">Zonas de Cobertura en CDMX: *</label>
+            <input 
+              type="text" 
+              [(ngModel)]="formZonasCobertura" 
+              placeholder="Ej. Cuauhtémoc, Roma-Condesa, Benito Juárez" 
+              class="styled-text-input" />
+          </div>
+        </div>
+
+        <!-- SECCIÓN 3: Biografía y Filosofía -->
+        <div class="form-section-title">
+          <span>3. Biografía y Enfoque Profesional</span>
+        </div>
+
+        <div class="form-field-group">
+          <label class="field-label">Reseña Profesional / Bio: *</label>
+          <textarea 
+            [(ngModel)]="formBio" 
+            rows="3" 
+            placeholder="Describe experiencia, certificaciones, enfoque feminista/diverso o metodología de entrenamiento..." 
+            class="styled-text-input"></textarea>
+        </div>
+
+        <!-- SECCIÓN 4: Matriz Horaria Semanal -->
+        <div class="form-section-title">
+          <span>4. Matriz Horaria de Disponibilidad Semanal</span>
+        </div>
+
+        <p class="agenda-helper-text">
+          Marca los días disponibles y especifica los rangos de atención (ej. <em>07:00 - 08:30, 18:00 - 19:30</em>).
+        </p>
+
+        <div class="agenda-days-editor">
+          <div class="day-editor-row" *ngFor="let dia of formAgendaDias" [class.is-inactive]="!dia.activo">
+            <div class="day-check-col">
+              <label class="day-checkbox-label">
+                <input type="checkbox" [(ngModel)]="dia.activo" />
+                <span class="day-name">{{ dia.label }}</span>
+              </label>
+            </div>
+
+            <div class="day-hours-col" *ngIf="dia.activo">
+              <input 
+                type="text" 
+                [(ngModel)]="dia.horasStr" 
+                placeholder="Ej. 07:00 - 08:30, 18:00 - 19:30" 
+                class="styled-text-input day-hours-input" />
+              
+              <!-- Presets rápidos -->
+              <div class="quick-presets">
+                <button type="button" class="preset-btn" (click)="setPresetHorario(dia, 'manana')">Mañana</button>
+                <button type="button" class="preset-btn" (click)="setPresetHorario(dia, 'tarde')">Tarde</button>
+                <button type="button" class="preset-btn" (click)="setPresetHorario(dia, 'ambos')">Ambos</button>
+              </div>
+            </div>
+
+            <div class="day-off-label" *ngIf="!dia.activo">
+              <span>Descanso / No disponible</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="subdialog-footer">
+        <button type="button" class="btn-sub-cancel" (click)="closeFormModal()">Cancelar</button>
+        <button 
+          type="button" 
+          class="btn-sub-save" 
+          (click)="saveForm()" 
+          [disabled]="isSaving() || !formNombreCompleto.trim()">
+          <span *ngIf="!isSaving()">{{ isEditing() ? 'Guardar Cambios' : 'Dar de Alta Entrenadora' }}</span>
+          <span *ngIf="isSaving()">Guardando...</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODAL 2: FICHA COMPLETA & AGENDA SEMANAL       -->
+  <!-- ============================================== -->
+  <div class="subdialog-backdrop" *ngIf="showDetailModal() && detailTarget()">
+    <div class="subdialog-card detail-sheet-card">
+      
+      <div class="subdialog-header">
+        <div class="header-text">
+          <span class="subdialog-badge">Ficha Oficial de Staff</span>
+          <h4>{{ detailTarget()?.nombre_completo }}</h4>
+        </div>
+        <button type="button" class="btn-sub-close" (click)="closeDetailModal()">✕</button>
+      </div>
+
+      <div class="subdialog-body">
+        
+        <!-- Perfil Hero -->
+        <div class="detail-hero-box">
+          <div class="hero-avatar">
+            <img *ngIf="detailTarget()?.foto_url" [src]="detailTarget()?.foto_url" [alt]="detailTarget()?.nombre_completo" />
+            <div *ngIf="!detailTarget()?.foto_url" class="hero-avatar-fallback">🥊</div>
+          </div>
+
+          <div class="hero-info">
+            <div class="hero-top-row">
+              <span class="status-chip" [class.active]="detailTarget()?.activo">
+                {{ detailTarget()?.activo ? '● Activa en la Plataforma' : '○ Pausada' }}
+              </span>
+              <span class="price-chip-highlight">${{ detailTarget()?.precio_sesion }} MXN / sesión</span>
+            </div>
+
+            <h3 class="hero-title">{{ detailTarget()?.nombre_completo }}</h3>
+            
+            <div class="hero-zone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              <span>{{ detailTarget()?.zonas_cobertura }}</span>
+            </div>
+
+            <div class="hero-disciplines">
+              <span class="hero-disc-tag" *ngFor="let d of getDisciplinasList(detailTarget()?.disciplinas || '')">
+                {{ d }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Biografía -->
+        <div class="detail-section">
+          <h5>📖 Reseña y Enfoque de Entrenamiento</h5>
+          <p class="detail-bio-text">{{ detailTarget()?.bio }}</p>
+        </div>
+
+        <!-- Matriz Horaria de Disponibilidad -->
+        <div class="detail-section">
+          <h5>📅 Disponibilidad Semanal para Sesiones</h5>
+          
+          <div class="detail-schedule-table">
+            <div 
+              class="schedule-day-card" 
+              *ngFor="let dia of getDiasAgendaDetalle(detailTarget()!)"
+              [class.is-day-active]="dia.activo"
+              [class.is-day-off]="!dia.activo">
+              <div class="day-card-header">
+                <strong>{{ dia.dia }}</strong>
+                <span class="day-status-pill">{{ dia.activo ? 'Disponible' : 'Descanso' }}</span>
+              </div>
+              <div class="day-card-hours" *ngIf="dia.activo">
+                <span class="hour-badge" *ngFor="let h of dia.horas">{{ h }}</span>
+              </div>
+              <div class="day-card-hours day-card-off" *ngIf="!dia.activo">
+                <span>Sin bloques agendables</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="subdialog-footer">
+        <a 
+          [href]="getWhatsAppLink(detailTarget()!)" 
+          target="_blank" 
+          rel="noopener noreferrer" 
+          class="btn-whatsapp-direct">
+          <span>💬 Abrir WhatsApp con Mensaje Predefinido</span>
+        </a>
+        <button type="button" class="btn-sub-cancel" (click)="closeDetailModal()">Cerrar Ficha</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============================================== -->
+  <!-- MODAL 3: CONFIRMACIÓN DE ELIMINACIÓN           -->
+  <!-- ============================================== -->
+  <div class="subdialog-backdrop" *ngIf="showDeleteModal() && targetToDelete()">
+    <div class="subdialog-card delete-confirm-card">
+      <div class="delete-icon-circle">🗑️</div>
+      <h4>¿Dar de baja a esta entrenadora?</h4>
+      <p class="delete-confirm-text">
+        Estás a punto de eliminar a <strong>{{ targetToDelete()?.nombre_completo }}</strong> del catálogo oficial de staff.
+        Esta acción removerá su ficha de la página de inicio.
+      </p>
+
+      <div class="delete-modal-actions">
+        <button type="button" class="btn-sub-cancel" (click)="closeDeleteConfirm()">Cancelar</button>
+        <button type="button" class="btn-sub-delete-danger" (click)="confirmDelete()">Sí, Eliminar del Staff</button>
+      </div>
+    </div>
+  </div>
+
+</div>

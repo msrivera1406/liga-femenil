@@ -1,0 +1,160 @@
+<!-- 1. SCROLL-DRIVEN 3D ANIMATION STAGE (120 FRAMES INTERACTIVOS) -->
+<section class="scroll-track" #scrollTrack>
+  <div class="sticky-stage">
+    <!-- Fondo estático con mesh -->
+    <div class="stage-backdrop"></div>
+
+    <!-- Canvas interactivo que dibuja el frame según el scroll -->
+    <canvas #scrollCanvas class="frames-canvas"></canvas>
+
+    <!-- Overlays editoriales sincronizados con el scroll -->
+    <div class="stage-overlays container">
+      <!-- Fase 1: Introducción & Bienvenida -->
+      <div class="overlay-phase phase-1" [class.active]="activePhase() === 1">
+        <div class="phase-1-top">
+          <div class="hero-badge">
+            <span class="badge-icon">🌈</span>
+            <span>MUJERES DIVERSAS MÉXICO</span>
+          </div>
+
+          <h1 class="hero-title">
+            Fútbol con orgullo. <br />
+            <span class="hero-gradient-text">Más que una liga, una comunidad.</span>
+          </h1>
+        </div>
+
+        <div class="phase-1-bottom">
+          <p class="hero-description">
+            ¿Amas el fútbol o tienes ganas de volver a jugar pero no tienes equipo? 
+            <strong>Este es tu espacio seguro.</strong> Juega y compite sin miedo ni prejuicios en una cancha pensada para todas.
+          </p>
+
+          <div class="scroll-hint">
+            <div class="mouse-icon">
+              <div class="wheel"></div>
+            </div>
+            <span>Desliza hacia abajo para avanzar la jugada ↓</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fase 2: Nuestros Diferenciadores (Sin tarjeta externa, estilo hero fluido) -->
+      <div class="overlay-phase phase-2 phase-differentiators" [class.active]="activePhase() === 2">
+        <div class="hero-badge badge-mint">
+          <span class="badge-icon">✨</span>
+          <span>LO QUE NOS HACE ÚNICAS</span>
+        </div>
+
+        <h2 class="hero-title">
+          Nuestros <br />
+          <span class="hero-gradient-text">Diferenciadores.</span>
+        </h2>
+
+        <p class="hero-description differentiator-subtitle">
+          Derribamos las barreras del deporte tradicional para crear una experiencia libre, segura y colectiva:
+        </p>
+
+        <div class="differentiator-list">
+          <!-- Fila 1: Comunidad de mujeres para mujeres -->
+          <div class="differentiator-row">
+            <div class="diff-icon-box diff-coral">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
+              </svg>
+            </div>
+            <div class="diff-content">
+              <div class="diff-header-line">
+                <span class="diff-title">Comunidad de mujeres para mujeres</span>
+                <span class="diff-tag tag-coral">Espacio Seguro</span>
+              </div>
+              <p class="diff-desc">
+                Jugamos, competimos y tomamos las decisiones en un espacio creado por y para nosotras.
+              </p>
+            </div>
+          </div>
+
+          <!-- Fila 2: Modo Ghost Player -->
+          <div class="differentiator-row">
+            <div class="diff-icon-box diff-mint">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg>
+            </div>
+            <div class="diff-content">
+              <div class="diff-header-line">
+                <span class="diff-title">Modo Ghost Player</span>
+                <span class="diff-tag tag-mint">Protección de Imagen</span>
+              </div>
+              <p class="diff-desc">
+                Tu privacidad garantizada. Si prefieres no mostrar tu foto pública por razones laborales o personales, juegas con silueta y tu dorsal oficial.
+              </p>
+            </div>
+          </div>
+
+          <!-- Fila 3: ¿Buscas equipo? Bolsa individual -->
+          <div class="differentiator-row">
+            <div class="diff-icon-box diff-blue">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </div>
+            <div class="diff-content">
+              <div class="diff-header-line">
+                <span class="diff-title">¿Buscas equipo? Encuentra el tuyo</span>
+                <span class="diff-tag tag-blue">Inscripción Individual</span>
+              </div>
+              <p class="diff-desc">
+                No necesitas un equipo completo. Inscríbete individualmente y te asignamos a una escuadra según tu posición, nivel y afinidad comunitaria.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="hero-cta-group diff-cta-group">
+          <a routerLink="/comunidad" class="btn-primary-hero">
+            <span>¡Quiero Jugar!</span>
+          </a>
+
+          <a routerLink="/jornadas" class="btn-secondary-hero">
+            <span>Ver Partidos del Domingo</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="arrow-icon">
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. METRICS & IMPACT BAR -->
+<section class="metrics-section">
+  <div class="container">
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <span class="metric-number">12</span>
+        <span class="metric-label">Escuadras Oficiales</span>
+        <span class="metric-sub">Formato round-robin</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-number">11</span>
+        <span class="metric-label">Jornadas Dominicales</span>
+        <span class="metric-sub">6 partidos por fecha</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-number">180+</span>
+        <span class="metric-label">Jugadoras Activas</span>
+        <span class="metric-sub">Identidad y dorsal único</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-number">3 pts</span>
+        <span class="metric-label">Al Ganador Oficial</span>
+        <span class="metric-sub">Sin empates sin definición</span>
+      </div>
+    </div>
+  </div>
+</section>

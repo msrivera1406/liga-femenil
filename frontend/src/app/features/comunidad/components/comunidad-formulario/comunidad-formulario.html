@@ -1,0 +1,229 @@
+<!-- SECCIÓN 2: ÚNETE A NOSOTROS (Bolsa de Jugadoras Libres) -->
+<section class="section-formulario-wrapper" id="unete-a-nosotros">
+  <div class="formulario-bg-overlay"></div>
+  <div class="container relative-z">
+    <div class="section-pill-header">
+      <span class="pill-title-tag alt-pill">ÚNETE A NOSOTROS:</span>
+      <span class="pill-count-hint">Bolsa de Jugadoras Libres · Apertura 2026</span>
+    </div>
+
+    <!-- Contenedor del Formulario de Registro Independiente -->
+    <div class="formulario-card-container">
+      <div class="formulario-inner-card">
+        <div class="formulario-badge-tag">
+          <span class="tag-dot"></span>
+          <span>¿QUIERES JUGAR EN LA LIGA Y NO TIENES EQUIPO?</span>
+        </div>
+
+        <h2 class="formulario-main-title">
+          Bolsa de Jugadoras <span class="coral-accent">& Registro Deportivo</span>
+        </h2>
+        
+        <p class="formulario-intro-desc">
+          Llena este registro oficial de la <strong>Liga Femenil & Comunidad Diversa</strong>. Si eres jugadora libre o agente independiente, te integraremos con los clubes que buscan refuerzos para sus planteles. Tu información personal y médica es <strong>privada y confidencial</strong>.
+        </p>
+
+        <form class="registro-jugadora-form" (ngSubmit)="onSubmitRegistro()" #f="ngForm">
+          <!-- GRUPO 1: PERFIL FUTBOLÍSTICO PÚBLICO -->
+          <div class="form-section-title">
+            <span class="section-num">1</span>
+            <span>Perfil Futbolístico en Cancha</span>
+          </div>
+
+          <div class="form-row-cols">
+            <div class="form-field">
+              <label for="nombre_deportivo">Apodo / Nombre en cancha preferido *</label>
+              <input 
+                type="text" 
+                id="nombre_deportivo" 
+                name="nombre_deportivo" 
+                [(ngModel)]="registroForm.nombre_deportivo" 
+                placeholder="Ej: Sofi 'Rayo', Vale, Capi..." 
+                required 
+              />
+            </div>
+
+            <div class="form-field">
+              <label for="posicion">Posición favorita en la que deseas jugar *</label>
+              <select id="posicion" name="posicion" [(ngModel)]="registroForm.posicion" required>
+                <option value="Portera">🧤 Portera</option>
+                <option value="Defensa">🛡️ Defensa</option>
+                <option value="Medio">⚡ Mediocampista</option>
+                <option value="Delantera">🎯 Delantera</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row-cols full-grid-row">
+            <div class="form-field">
+              <label for="nivel_experiencia">Nivel de experiencia futbolística *</label>
+              <select id="nivel_experiencia" name="nivel_experiencia" [(ngModel)]="registroForm.nivel_experiencia" required>
+                <option value="Iniciación (Quiero aprender y divertirme)">Iniciación (Quiero aprender y divertirme)</option>
+                <option value="Intermedio (Juego recreativo y regular)">Intermedio (Juego recreativo y regular)</option>
+                <option value="Avanzado (Torneos competitivos / Experiencia previa)">Avanzado (Torneos competitivos / Experiencia previa)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- GRUPO 2: DATOS PERSONALES Y FICHA MÉDICA (SENSIBLES / PRIVADOS) -->
+          <div class="form-section-title sensitive">
+            <span class="section-num">2</span>
+            <span>Ficha Personal & Médica de Emergencia (Datos confidenciales de salud y responsiva)</span>
+          </div>
+
+          <div class="form-row-cols three-cols">
+            <div class="form-field">
+              <label for="nombre_legal">Nombre legal completo *</label>
+              <input 
+                type="text" 
+                id="nombre_legal" 
+                name="nombre_legal" 
+                [(ngModel)]="registroForm.nombre_legal" 
+                placeholder="Para registro de seguro deportivo" 
+                required 
+              />
+            </div>
+
+            <div class="form-field">
+              <label for="edad">Edad (años) *</label>
+              <input 
+                type="number" 
+                id="edad" 
+                name="edad" 
+                [(ngModel)]="registroForm.edad" 
+                placeholder="Ej: 24" 
+                min="16" 
+                max="65" 
+                required 
+              />
+            </div>
+
+            <div class="form-field">
+              <label for="tipo_sangre">Tipo de Sangre *</label>
+              <select id="tipo_sangre" name="tipo_sangre" [(ngModel)]="registroForm.tipo_sangre" required>
+                <option value="O+">O Positivo (O+)</option>
+                <option value="O-">O Negativo (O-)</option>
+                <option value="A+">A Positivo (A+)</option>
+                <option value="A-">A Negativo (A-)</option>
+                <option value="B+">B Positivo (B+)</option>
+                <option value="B-">B Negativo (B-)</option>
+                <option value="AB+">AB Positivo (AB+)</option>
+                <option value="AB-">AB Negativo (AB-)</option>
+                <option value="Desconocido">Por confirmar en mesa</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row-cols three-cols">
+            <div class="form-field">
+              <label for="telefono_contacto">Teléfono personal / WhatsApp *</label>
+              <input 
+                type="tel" 
+                id="telefono_contacto" 
+                name="telefono_contacto" 
+                [(ngModel)]="registroForm.telefono_contacto" 
+                placeholder="10 dígitos (Ej: 55 1234 5678)" 
+                required 
+              />
+            </div>
+
+            <div class="form-field">
+              <label for="contacto_emergencia_nombre">Contacto de emergencia (Nombre) *</label>
+              <input 
+                type="text" 
+                id="contacto_emergencia_nombre" 
+                name="contacto_emergencia_nombre" 
+                [(ngModel)]="registroForm.contacto_emergencia_nombre" 
+                placeholder="Nombre de familiar o persona de confianza" 
+                required 
+              />
+            </div>
+
+            <div class="form-field">
+              <label for="contacto_emergencia_parentesco">Parentesco *</label>
+              <select id="contacto_emergencia_parentesco" name="contacto_emergencia_parentesco" [(ngModel)]="registroForm.contacto_emergencia_parentesco" required>
+                <option value="Madre">Madre</option>
+                <option value="Padre">Padre</option>
+                <option value="Pareja">Pareja</option>
+                <option value="Hermana/o">Hermana/o</option>
+                <option value="Amiga/o">Amiga/o</option>
+                <option value="Tutor/a">Tutor/a Legal</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row-cols">
+            <div class="form-field">
+              <label for="contacto_emergencia_telefono">Teléfono del contacto de emergencia *</label>
+              <input 
+                type="tel" 
+                id="contacto_emergencia_telefono" 
+                name="contacto_emergencia_telefono" 
+                [(ngModel)]="registroForm.contacto_emergencia_telefono" 
+                placeholder="Número de teléfono directo" 
+                required 
+              />
+            </div>
+
+            <div class="form-field">
+              <label for="alergias_condiciones">Alergias o condiciones médicas (Opcional)</label>
+              <input 
+                type="text" 
+                id="alergias_condiciones" 
+                name="alergias_condiciones" 
+                [(ngModel)]="registroForm.alergias_condiciones" 
+                placeholder="Ej: Asma leve, intolerancia a AINEs, ninguna..." 
+              />
+            </div>
+          </div>
+
+          <!-- GRUPO 3: PRIVACIDAD Y GHOST PLAYER -->
+          <div class="form-privacy-box">
+            <label class="checkbox-option">
+              <input type="checkbox" name="autoriza_imagen" [(ngModel)]="registroForm.autoriza_imagen" />
+              <span class="custom-check"></span>
+              <span class="checkbox-label-text">
+                <strong>Autorizo que mi fotografía deportiva aparezca en el sitio web de la liga.</strong>
+                <small>Si desmarcas esta casilla, se activará el <em>Modo Ghost Player</em> protegiendo tu identidad visual con una silueta y tu dorsal.</small>
+              </span>
+            </label>
+
+            <label class="checkbox-option mandatory">
+              <input type="checkbox" name="aviso_privacidad_aceptado" [(ngModel)]="registroForm.aviso_privacidad_aceptado" required />
+              <span class="custom-check"></span>
+              <span class="checkbox-label-text">
+                <strong>Acepto el Código de Convivencia, Espacio Seguro y el Aviso de Privacidad de la liga. *</strong>
+              </span>
+            </label>
+          </div>
+
+          <!-- BOTÓN DE ENVÍO -->
+          <div class="form-actions-bar">
+            <button type="submit" class="btn-submit-registro" [disabled]="isSubmitting()">
+              <span *ngIf="!isSubmitting()">Enviar Ficha de Registro a la Directora</span>
+              <span *ngIf="isSubmitting()">Procesando y Asignando Folio...</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODAL DE ÉXITO DE REGISTRO INDEPENDIENTE -->
+<div class="success-modal-backdrop" *ngIf="registroExitoso() as reg" (click)="resetRegistro()">
+  <div class="success-card" (click)="$event.stopPropagation()">
+    <div class="success-icon-badge">🎉</div>
+    <h3 class="success-title">¡Bienvenida a la Liga, {{ reg.nombre }}!</h3>
+    <p class="success-message">
+      Tu registro ha sido enviado exitosamente a la <strong>Directora del Torneo</strong>. Tu información sensible y médica está debidamente resguardada.
+    </p>
+    <div class="folio-box">
+      <span class="folio-label">FOLIO OFICIAL DE JUGADORA:</span>
+      <span class="folio-code">{{ reg.folio }}</span>
+    </div>
+    <p class="next-step-hint">Te contactaremos vía WhatsApp para coordinar tu primer partido y asignarte con tu equipo.</p>
+    <button type="button" class="btn-ack-success" (click)="resetRegistro()">Entendido y Cerrar</button>
+  </div>
+</div>

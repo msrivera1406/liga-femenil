@@ -1,0 +1,202 @@
+<div class="posiciones-page">
+  <!-- 1. ENCABEZADO EDITORIAL & SELECTOR MODERNO DE TEMPORADA -->
+  <header class="posiciones-hero">
+    <div class="container">
+      <div class="hero-top-row">
+        <div class="hero-text-block">
+          <div class="hero-badge">
+            <span class="badge-icon">🏆</span>
+            <span>TABLA GENERAL · CLASIFICACIÓN OFICIAL</span>
+          </div>
+          <h1 class="posiciones-main-title">
+            Tabla de <span class="gradient-text">Posiciones</span>
+          </h1>
+          <p class="posiciones-subtitle">
+            Puntaje, diferencia de goles y racha de los 12 equipos. Los mejores 4 avanzan a la Liguilla.
+          </p>
+        </div>
+
+        <!-- SELECTOR MODERNO DE TEMPORADA & JORNADA (Fiel al boceto) -->
+        <div class="season-controls-bar">
+          <!-- Selector Desplegable de Temporada -->
+          <div class="season-dropdown-wrapper">
+            <button 
+              type="button" 
+              class="season-pill-btn"
+              [class.open]="isSeasonDropdownOpen()"
+              (click)="toggleDropdown($event)"
+              aria-haspopup="listbox"
+              [attr.aria-expanded]="isSeasonDropdownOpen()"
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="calendar-icon">
+                <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                <line x1="16" x2="16" y1="2" y2="6"/>
+                <line x1="8" x2="8" y1="2" y2="6"/>
+                <line x1="3" x2="21" y1="10" y2="10"/>
+              </svg>
+              <span class="season-btn-text">{{ selectedSeason().nombre }}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="chevron-icon">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+
+            <!-- Menú Flotante de Temporadas -->
+            <div class="season-dropdown-menu" *ngIf="isSeasonDropdownOpen()" (click)="$event.stopPropagation()">
+              <div class="menu-header">Temporadas Registradas</div>
+              <button 
+                type="button" 
+                class="season-option-item"
+                *ngFor="let t of temporadas"
+                [class.selected]="selectedSeason().id === t.id"
+                (click)="selectSeason(t, $event)"
+              >
+                <div class="option-info">
+                  <span class="opt-name">{{ t.nombre }}</span>
+                  <span class="opt-sub">{{ t.torneo }}</span>
+                </div>
+                <span class="opt-badge" *ngIf="t.activo">Actual</span>
+                <span class="opt-check" *ngIf="selectedSeason().id === t.id">✓</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Píldora de Jornada Actual / Corte de Jornada -->
+          <div class="jornada-pill-tag" title="Corte oficial de partidos disputados">
+            <span class="jornada-dot"></span>
+            <span class="jornada-text">{{ selectedSeason().jornadaCorte }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 2. TARJETA PRINCIPAL DE POSICIONES (GRAN CONTENEDOR REDONDEADO) -->
+  <main class="container standings-main-container">
+    <section class="standings-card">
+      <!-- Barra Superior de la Tarjeta con Leyenda de Clasificación -->
+      <div class="card-legend-header">
+        <div class="legend-group">
+          <div class="legend-item playoff">
+            <span class="legend-color-dot playoff-dot"></span>
+            <span class="legend-label">Puestos 1 al 4: <strong>Clasificación a Liguilla</strong></span>
+          </div>
+          <div class="legend-item regular">
+            <span class="legend-color-dot regular-dot"></span>
+            <span class="legend-label">Puestos 5 al 12: <strong>Fase Regular</strong></span>
+          </div>
+        </div>
+
+        <div class="quick-stats-summary" *ngIf="lider() as l">
+          <span class="stats-text">Líder invicto: <strong>{{ l.nombre_equipo }}</strong> ({{ l.pts }} pts)</span>
+        </div>
+      </div>
+
+      <!-- Tabla Editorial de Posiciones con Scroll Horizontal en Móvil -->
+      <div class="table-responsive-wrapper">
+        <table class="standings-table">
+          <thead>
+            <tr>
+              <th class="th-pos">#</th>
+              <th class="th-team">Equipo</th>
+              <th class="th-stat" title="Partidos Jugados">PJ</th>
+              <th class="th-stat" title="Partidos Ganados (Tiempo regular o penales)">PG</th>
+              <th class="th-stat" title="Partidos Empatados">PE</th>
+              <th class="th-stat" title="Partidos Perdidos">PP</th>
+              <th class="th-stat" title="Goles a Favor">GF</th>
+              <th class="th-stat" title="Goles en Contra">GC</th>
+              <th class="th-stat" title="Diferencia de Goles">DG</th>
+              <th class="th-pts" title="Puntos Acumulados">PTS</th>
+              <th class="th-form" title="Racha de los últimos 4 partidos">Racha</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr 
+              *ngFor="let item of posiciones(); let idx = index" 
+              class="standings-row"
+              [class.top-one]="idx === 0"
+              [class.in-playoffs]="idx < 4"
+            >
+              <!-- Posición (#) con Badge Editorial -->
+              <td class="td-pos">
+                <span 
+                  class="rank-badge" 
+                  [ngClass]="{
+                    'rank-first': idx === 0,
+                    'rank-playoff': idx > 0 && idx < 4,
+                    'rank-regular': idx >= 4
+                  }"
+                >
+                  {{ item.posicion || (idx + 1) }}
+                </span>
+              </td>
+
+              <!-- Equipo: Escudo + Nombre (Columna fija en scroll móvil) -->
+              <td class="td-team">
+                <div class="team-cell-wrap">
+                  <div class="crest-frame">
+                    <img 
+                      [src]="item.escudo_url" 
+                      [alt]="item.nombre_equipo" 
+                      class="team-crest-img"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  </div>
+                  <span class="team-full-name">{{ item.nombre_equipo }}</span>
+                </div>
+              </td>
+
+              <!-- Estadísticas numéricas -->
+              <td class="td-stat">{{ item.pj }}</td>
+              <td class="td-stat">{{ item.pg }}</td>
+              <td class="td-stat">{{ item.pe }}</td>
+              <td class="td-stat">{{ item.pp }}</td>
+              <td class="td-stat">{{ item.gf }}</td>
+              <td class="td-stat">{{ item.gc }}</td>
+              <td class="td-stat td-dg" [ngClass]="{'dg-positive': item.dg > 0, 'dg-negative': item.dg < 0}">
+                {{ item.dg > 0 ? '+' + item.dg : item.dg }}
+              </td>
+
+              <!-- Puntos Totales -->
+              <td class="td-pts">
+                <span class="pts-badge-pill">{{ item.pts }}</span>
+              </td>
+
+              <!-- Racha Reciente (Burbujas G/P) -->
+              <td class="td-form">
+                <div class="form-bubbles-container">
+                  <span 
+                    *ngFor="let r of item.forma_reciente" 
+                    class="form-chip"
+                    [class.form-win]="r === 'G'"
+                    [class.form-loss]="r === 'P'"
+                    [title]="r === 'G' ? 'Victoria' : 'Derrota'"
+                  >
+                    {{ r }}
+                  </span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pie de Tarjeta: Criterio Oficial del Torneo -->
+      <footer class="standings-card-footer">
+        <div class="footer-note-item">
+          <span><strong>Reglamento de competencia:</strong> 3 puntos por victoria (tiempo regular o muerte súbita de penales).</span>
+        </div>
+        <div class="footer-note-item">
+          <span><strong>Criterios de desempate:</strong> 1° Puntos, 2° Diferencia de Goles (DG), 3° Goles a Favor (GF), 4° Duelo directo.</span>
+        </div>
+      </footer>
+    </section>
+  </main>
+
+  <!-- 3. FOOTER EDITORIAL (Lazy loading al entrar en viewport) -->
+  @defer (on viewport) {
+    <app-landing-footer></app-landing-footer>
+  } @placeholder {
+    <div class="footer-lazy-placeholder"></div>
+  }
+</div>

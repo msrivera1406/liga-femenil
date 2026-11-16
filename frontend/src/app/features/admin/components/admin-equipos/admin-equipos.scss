@@ -1,0 +1,898 @@
+@use 'styles/variables' as *;
+
+:host {
+  display: block;
+  width: 100%;
+}
+
+.pane-equipos {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+
+  .teams-top-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    background: #FAF7F2;
+    border: 1.5px solid rgba(46, 39, 36, 0.08);
+    border-radius: 20px;
+    padding: 14px 20px;
+
+    .teams-stats-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+
+      .teams-count-badge {
+        font-family: $font-display;
+        font-size: 17px;
+        font-weight: 800;
+        color: #2C2623;
+
+        strong {
+          color: #165644;
+        }
+      }
+
+      .teams-meta-sub {
+        font-size: 11.5px;
+        font-weight: 600;
+        color: #7A726B;
+      }
+    }
+
+    .teams-toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+
+      .teams-search-box {
+        position: relative;
+        display: flex;
+        align-items: center;
+        background: #FFFFFF;
+        border: 1.5px solid rgba(46, 39, 36, 0.12);
+        border-radius: 999px;
+        padding: 6px 14px 6px 12px;
+        gap: 8px;
+        transition: border-color 0.2s, box-shadow 0.2s;
+
+        &:focus-within {
+          border-color: #165644;
+          box-shadow: 0 0 0 3px rgba(22, 86, 68, 0.08);
+        }
+
+        svg {
+          width: 15px;
+          height: 15px;
+          stroke: #7A726B;
+          flex-shrink: 0;
+        }
+
+        .teams-search-input {
+          border: none;
+          background: transparent;
+          font-family: $font-body;
+          font-size: 13px;
+          font-weight: 600;
+          color: #2C2623;
+          outline: none;
+          width: 190px;
+          transition: width 0.2s;
+
+          &::placeholder {
+            color: #A39B94;
+          }
+
+          &:focus {
+            width: 230px;
+          }
+        }
+
+        .btn-clear-search {
+          background: none;
+          border: none;
+          color: #7A726B;
+          cursor: pointer;
+          font-size: 12px;
+          padding: 2px;
+          border-radius: 50%;
+          line-height: 1;
+
+          &:hover {
+            color: #D94426;
+          }
+        }
+      }
+
+      .btn-add-club-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #165644, #1E7059);
+        color: #FFFFFF;
+        border: none;
+        border-radius: 999px;
+        padding: 9px 20px;
+        font-family: $font-body;
+        font-size: 13px;
+        font-weight: 800;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 4px 14px rgba(22, 86, 68, 0.25);
+
+        svg {
+          width: 16px;
+          height: 16px;
+          stroke: currentColor;
+        }
+
+        &:hover {
+          background: linear-gradient(135deg, #1E7059, #25856B);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 18px rgba(22, 86, 68, 0.32);
+        }
+      }
+    }
+  }
+
+  .teams-cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 18px;
+
+    .team-card-item {
+      border-radius: 20px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+
+    // Tarjeta 1: Botón circular + para nuevo club
+    .card-create-new-team {
+      border: 2px dashed rgba(22, 86, 68, 0.3);
+      background: rgba(22, 86, 68, 0.02);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px 18px;
+      cursor: pointer;
+      min-height: 250px;
+
+      .create-circle-btn {
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #165644, #1E7059);
+        color: #FFFFFF;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 8px 24px rgba(22, 86, 68, 0.25);
+        margin-bottom: 16px;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+        svg {
+          width: 28px;
+          height: 28px;
+          stroke: #FFFFFF;
+        }
+      }
+
+      .create-title {
+        font-family: $font-display;
+        font-size: 16px;
+        font-weight: 800;
+        color: #165644;
+        margin-bottom: 6px;
+      }
+
+      .create-sub {
+        font-size: 11.5px;
+        color: #7A726B;
+        margin: 0;
+        line-height: 1.4;
+        max-width: 170px;
+      }
+
+      &:hover {
+        border-color: #165644;
+        background: rgba(22, 86, 68, 0.05);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 24px rgba(22, 86, 68, 0.1);
+
+        .create-circle-btn {
+          transform: scale(1.1) rotate(90deg);
+          background: linear-gradient(135deg, #1E7059, #25856B);
+          box-shadow: 0 10px 28px rgba(22, 86, 68, 0.35);
+        }
+      }
+    }
+
+    // Tarjeta de club
+    .team-club-card {
+      background: #FFFFFF;
+      border: 1.5px solid rgba(46, 39, 36, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 22px 18px 16px;
+      box-shadow: 0 4px 18px rgba(0, 0, 0, 0.03);
+      min-height: 250px;
+      justify-content: space-between;
+
+      &:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+        border-color: rgba(22, 86, 68, 0.25);
+
+        .club-crest-container {
+          transform: scale(1.06);
+          border-color: rgba(22, 86, 68, 0.2);
+        }
+      }
+
+      .club-crest-container {
+        width: 78px;
+        height: 78px;
+        border-radius: 50%;
+        background: #FFFFFF;
+        border: 2.5px solid #FFFFFF;
+        box-shadow: 0 4px 14px rgba(46, 39, 36, 0.1), 0 0 0 1px rgba(22, 86, 68, 0.12);
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 12px;
+        overflow: hidden;
+        transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+
+        .club-crest-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 50%;
+          display: block;
+        }
+
+        .club-crest-placeholder {
+          font-family: $font-display;
+          font-size: 24px;
+          font-weight: 900;
+          color: #165644;
+        }
+      }
+
+      .club-info-block {
+        width: 100%;
+        margin-bottom: 14px;
+
+        .club-name {
+          font-family: $font-display;
+          font-size: 15.5px;
+          font-weight: 800;
+          color: #2C2623;
+          margin: 0 0 6px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .club-meta-chips {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 6px;
+          flex-wrap: wrap;
+
+          .chip-roster-count {
+            background: rgba(22, 86, 68, 0.08);
+            color: #165644;
+            border: 1px solid rgba(22, 86, 68, 0.15);
+            border-radius: 999px;
+            padding: 3px 9px;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.18s ease;
+
+            &:hover {
+              background: #165644;
+              color: #FFFFFF;
+              border-color: #165644;
+            }
+          }
+
+          .chip-status-active {
+            background: rgba(30, 112, 89, 0.08);
+            color: #1E7059;
+            border-radius: 999px;
+            padding: 3px 8px;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+          }
+        }
+      }
+
+      .club-actions-footer {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding-top: 12px;
+        border-top: 1px solid rgba(46, 39, 36, 0.06);
+
+        .btn-club-action {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 4px;
+          border: 1px solid rgba(46, 39, 36, 0.12);
+          background: #FAF7F2;
+          border-radius: 10px;
+          padding: 6px 10px;
+          font-family: $font-body;
+          font-size: 11.5px;
+          font-weight: 700;
+          color: #5D544D;
+          cursor: pointer;
+          transition: all 0.18s ease;
+          flex: 1;
+
+          svg {
+            width: 13px;
+            height: 13px;
+            stroke: currentColor;
+          }
+
+          &.btn-view-roster:hover {
+            background: rgba(22, 86, 68, 0.1);
+            color: #165644;
+            border-color: #165644;
+          }
+
+          &.btn-edit-club:hover {
+            background: rgba(47, 111, 148, 0.1);
+            color: #2F6F94;
+            border-color: #2F6F94;
+          }
+
+          &.btn-delete-club {
+            flex: 0 0 32px;
+            padding: 6px 0;
+
+            &:hover {
+              background: rgba(217, 68, 38, 0.1);
+              color: #D94426;
+              border-color: #D94426;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // SUBDIÁLOGOS (Crear/Editar, Eliminar, Ver Plantel)
+  .team-subdialog-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(16, 26, 23, 0.6);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeInSubdialog 0.2s ease;
+  }
+
+  .team-subdialog-card {
+    background: #FFFFFF;
+    border: 1.5px solid rgba(46, 39, 36, 0.1);
+    border-radius: 24px;
+    width: 100%;
+    max-width: 480px;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+    overflow: hidden;
+    animation: popUpSubdialog 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+
+    .subdialog-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px;
+      background: #FAF7F2;
+      border-bottom: 1px solid rgba(46, 39, 36, 0.08);
+
+      .subdialog-title-group {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+
+        .subdialog-icon {
+          font-size: 18px;
+        }
+
+        .mini-crest-head {
+          width: 28px;
+          height: 28px;
+          object-fit: cover;
+          border-radius: 50%;
+          border: 1.5px solid #FFFFFF;
+          box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+          display: block;
+        }
+
+        h4 {
+          font-family: $font-display;
+          font-size: 17px;
+          font-weight: 800;
+          color: #2C2623;
+          margin: 0;
+        }
+      }
+
+      .btn-subdialog-close {
+        background: transparent;
+        border: none;
+        font-size: 16px;
+        color: #7A726B;
+        cursor: pointer;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s ease;
+
+        &:hover {
+          background: rgba(46, 39, 36, 0.08);
+          color: #2C2623;
+        }
+      }
+    }
+
+    .subdialog-body {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+
+      .crest-preview-uploader {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: #FAF7F2;
+        border: 1.5px solid rgba(46, 39, 36, 0.08);
+        border-radius: 16px;
+        padding: 14px;
+
+        .preview-crest-circle {
+          width: 60px;
+          height: 60px;
+          border-radius: 50%;
+          background: #FFFFFF;
+          border: 2px solid #FFFFFF;
+          box-shadow: 0 4px 12px rgba(46, 39, 36, 0.1), 0 0 0 1px rgba(22, 86, 68, 0.12);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow: hidden;
+          flex-shrink: 0;
+
+          .preview-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            display: block;
+          }
+
+          .preview-fallback {
+            font-family: $font-display;
+            font-size: 15px;
+            font-weight: 900;
+            color: #165644;
+          }
+        }
+
+        .preview-info-text {
+          strong {
+            font-size: 13.5px;
+            font-weight: 800;
+            color: #2C2623;
+            display: block;
+            margin-bottom: 2px;
+          }
+
+          p {
+            font-size: 11.5px;
+            color: #7A726B;
+            margin: 0;
+            line-height: 1.35;
+          }
+        }
+      }
+
+      .form-field-group {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+
+        .field-label {
+          font-size: 12px;
+          font-weight: 800;
+          color: #2C2623;
+        }
+
+        .styled-text-input {
+          background: #FAF7F2;
+          border: 1.5px solid rgba(46, 39, 36, 0.12);
+          border-radius: 12px;
+          padding: 10px 14px;
+          font-family: $font-body;
+          font-size: 13.5px;
+          font-weight: 600;
+          color: #2C2623;
+          outline: none;
+          transition: all 0.18s ease;
+
+          &:focus {
+            background: #FFFFFF;
+            border-color: #165644;
+            box-shadow: 0 0 0 3px rgba(22, 86, 68, 0.08);
+          }
+        }
+      }
+    }
+
+    .subdialog-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 16px 22px;
+      background: #FAF7F2;
+      border-top: 1px solid rgba(46, 39, 36, 0.08);
+
+      .btn-sub-cancel {
+        background: transparent;
+        border: 1.5px solid rgba(46, 39, 36, 0.15);
+        border-radius: 999px;
+        padding: 9px 18px;
+        font-family: $font-body;
+        font-size: 13px;
+        font-weight: 700;
+        color: #5D544D;
+        cursor: pointer;
+        transition: all 0.18s ease;
+
+        &:hover {
+          background: rgba(46, 39, 36, 0.06);
+          color: #2C2623;
+        }
+      }
+
+      .btn-sub-confirm {
+        background: linear-gradient(135deg, #165644, #1E7059);
+        border: none;
+        border-radius: 999px;
+        padding: 10px 22px;
+        font-family: $font-body;
+        font-size: 13px;
+        font-weight: 800;
+        color: #FFFFFF;
+        cursor: pointer;
+        transition: all 0.18s ease;
+        box-shadow: 0 4px 14px rgba(22, 86, 68, 0.25);
+
+        &:hover {
+          background: linear-gradient(135deg, #1E7059, #25856B);
+          transform: translateY(-1px);
+        }
+
+        &:disabled {
+          opacity: 0.55;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    // Modal de confirmación de eliminación
+    &.card-delete-confirm {
+      max-width: 420px;
+      text-align: center;
+      padding: 28px 24px 22px;
+
+      .delete-icon-warning {
+        font-size: 38px;
+        margin-bottom: 12px;
+      }
+
+      .delete-title {
+        font-family: $font-display;
+        font-size: 17px;
+        font-weight: 800;
+        color: #2C2623;
+        margin: 0 0 8px;
+      }
+
+      .delete-desc {
+        font-size: 13px;
+        color: #7A726B;
+        margin: 0 0 20px;
+        line-height: 1.45;
+      }
+
+      .delete-actions-row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+
+        .btn-confirm-delete {
+          background: #D94426;
+          color: #FFFFFF;
+          border: none;
+          border-radius: 999px;
+          padding: 10px 22px;
+          font-family: $font-body;
+          font-size: 13px;
+          font-weight: 800;
+          cursor: pointer;
+          transition: all 0.18s ease;
+          box-shadow: 0 4px 14px rgba(217, 68, 38, 0.3);
+
+          &:hover {
+            background: #BA3318;
+            transform: translateY(-1px);
+          }
+        }
+      }
+    }
+
+    // Modal de Previsualización de Plantel
+    &.card-roster-preview {
+      max-width: 560px;
+
+      .roster-list-body {
+        max-height: 380px;
+        overflow-y: auto;
+        padding: 18px 20px;
+
+        .roster-loading-state, .roster-empty-state {
+          text-align: center;
+          padding: 24px 12px;
+          font-size: 13px;
+          color: #7A726B;
+          font-weight: 600;
+        }
+
+        .roster-players-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+          gap: 10px;
+
+          .roster-player-chip {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #FAF7F2;
+            border: 1px solid rgba(46, 39, 36, 0.08);
+            border-radius: 12px;
+            padding: 8px 12px;
+            transition: all 0.15s ease;
+
+            &:hover {
+              background: #FFFFFF;
+              border-color: rgba(22, 86, 68, 0.25);
+              transform: translateY(-1px);
+              box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+            }
+
+            .player-avatar-wrap {
+              width: 34px;
+              height: 34px;
+              border-radius: 50%;
+              overflow: hidden;
+              background: #E8E2D9;
+              flex-shrink: 0;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              .player-avatar-img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+              }
+
+              .player-ghost-avatar {
+                font-size: 15px;
+                opacity: 0.7;
+              }
+            }
+
+            .player-chip-info {
+              display: flex;
+              flex-direction: column;
+              overflow: hidden;
+              min-width: 0;
+
+              .player-chip-dorsal {
+                font-size: 9.5px;
+                font-weight: 800;
+                color: #165644;
+              }
+
+              .player-chip-name {
+                font-size: 12.5px;
+                font-weight: 800;
+                color: #2C2623;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+              }
+
+              .player-chip-pos {
+                font-size: 10.5px;
+                color: #7A726B;
+                font-weight: 600;
+              }
+            }
+          }
+        }
+      }
+
+      .roster-footer {
+        justify-content: center;
+        padding: 14px 20px;
+
+        .btn-manage-roster-link {
+          background: rgba(22, 86, 68, 0.08);
+          color: #165644;
+          border: 1.5px solid rgba(22, 86, 68, 0.25);
+          border-radius: 999px;
+          padding: 10px 20px;
+          font-family: $font-body;
+          font-size: 13px;
+          font-weight: 800;
+          cursor: pointer;
+          transition: all 0.2s ease;
+          width: 100%;
+          text-align: center;
+
+          &:hover {
+            background: #165644;
+            color: #FFFFFF;
+            border-color: #165644;
+            transform: translateY(-1px);
+          }
+        }
+      }
+    }
+  }
+}
+
+
+@keyframes fadeInSubdialog {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes popUpSubdialog {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes slideDownToast {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulseMic {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes pingRing {
+  0% { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+
+
+@media (max-width: 640px) {
+  .teams-top-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+
+    .teams-toolbar-actions {
+      flex-direction: column;
+      align-items: stretch;
+
+      .teams-search-box {
+        .teams-search-input {
+          width: 100%;
+          &:focus { width: 100%; }
+        }
+      }
+
+      .btn-add-club-primary {
+        justify-content: center;
+      }
+    }
+  }
+
+  .teams-cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px;
+
+    .card-create-new-team {
+      min-height: 200px;
+      padding: 20px 14px;
+
+      .create-circle-btn {
+        width: 50px;
+        height: 50px;
+        margin-bottom: 10px;
+
+        svg {
+          width: 22px;
+          height: 22px;
+        }
+      }
+    }
+
+    .team-club-card {
+      padding: 16px 10px 12px;
+      min-height: 200px;
+
+      .club-crest-container {
+        width: 58px;
+        height: 58px;
+        margin-bottom: 8px;
+      }
+
+      .club-info-block .club-name {
+        font-size: 13.5px;
+      }
+
+      .club-actions-footer {
+        flex-wrap: wrap;
+        .btn-club-action {
+          font-size: 10.5px;
+          padding: 5px 6px;
+        }
+      }
+    }
+  }
+
+  .card-roster-preview .roster-list-body .roster-players-grid {
+    grid-template-columns: 1fr;
+  }
+}
+

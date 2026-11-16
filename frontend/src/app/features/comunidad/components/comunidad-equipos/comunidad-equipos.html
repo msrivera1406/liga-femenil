@@ -1,0 +1,233 @@
+<!-- SECCIÓN 1: NUESTROS EQUIPOS (Con fondo_equipos.jpeg) -->
+<section class="section-equipos-wrapper" id="nuestros-equipos">
+  <div class="equipos-bg-overlay"></div>
+  <div class="container relative-z">
+    <div class="section-pill-header">
+      <span class="pill-title-tag">NUESTROS EQUIPOS:</span>
+      <span class="pill-count-hint pill-count-white">11 Clubes Oficiales · Apertura 2026 (Haz clic para ver plantel y video)</span>
+    </div>
+
+    <!-- Cuadrícula interactiva de 12 equipos (Boceto 1) -->
+    <div class="equipos-grid">
+      <article 
+        class="team-card-btn" 
+        *ngFor="let eq of equipos()" 
+        (click)="openTeamModal(eq)"
+        [title]="'Ver perfil completo, video y alineación de ' + eq.nombre"
+        tabindex="0"
+        role="button"
+        (keydown.enter)="openTeamModal(eq)"
+      >
+        <div class="crest-container">
+          <img 
+            [src]="eq.escudo_url" 
+            [alt]="eq.nombre" 
+            class="team-crest-img"
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <h3 class="team-card-name">{{ eq.nombre }}</h3>
+
+        <div class="card-action-cue">
+          <span>Ver Club</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- MODAL DINÁMICO DEL EQUIPO (Boceto 2) -->
+<div class="team-modal-backdrop" *ngIf="isModalOpen() && selectedEquipo() as eq" (click)="closeTeamModal()">
+  <div class="team-modal-card" (click)="$event.stopPropagation()">
+    <!-- Botón de Cerrar -->
+    <button type="button" class="btn-close-team-modal" (click)="closeTeamModal()" aria-label="Cerrar modal de equipo">✕</button>
+
+    <!-- 1. CABECERA: LOGO + VIDEO INICIAL (Boceto 2) -->
+    <div class="modal-top-grid">
+      <!-- BLOQUE LOGO -->
+      <div class="modal-logo-block">
+        <div class="modal-crest-wrap">
+          <img [src]="eq.escudo_url" [alt]="eq.nombre" class="modal-crest-large" loading="lazy" decoding="async" />
+        </div>
+        <div class="modal-club-names">
+          <span class="club-tag-pre">CLUB OFICIAL · LIGA DIVERSA</span>
+          <h2 class="club-title">{{ eq.nombre }}</h2>
+        </div>
+      </div>
+
+      <!-- BLOQUE VIDEO INICIAL (Autoplay, Loop, Muted) -->
+      <div class="modal-video-block">
+        <div class="video-container">
+          <video 
+            class="team-highlight-video"
+            autoplay 
+            muted 
+            loop 
+            playsinline
+            poster="images/fondo_equipos.jpeg"
+          >
+            <source src="/images/video-leona.mp4" type="video/mp4" *ngIf="eq.video_url">
+          </video>
+          <div class="video-overlay-badge">
+            <span class="live-dot-pulse"></span>
+            <span>Clip Oficial del Club</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. TABLA DE ESTADÍSTICAS DEL EQUIPO (Boceto 2) -->
+    <div class="modal-stats-section" *ngIf="selectedEquipoStats() as st">
+      <h3 class="modal-section-heading">
+        <span class="heading-icon">📊</span>
+        <span>Tabla de Estadísticas del Equipo (Apertura 2026)</span>
+      </h3>
+
+      <div class="stats-table-wrapper">
+        <table class="team-stats-table">
+          <thead>
+            <tr>
+              <th>Posición</th>
+              <th>PJ</th>
+              <th>PG</th>
+              <th>PE</th>
+              <th>PP</th>
+              <th>GF</th>
+              <th>GC</th>
+              <th>DG</th>
+              <th>PTS</th>
+              <th>Racha</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="stat-rank-cell">
+                <span class="rank-circle">#{{ st.posicion }}</span>
+              </td>
+              <td>{{ st.pj }}</td>
+              <td class="stat-bold">{{ st.pg }}</td>
+              <td>{{ st.pe }}</td>
+              <td>{{ st.pp }}</td>
+              <td>{{ st.gf }}</td>
+              <td>{{ st.gc }}</td>
+              <td [ngClass]="{'dg-pos': st.dg > 0, 'dg-neg': st.dg < 0}">{{ st.dg > 0 ? '+' + st.dg : st.dg }}</td>
+              <td class="stat-pts-cell">
+                <span class="pts-pill">{{ st.pts }}</span>
+              </td>
+              <td>
+                <div class="form-bubbles-mini">
+                  <span *ngFor="let f of st.forma_reciente" class="form-dot-mini" [class.win]="f === 'G'" [class.loss]="f === 'P'">{{ f }}</span>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 3. ALINEACIONES DEL EQUIPO DISTRIBUIDAS POR LÍNEAS (Boceto 2) -->
+    <div class="modal-roster-section">
+      <h3 class="modal-section-heading">
+        <span class="heading-icon">👥</span>
+        <span>Alineaciones del Equipo (Porteras, Defensas, Mediocampistas y Delanteras)</span>
+      </h3>
+
+      <div class="roster-lines-grid" *ngIf="selectedEquipoRoster() as r">
+        <!-- A) Porteras -->
+        <div class="roster-line-card">
+          <div class="line-header">
+            <span class="line-icon">🧤</span>
+            <span class="line-title">Porteras</span>
+            <span class="line-count">({{ r.porteras.length }})</span>
+          </div>
+          <div class="players-list">
+            <div class="player-roster-item" *ngFor="let p of r.porteras">
+              <div class="player-avatar-mini">
+                <img *ngIf="p.autoriza_imagen && p.foto_url" [src]="p.foto_url" [alt]="p.nombre_deportivo" class="avatar-img" loading="lazy" decoding="async" />
+                <!-- Ghost Player Avatar -->
+                <div *ngIf="!p.autoriza_imagen || !p.foto_url" class="ghost-player-avatar" title="Identidad protegida (Modo Ghost Player)">
+                  <span>#{{ p.dorsal || 1 }}</span>
+                </div>
+              </div>
+              <div class="player-item-info">
+                <span class="player-item-name">{{ p.nombre_deportivo }}</span>
+                <span class="player-item-pronoun">{{ p.pronombres }} · Dorsal #{{ p.dorsal }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- B) Defensas -->
+        <div class="roster-line-card">
+          <div class="line-header">
+            <span class="line-icon">🛡️</span>
+            <span class="line-title">Defensas</span>
+            <span class="line-count">({{ r.defensas.length }})</span>
+          </div>
+          <div class="players-list">
+            <div class="player-roster-item" *ngFor="let p of r.defensas">
+              <div class="player-avatar-mini">
+                <img *ngIf="p.autoriza_imagen && p.foto_url" [src]="p.foto_url" [alt]="p.nombre_deportivo" class="avatar-img" loading="lazy" decoding="async" />
+                <div *ngIf="!p.autoriza_imagen || !p.foto_url" class="ghost-player-avatar" title="Identidad protegida (Modo Ghost Player)">
+                  <span>#{{ p.dorsal || 4 }}</span>
+                </div>
+              </div>
+              <div class="player-item-info">
+                <span class="player-item-name">{{ p.nombre_deportivo }}</span>
+                <span class="player-item-pronoun">{{ p.pronombres }} · Dorsal #{{ p.dorsal }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- C) Mediocampistas -->
+        <div class="roster-line-card">
+          <div class="line-header">
+            <span class="line-icon">⚡</span>
+            <span class="line-title">Mediocampistas</span>
+            <span class="line-count">({{ r.medios.length }})</span>
+          </div>
+          <div class="players-list">
+            <div class="player-roster-item" *ngFor="let p of r.medios">
+              <div class="player-avatar-mini">
+                <img *ngIf="p.autoriza_imagen && p.foto_url" [src]="p.foto_url" [alt]="p.nombre_deportivo" class="avatar-img" loading="lazy" decoding="async" />
+                <div *ngIf="!p.autoriza_imagen || !p.foto_url" class="ghost-player-avatar" title="Identidad protegida (Modo Ghost Player)">
+                  <span>#{{ p.dorsal || 8 }}</span>
+                </div>
+              </div>
+              <div class="player-item-info">
+                <span class="player-item-name">{{ p.nombre_deportivo }}</span>
+                <span class="player-item-pronoun">{{ p.pronombres }} · Dorsal #{{ p.dorsal }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- D) Delanteras -->
+        <div class="roster-line-card">
+          <div class="line-header">
+            <span class="line-icon">🎯</span>
+            <span class="line-title">Delanteras</span>
+            <span class="line-count">({{ r.delanteras.length }})</span>
+          </div>
+          <div class="players-list">
+            <div class="player-roster-item" *ngFor="let p of r.delanteras">
+              <div class="player-avatar-mini">
+                <img *ngIf="p.autoriza_imagen && p.foto_url" [src]="p.foto_url" [alt]="p.nombre_deportivo" class="avatar-img" loading="lazy" decoding="async" />
+                <div *ngIf="!p.autoriza_imagen || !p.foto_url" class="ghost-player-avatar" title="Identidad protegida (Modo Ghost Player)">
+                  <span>#{{ p.dorsal || 9 }}</span>
+                </div>
+              </div>
+              <div class="player-item-info">
+                <span class="player-item-name">{{ p.nombre_deportivo }}</span>
+                <span class="player-item-pronoun">{{ p.pronombres }} · Dorsal #{{ p.dorsal }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

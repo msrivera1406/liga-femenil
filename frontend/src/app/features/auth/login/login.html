@@ -1,0 +1,102 @@
+<div class="login-page-wrapper">
+  <!-- Fondo decorativo temático con fondo_destacadas.jpeg -->
+  <div class="login-bg-media"></div>
+  <div class="login-backdrop-overlay"></div>
+
+  <!-- Contenedor central -->
+  <div class="login-center-container">
+    <!-- Tarjeta Glassmorphism (Fiel al boceto del usuario) -->
+    <div class="login-glass-card">
+
+      <!-- 1. Logo circular de la liga en cabecera -->
+      <div class="login-logo-wrapper">
+        <div class="logo-circle">
+          <img src="/images/logo.png" alt="Liga Femenil & Comunidad Diversa" class="league-logo-img" />
+        </div>
+      </div>
+
+      <!-- 2. Mensaje de bienvenida -->
+      <div class="login-header-text">
+        <h1 class="welcome-heading">Panel de Control & Clubes</h1>
+        <p class="welcome-subheading">
+          ¡Bienvenidos! Construyamos juntos la <strong>mejor liga</strong> de mujeres para mujeres.
+        </p>
+      </div>
+
+      <!-- 3. Formulario de acceso -->
+      <form class="login-form" (ngSubmit)="onSubmitLogin()" #loginForm="ngForm">
+
+        <!-- Alerta de error si las credenciales fallan -->
+        <div class="login-error-badge" *ngIf="errorMessage()">
+          <span class="error-icon">⚠️</span>
+          <span class="error-text">{{ errorMessage() }}</span>
+        </div>
+
+        <!-- Campo Usuario (Estilo Cápsula/Pill como en el boceto) -->
+        <div class="form-pill-group">
+          <label for="identificador" class="visually-hidden">Usuario o Correo</label>
+          <div class="input-pill-wrapper">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </span>
+            <input type="text" id="identificador" name="identificador" [(ngModel)]="identificador"
+              placeholder="Usuario o correo electrónico" required autocomplete="username" class="pill-input" />
+          </div>
+        </div>
+
+        <!-- Campo Contraseña (Estilo Cápsula/Pill con toggle de visibilidad) -->
+        <div class="form-pill-group">
+          <label for="contrasena" class="visually-hidden">Contraseña</label>
+          <div class="input-pill-wrapper">
+            <span class="input-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+              </svg>
+            </span>
+            <input [type]="showPassword() ? 'text' : 'password'" id="contrasena" name="contrasena"
+              [(ngModel)]="contrasena" placeholder="Contraseña" required autocomplete="current-password"
+              class="pill-input" />
+            <button type="button" class="btn-toggle-visibility" (click)="togglePasswordVisibility()"
+              [title]="showPassword() ? 'Ocultar contraseña' : 'Ver contraseña'" tabindex="-1">
+              <svg *ngIf="!showPassword()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+              <svg *ngIf="showPassword()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path
+                  d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                <line x1="1" y1="1" x2="23" y2="23" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Botón de Entrada -->
+        <button type="submit" class="btn-submit-login" [disabled]="isLoading() || !identificador || !contrasena">
+          <span *ngIf="!isLoading()">Iniciar Sesión</span>
+          <span *ngIf="isLoading()" class="loading-state">
+            <span class="spinner-dot"></span>
+            <span>Verificando credenciales...</span>
+          </span>
+          <svg *ngIf="!isLoading()" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="9 18 15 12 9 6" />
+          </svg>
+        </button>
+      </form>
+
+      <!-- 4. Enlace inferior: Redirigir a WhatsApp de la Directora -->
+      <div class="login-footer-action">
+        <a [href]="whatsappUrl" target="_blank" rel="noopener noreferrer" class="link-wsp-directora"
+          title="Contactar a la Directora vía WhatsApp">
+          <span class="wsp-bubble-icon">💬</span>
+          <span>¿Olvidaste tu contraseña? Solicitar restablecimiento vía WhatsApp con la Directora</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</div>
