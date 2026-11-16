@@ -2,3 +2,8 @@ export * from './torneo.service';
 export * from './equipos.service';
 export * from './jugadoras.service';
 export * from './entrenadores.service';
+export * from './instagram.service';
+export * from './auth.service';
+export * from './ai-scanner.service';
+export * from './voice-recognition.service';
+export * from './ai-ig.service';

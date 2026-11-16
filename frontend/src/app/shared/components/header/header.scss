@@ -1,34 +1,19 @@
 @use 'styles/variables' as *;
 
 .app-header {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 90;
+  left: 0;
+  right: 0;
+  z-index: 100;
   width: 100%;
-  background: rgba(254, 250, 243, 0.52);
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
-  border-bottom: 1px solid rgba(155, 206, 193, 0.28);
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: none;
+  box-shadow: none;
+  pointer-events: none;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 24px -2px rgba(60, 45, 30, 0.03);
-
-  // Subtle pride glow line under header
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -1px;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(
-      90deg,
-      rgba(255, 182, 166, 0.5) 0%,
-      rgba(255, 235, 211, 0.5) 33%,
-      rgba(155, 206, 193, 0.5) 66%,
-      rgba(103, 162, 197, 0.5) 100%
-    );
-    opacity: 0.75;
-  }
 }
 
 // Nav Container
@@ -38,8 +23,14 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 24px;
-  height: 68px;
+  padding: 12px 24px;
+  height: 72px;
+
+  .brand,
+  .desktop-nav,
+  .header-actions {
+    pointer-events: auto;
+  }
 }
 
 // Brand
@@ -87,6 +78,7 @@
       font-size: 15px;
       letter-spacing: -0.01em;
       color: $text-primary;
+      text-shadow: 0 1px 4px rgba(254, 250, 243, 0.9), 0 0 10px rgba(254, 250, 243, 0.7);
       white-space: nowrap;
     }
 
@@ -97,6 +89,7 @@
       background: linear-gradient(90deg, #D96552 0%, #67A2C5 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 1px 2px rgba(254, 250, 243, 0.9));
       white-space: nowrap;
     }
   }
@@ -115,11 +108,13 @@
     align-items: center;
     list-style: none;
     gap: 6px;
-    background: rgba(255, 235, 211, 0.45);
+    background: rgba(254, 250, 243, 0.65);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
     padding: 5px;
     border-radius: $radius-pill;
-    border: 1px solid rgba(155, 206, 193, 0.4);
-    box-shadow: inset 0 2px 4px rgba(60, 45, 30, 0.03);
+    border: 1px solid rgba(155, 206, 193, 0.45);
+    box-shadow: 0 4px 16px rgba(44, 38, 35, 0.05);
   }
 
   .nav-link {

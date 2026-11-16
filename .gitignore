@@ -1,0 +1,17 @@
+# Secretos
+.env
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Cache de la API de Instagram
+backend/cache/
+
+# Sistema
+.DS_Store
+Thumbs.db
