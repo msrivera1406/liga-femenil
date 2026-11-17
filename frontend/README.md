@@ -20,7 +20,8 @@ npm test         # pruebas con Vitest
 |---|---|
 | `apiUrl` | API PHP (`http://localhost/liga-femenil/backend/api`) |
 | `aiApiUrl` | Servicio de IA Flask (`http://localhost:5000/api`) |
-| `useMock` | `true` usa los datos de `src/app/core/mocks/`. `false` llama a la API real |
+| `backendUrl` | PHP del backend (`consulta.php`, `registrar.php`, `modificar.php`) |
+| `mocks.*` | Por área (`torneo`, `equipos`, `jugadoras`, `entrenadores`, `instagram`, `admin`): `true` usa `src/app/core/mocks/`, `false` usa el backend |
 
 ## Estructura
 ```
