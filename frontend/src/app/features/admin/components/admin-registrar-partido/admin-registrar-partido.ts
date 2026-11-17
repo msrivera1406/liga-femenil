@@ -123,25 +123,37 @@ export class AdminRegistrarPartidoComponent implements OnInit {
     this.cargarTodasLasJornadas();
   }
 
-  cargarTodasLasJornadas(): void {
+  // Recuerda el partido abierto para que, al refrescar la página, se vuelva a él
+  private static readonly CLAVE_PARTIDO = 'liga_admin_partido_acta';
+
+  /**
+   * Carga las jornadas y elige qué partido mostrar, en este orden:
+   * 1. El indicado (el recién guardado, o el que se pidió desde el tablero).
+   * 2. El último que se tenía abierto antes de refrescar.
+   * 3. El primer partido pendiente de la jornada en curso.
+   */
+  cargarTodasLasJornadas(partidoPreferidoId: number | null = this.initialMatchId ?? null): void {
     this.torneoService.getJornadas(1).pipe(take(1)).subscribe(jornadas => {
       this.todasLasJornadas.set(jornadas);
-      if (jornadas.length > 0) {
-        if (this.initialMatchId) {
-          for (const j of jornadas) {
-            const found = j.partidos?.find(p => p.id === this.initialMatchId);
-            if (found) {
-              this.selectedJornadaId.set(j.id);
-              this.selectMatchForRegistration(found);
-              return;
-            }
-          }
+      if (jornadas.length === 0) return;
+
+      const recordado = Number(sessionStorage.getItem(AdminRegistrarPartidoComponent.CLAVE_PARTIDO)) || null;
+      for (const id of [partidoPreferidoId, recordado]) {
+        if (!id) continue;
+        const jornada = jornadas.find(j => j.partidos?.some(p => p.id === id));
+        if (jornada) {
+          this.selectedJornadaId.set(jornada.id);
+          this.selectMatchForRegistration(jornada.partidos!.find(p => p.id === id)!);
+          return;
         }
-        const defaultJornada = jornadas.find(j => j.numero_jornada === 5) || jornadas[0];
-        this.selectedJornadaId.set(defaultJornada.id);
-        if (defaultJornada.partidos && defaultJornada.partidos.length > 0) {
-          this.selectMatchForRegistration(defaultJornada.partidos[0]);
-        }
+      }
+
+      const pendiente = (p: Partido) => p.estado !== 'finalizado';
+      const enCurso = jornadas.find(j => j.partidos?.some(pendiente)) ?? jornadas[jornadas.length - 1];
+      this.selectedJornadaId.set(enCurso.id);
+      const partido = enCurso.partidos?.find(pendiente) ?? enCurso.partidos?.[0];
+      if (partido) {
+        this.selectMatchForRegistration(partido);
       }
     });
   }
@@ -180,6 +192,7 @@ export class AdminRegistrarPartidoComponent implements OnInit {
 
   selectMatchForRegistration(partido: Partido): void {
     this.activeRegistrationMatchId.set(partido.id);
+    sessionStorage.setItem(AdminRegistrarPartidoComponent.CLAVE_PARTIDO, String(partido.id));
     this.regGolesLocal.set(partido.goles_local ?? 0);
     this.regGolesVisitante.set(partido.goles_visitante ?? 0);
     this.regEstado.set(partido.estado || 'en_juego');
@@ -843,7 +856,7 @@ export class AdminRegistrarPartidoComponent implements OnInit {
         this.isSavingActa.set(false);
         this.saveSuccessToast.set(`¡Acta del partido ${match.equipo_local?.nombre} vs ${match.equipo_visitante?.nombre} guardada exitosamente!`);
         this.actaGuardada.emit(match);
-        this.cargarTodasLasJornadas(); // refleja el marcador y el ganador calculados por el servidor
+        this.cargarTodasLasJornadas(match.id); // recarga lo guardado sin cambiar de partido
         setTimeout(() => this.saveSuccessToast.set(null), 4000);
       },
       error: (err: Error) => {

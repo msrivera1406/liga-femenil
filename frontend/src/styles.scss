@@ -47,3 +47,34 @@ button {
     padding-bottom: 0;
   }
 }
+// Aviso de éxito de los módulos del panel (acta, calendario, equipos, jugadoras).
+// Es global porque lo comparten varios componentes y los estilos de Angular están encapsulados.
+.registration-toast-success {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  margin-bottom: 18px;
+  background: linear-gradient(135deg, #165644, #1E7059);
+  color: #FFFFFF;
+  padding: 12px 20px;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  box-shadow: 0 10px 28px rgba(22, 86, 68, 0.3);
+  animation: toastEntrada 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+
+  svg {
+    width: 18px;
+    height: 18px;
+    stroke: #48D1A0;
+    flex-shrink: 0;
+  }
+}
+
+@keyframes toastEntrada {
+  from { opacity: 0; transform: translateY(-12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
