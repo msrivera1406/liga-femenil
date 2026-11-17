@@ -15,3 +15,7 @@ backend/cache/
 # Sistema
 .DS_Store
 Thumbs.db
+
+# Imágenes subidas desde la app (escudos y fotos)
+backend/uploads/*
+!backend/uploads/.htaccess

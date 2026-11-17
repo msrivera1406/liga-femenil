@@ -110,8 +110,9 @@ export class AdminEquiposComponent implements OnInit {
           this.equiposList.update(list => list.map(e => e.id === id ? { ...e, ...payload } : e));
           this.showTeamToast(`Datos de ${payload.nombre} actualizados con éxito.`);
         },
-        error: () => {
+        error: (err: Error) => {
           this.teamIsSaving.set(false);
+          alert(err?.message || 'No se pudo guardar.');
         }
       });
     } else {
@@ -124,8 +125,9 @@ export class AdminEquiposComponent implements OnInit {
           }
           this.showTeamToast(`¡Club ${payload.nombre} registrado exitosamente!`);
         },
-        error: () => {
+        error: (err: Error) => {
           this.teamIsSaving.set(false);
+          alert(err?.message || 'No se pudo guardar.');
         }
       });
     }
@@ -150,7 +152,8 @@ export class AdminEquiposComponent implements OnInit {
         this.equiposList.update(list => list.filter(e => e.id !== team.id));
         this.closeDeleteTeamModal();
         this.showTeamToast(`El club ${team.nombre} ha sido retirado.`);
-      }
+      },
+      error: (err: Error) => alert(err?.message || 'No se pudo completar la acción.')
     });
   }
 

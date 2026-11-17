@@ -203,16 +203,29 @@ export class AdminProgramarCalendarioComponent implements OnInit {
   }
 
   guardarCalendarioJornada(): void {
+    const jornada = this.calSelectedJornada();
+    if (!jornada || this.calIsSaving()) return;
     this.calIsSaving.set(true);
-    setTimeout(() => {
-      this.calIsSaving.set(false);
-      this.calHasChanges.set(false);
-      this.calSuccessToast.set(`¡Calendario oficial de la Jornada ${this.calSelectedJornadaNum()} guardado con éxito!`);
-      this.calendarioGuardado.emit();
-      setTimeout(() => {
-        this.calSuccessToast.set(null);
-      }, 4000);
-    }, 600);
+    this.torneoService.actualizarCalendarioJornada(jornada.id, this.calFechaDomingo(), this.calMatches())
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.calIsSaving.set(false);
+          this.calHasChanges.set(false);
+          this.calSuccessToast.set(`¡Calendario oficial de la Jornada ${this.calSelectedJornadaNum()} guardado con éxito!`);
+          this.calendarioGuardado.emit();
+          // Recarga lo guardado (los partidos ya jugados no se reprograman)
+          this.torneoService.getJornadas(1).pipe(take(1)).subscribe(jornadas => {
+            this.calJornadas.set(jornadas);
+            this.initCalendarForJornada();
+          });
+          setTimeout(() => this.calSuccessToast.set(null), 4000);
+        },
+        error: (err: Error) => {
+          this.calIsSaving.set(false);
+          alert(err?.message || 'No se pudo guardar el calendario. Inténtalo de nuevo.');
+        }
+      });
   }
 
   @HostListener('window:keydown', ['$event'])

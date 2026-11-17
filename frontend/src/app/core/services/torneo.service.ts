@@ -65,9 +65,9 @@ export class TorneoService {
         message: 'Acta arbitral guardada exitosamente en modo simulación.'
       }).pipe(delay(300));
     }
-    return this.http.post<ApiResponse<{ guardado: boolean }>>(
-      `${this.apiUrl}/admin/partidos/guardar-acta.php`,
-      dto
+    // El backend recalcula el ganador y reemplaza las incidencias del partido
+    return this.api.registrar<{ ok: true; ganador_id: number | null }>('guardar_acta', { ...dto }).pipe(
+      map(() => ({ success: true, data: { guardado: true }, message: 'Acta arbitral guardada.' }))
     );
   }
 
@@ -84,9 +84,19 @@ export class TorneoService {
         message: 'Calendario oficial de la jornada actualizado correctamente.'
       }).pipe(delay(250));
     }
-    return this.http.post<ApiResponse<{ actualizado: boolean }>>(
-      `${this.apiUrl}/admin/jornadas/actualizar-calendario.php`,
-      { jornada_id: jornadaId, fecha_domingo: fecha, partidos }
+    return this.api.modificar<{ ok: true }>('calendario', {
+      jornada_id: jornadaId,
+      fecha_domingo: fecha,
+      partidos: partidos.map(p => ({
+        id: p.id,
+        horario: p.horario,
+        cancha: p.cancha,
+        equipo_local_id: p.equipo_local_id,
+        equipo_visitante_id: p.equipo_visitante_id,
+        estado: p.estado
+      }))
+    }).pipe(
+      map(() => ({ success: true, data: { actualizado: true }, message: 'Calendario oficial de la jornada actualizado correctamente.' }))
     );
   }
 }

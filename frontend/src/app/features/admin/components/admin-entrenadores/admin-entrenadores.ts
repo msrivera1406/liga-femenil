@@ -123,7 +123,7 @@ export class AdminEntrenadoresComponent implements OnInit {
 
   loadEntrenadores(): void {
     this.isLoading.set(true);
-    this.entrenadoresService.getEntrenadores().pipe(take(1)).subscribe({
+    this.entrenadoresService.getEntrenadoresAdmin().pipe(take(1)).subscribe({
       next: (list) => {
         this.entrenadoresList.set(list);
         this.isLoading.set(false);
@@ -242,8 +242,9 @@ export class AdminEntrenadoresComponent implements OnInit {
           this.entrenadoresList.update(list => list.map(e => e.id === id ? { ...e, ...payload } : e));
           this.showToast(`Perfil de ${payload.nombre_completo} actualizado con éxito.`);
         },
-        error: () => {
+        error: (err: Error) => {
           this.isSaving.set(false);
+          alert(err?.message || 'No se pudo guardar.');
         }
       });
     } else {
@@ -254,8 +255,9 @@ export class AdminEntrenadoresComponent implements OnInit {
           this.entrenadoresList.update(list => [res.data, ...list]);
           this.showToast(`¡${res.data.nombre_completo} dada de alta en el catálogo!`);
         },
-        error: () => {
+        error: (err: Error) => {
           this.isSaving.set(false);
+          alert(err?.message || 'No se pudo guardar.');
         }
       });
     }
@@ -274,7 +276,8 @@ export class AdminEntrenadoresComponent implements OnInit {
           ? `${entrenador.nombre_completo} está visible en la web.` 
           : `${entrenador.nombre_completo} fue pausada temporalmente.`
         );
-      }
+      },
+      error: (err: Error) => alert(err?.message || 'No se pudo completar la acción.')
     });
   }
 
@@ -309,7 +312,8 @@ export class AdminEntrenadoresComponent implements OnInit {
         this.entrenadoresList.update(list => list.filter(e => e.id !== target.id));
         this.closeDeleteConfirm();
         this.showToast(`${target.nombre_completo} eliminada del catálogo.`);
-      }
+      },
+      error: (err: Error) => alert(err?.message || 'No se pudo completar la acción.')
     });
   }
 

@@ -54,7 +54,13 @@ export class EquiposService {
         message: 'Club registrado exitosamente.'
       }).pipe(delay(200));
     }
-    return this.http.post<ApiResponse<Equipo>>(`${this.apiUrl}/admin/equipos/crear.php`, payload);
+    return this.api.registrar<{ ok: true; id: number }>('equipo', { ...payload }).pipe(
+      map(res => ({
+        success: true,
+        data: { capitana_id: null, escudo_url: null, video_url: null, ...payload, id: res.id, total_jugadoras: 0 } as Equipo,
+        message: 'Club registrado exitosamente.'
+      }))
+    );
   }
 
   actualizarEquipo(id: number, payload: Partial<Equipo>): Observable<ApiResponse<Equipo>> {
@@ -77,7 +83,9 @@ export class EquiposService {
         message: 'Equipo no encontrado'
       });
     }
-    return this.http.put<ApiResponse<Equipo>>(`${this.apiUrl}/admin/equipos/actualizar.php?id=${id}`, payload);
+    return this.api.modificar<{ ok: true }>('equipo', { ...payload, id }).pipe(
+      map(() => ({ success: true, data: { ...payload, id } as Equipo, message: 'Datos del club actualizados correctamente.' }))
+    );
   }
 
   eliminarEquipo(id: number): Observable<ApiResponse<{ eliminado: boolean }>> {
@@ -92,6 +100,8 @@ export class EquiposService {
         message: 'Club dado de baja exitosamente.'
       }).pipe(delay(200));
     }
-    return this.http.delete<ApiResponse<{ eliminado: boolean }>>(`${this.apiUrl}/admin/equipos/eliminar.php?id=${id}`);
+    return this.api.modificar<{ ok: true }>('baja_equipo', { id }).pipe(
+      map(() => ({ success: true, data: { eliminado: true }, message: 'Club dado de baja exitosamente.' }))
+    );
   }
 }

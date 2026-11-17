@@ -237,8 +237,9 @@ export class AdminJugadorasComponent implements OnInit {
           this.jugadorasList.update(list => list.map(j => j.id === id ? { ...j, ...payload } : j));
           this.showJugadoraToast(`Cédula de ${payload.nombre_deportivo} actualizada con éxito.`);
         },
-        error: () => {
+        error: (err: Error) => {
           this.jugadoraIsSaving.set(false);
+          alert(err?.message || 'No se pudo guardar.');
         }
       });
     } else {
@@ -251,8 +252,9 @@ export class AdminJugadorasComponent implements OnInit {
           }
           this.showJugadoraToast(`¡Cédula de ${payload.nombre_deportivo} registrada con éxito!`);
         },
-        error: () => {
+        error: (err: Error) => {
           this.jugadoraIsSaving.set(false);
+          alert(err?.message || 'No se pudo guardar.');
         }
       });
     }
@@ -293,8 +295,9 @@ export class AdminJugadorasComponent implements OnInit {
         } : j));
         this.showJugadoraToast(`¡${jugadora.nombre_deportivo} asignada a ${nombreEquipo} con dorsal #${dorsal}!`);
       },
-      error: () => {
+      error: (err: Error) => {
         this.assignIsSaving.set(false);
+        alert(err?.message || 'No se pudo guardar.');
       }
     });
   }
@@ -311,7 +314,8 @@ export class AdminJugadorasComponent implements OnInit {
             es_independiente: true
           } : item));
           this.showJugadoraToast(`"${j.nombre_deportivo}" ha sido transferida a la Bolsa Independiente.`);
-        }
+        },
+        error: (err: Error) => alert(err?.message || 'No se pudo completar la acción.')
       });
     }
   }
@@ -345,7 +349,8 @@ export class AdminJugadorasComponent implements OnInit {
         this.jugadorasList.update(list => list.filter(j => j.id !== jugadora.id));
         this.closeDeleteJugadoraModal();
         this.showJugadoraToast(`Se ha eliminado la cédula de ${jugadora.nombre_deportivo}.`);
-      }
+      },
+      error: (err: Error) => alert(err?.message || 'No se pudo completar la acción.')
     });
   }
 

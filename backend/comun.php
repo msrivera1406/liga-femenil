@@ -33,6 +33,13 @@
         return $conn;
     }
 
+    // URL pública de backend/uploads (ej. http://localhost/liga-femenil/backend/uploads)
+    function url_uploads() {
+        $esquema = !empty($_SERVER['HTTPS']) ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
+        return $esquema . '://' . $host . rtrim(dirname($_SERVER['SCRIPT_NAME']), '/') . '/uploads';
+    }
+
     function leer_json() {
         $data = json_decode(file_get_contents("php://input"), true);
         return is_array($data) ? $data : [];

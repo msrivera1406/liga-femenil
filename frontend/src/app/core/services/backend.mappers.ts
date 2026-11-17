@@ -11,6 +11,7 @@ import {
   IncidenciaPartido,
   Jornada,
   JugadoraPublica,
+  NivelExperiencia,
   Partido,
   PosicionJugadora,
   PosicionTabla,
@@ -75,6 +76,7 @@ export interface PartidoApi {
   penales_local: Num | null;
   penales_visitante: Num | null;
   ganador_id: Num | null;
+  notas_mesa?: string | null; // solo llega si la sesión es de la Directora
   equipo_local_id: Num;
   equipo_local: string;
   escudo_local: string | null;
@@ -128,7 +130,7 @@ export function mapPartido(r: PartidoApi): Partido {
     ganador_id: ganadorId,
     estado: r.estado,
     cancha: r.cancha,
-    notas_mesa: null, // Las notas de mesa son internas; consulta.php no las expone
+    notas_mesa: r.notas_mesa ?? null,
     equipo_local: local,
     equipo_visitante: visitante,
     ganador: ganadorId === local.id ? local : ganadorId === visitante.id ? visitante : undefined,
@@ -237,5 +239,51 @@ export function mapEntrenador(r: EntrenadorApi): Entrenador {
     disponibilidad_json: parseDisponibilidad(r.disponibilidad_json),
     foto_url: r.foto_url,
     activo: bool(r.activo)
+  };
+}
+
+// ---------- Jugadora con datos privados (jugadoras_admin / plantel_privado) ----------
+export interface JugadoraPrivadaApi extends JugadoraPublicaApi {
+  equipo_id: Num | null;
+  nombre_equipo: string | null;
+  nivel_experiencia: NivelExperiencia | null;
+  edad: Num | null;
+  nombre_legal: string;
+  telefono_contacto: string;
+  contacto_emergencia_nombre: string;
+  contacto_emergencia_telefono: string;
+  contacto_emergencia_parentesco: string | null;
+  es_independiente: Bool;
+  activo: Bool;
+  creado_en: string;
+  tipo_sangre: string | null;
+  alergias_condiciones: string | null;
+}
+
+export function mapJugadoraPrivada(r: JugadoraPrivadaApi): JugadoraPublica {
+  const id = num(r.id);
+  const independiente = bool(r.es_independiente);
+  return {
+    id,
+    equipo_id: numOrNull(r.equipo_id),
+    nombre_deportivo: r.nombre_deportivo,
+    dorsal: numOrNull(r.dorsal),
+    posicion: r.posicion,
+    foto_url: r.foto_url,
+    autoriza_imagen: bool(r.autoriza_imagen),
+    es_independiente: independiente,
+    activo: bool(r.activo),
+    creado_en: r.creado_en,
+    nombre_equipo: r.nombre_equipo ?? 'Bolsa Independiente',
+    folio_registro: independiente ? 'IND-' + String(id).padStart(5, '0') : undefined,
+    nombre_legal: r.nombre_legal,
+    edad: numOrNull(r.edad),
+    telefono_contacto: r.telefono_contacto,
+    tipo_sangre: r.tipo_sangre ?? 'Desconocido',
+    contacto_emergencia_nombre: r.contacto_emergencia_nombre,
+    contacto_emergencia_telefono: r.contacto_emergencia_telefono,
+    contacto_emergencia_parentesco: r.contacto_emergencia_parentesco ?? '',
+    alergias_condiciones: r.alergias_condiciones ?? '',
+    nivel_experiencia: r.nivel_experiencia ?? undefined
   };
 }

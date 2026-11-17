@@ -25,7 +25,16 @@ export class EntrenadoresService {
       .pipe(map(rows => rows.map(mapEntrenador)));
   }
 
-  getEntrenadorById(id: number): Observable<Entrenador | undefined> {
+  // Catálogo completo para la Directora, incluidos los pausados
+  getEntrenadoresAdmin(): Observable<Entrenador[]> {
+    if (environment.mocks.admin) {
+      return of(MOCK_ENTRENADORES).pipe(delay(150));
+    }
+    return this.api.consulta<EntrenadorApi[]>('entrenadores_admin')
+      .pipe(map(rows => rows.map(mapEntrenador)));
+  }
+
+    getEntrenadorById(id: number): Observable<Entrenador | undefined> {
     if (environment.mocks.entrenadores) {
       const entrenador = MOCK_ENTRENADORES.find(e => e.id === id);
       return of(entrenador).pipe(delay(100));
@@ -64,7 +73,9 @@ export class EntrenadoresService {
         message: 'Entrenadora registrada en el catálogo oficial.'
       }).pipe(delay(200));
     }
-    return this.http.post<ApiResponse<Entrenador>>(`${this.apiUrl}/admin/entrenadores/crear.php`, payload);
+    return this.api.registrar<{ ok: true; id: number }>('entrenador', { ...payload }).pipe(
+      map(res => ({ success: true, data: { ...payload, id: res.id } as Entrenador, message: 'Entrenadora registrada en el catálogo oficial.' }))
+    );
   }
 
   actualizarEntrenador(id: number, payload: Partial<Entrenador>): Observable<ApiResponse<Entrenador>> {
@@ -84,7 +95,9 @@ export class EntrenadoresService {
         message: 'Entrenadora no encontrada.'
       }).pipe(delay(200));
     }
-    return this.http.put<ApiResponse<Entrenador>>(`${this.apiUrl}/admin/entrenadores/editar.php?id=${id}`, payload);
+    return this.api.modificar<{ ok: true }>('entrenador', { ...payload, id }).pipe(
+      map(() => ({ success: true, data: { ...payload, id } as Entrenador, message: 'Perfil de entrenadora actualizado correctamente.' }))
+    );
   }
 
   eliminarEntrenador(id: number): Observable<ApiResponse<void>> {
@@ -99,7 +112,9 @@ export class EntrenadoresService {
         message: 'Entrenadora dada de baja del catálogo.'
       }).pipe(delay(200));
     }
-    return this.http.delete<ApiResponse<void>>(`${this.apiUrl}/admin/entrenadores/eliminar.php?id=${id}`);
+    return this.api.modificar<{ ok: true }>('baja_entrenador', { id }).pipe(
+      map(() => ({ success: true, data: undefined, message: 'Entrenadora dada de baja del catálogo.' }))
+    );
   }
 
   toggleActivo(id: number, activo: boolean): Observable<ApiResponse<void>> {
@@ -114,6 +129,8 @@ export class EntrenadoresService {
         message: activo ? 'Entrenadora activada en el catálogo.' : 'Entrenadora pausada en el catálogo.'
       }).pipe(delay(150));
     }
-    return this.http.patch<ApiResponse<void>>(`${this.apiUrl}/admin/entrenadores/estado.php?id=${id}`, { activo });
+    return this.api.modificar<{ ok: true }>('entrenador_estado', { id, activo }).pipe(
+      map(() => ({ success: true, data: undefined, message: activo ? 'Entrenadora activada en el catálogo.' : 'Entrenadora pausada en el catálogo.' }))
+    );
   }
 }

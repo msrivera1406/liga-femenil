@@ -11,6 +11,6 @@ export const environment = {
     jugadoras: false,     // planteles públicos y registro de independientes
     entrenadores: false,  // catálogo público
     instagram: true,      // pendiente: token de Meta
-    admin: true           // lecturas privadas y escrituras de admin/representante (hasta tener login real)
+    admin: false          // lecturas privadas y escrituras de admin/representante
   }
 };

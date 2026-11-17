@@ -51,6 +51,23 @@ export class BackendApiService {
     return this.enviar<T>('auth.php', filtro, params);
   }
 
+  /** Sube una imagen (JPG, PNG o WebP, máx. 3 MB) y devuelve su URL pública. */
+  subirImagen(archivo: File, tipo: 'escudo' | 'jugadora'): Observable<string> {
+    const datos = new FormData();
+    datos.append('tipo', tipo);
+    datos.append('imagen', archivo, archivo.name);
+    return this.http.post<{ ok: true; url: string } | RespuestaError>(`${this.baseUrl}/subir_imagen.php`, datos, { withCredentials: true }).pipe(
+      catchError((err: HttpErrorResponse) => throwError(() =>
+        esRespuestaError(err.error)
+          ? new BackendRespuestaError(err.error.error || 'No se pudo subir la imagen.', err.status)
+          : new Error('No pudimos conectar con el servidor. Inténtalo de nuevo en unos minutos.'))),
+      map(res => {
+        if (esRespuestaError(res)) throw new BackendRespuestaError(res.error || 'No se pudo subir la imagen.');
+        return res.url;
+      })
+    );
+  }
+
   private enviar<T>(archivo: ArchivoBackend, filtro: string, params: Record<string, unknown>): Observable<T> {
     return this.http.post<T | RespuestaError>(`${this.baseUrl}/${archivo}`, { filtro, ...params }, { withCredentials: true }).pipe(
       catchError((err: HttpErrorResponse) => {

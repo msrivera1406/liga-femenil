@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, delay } from 'rxjs/operators';
 import { BackendApiService } from './backend-api.service';
-import { EquipoDetalleApi, mapEquipoDetalle } from './backend.mappers';
+import { EquipoDetalleApi, JugadoraPrivadaApi, mapEquipoDetalle, mapJugadoraPrivada } from './backend.mappers';
 import { environment } from '../../../environments/environment';
 import { JugadoraPublica, RegistroJugadoraIndependienteDTO, ApiResponse } from '../models';
 import { MOCK_JUGADORAS } from '../mocks';
@@ -20,8 +20,9 @@ export class JugadorasService {
     if (environment.mocks.admin) {
       return of(MOCK_JUGADORAS).pipe(delay(150));
     }
-    return this.http.get<ApiResponse<JugadoraPublica[]>>(`${this.apiUrl}/jugadoras.php`)
-      .pipe(map(res => res.data));
+    // Padrón completo con datos privados (solo Directora)
+    return this.api.consulta<JugadoraPrivadaApi[]>('jugadoras_admin')
+      .pipe(map(rows => rows.map(mapJugadoraPrivada)));
   }
 
   getJugadorasByEquipo(equipoId: number): Observable<JugadoraPublica[]> {
@@ -33,12 +34,19 @@ export class JugadorasService {
       .pipe(map(r => mapEquipoDetalle(r).jugadoras ?? []));
   }
 
-  getBolsaIndependientes(): Observable<JugadoraPublica[]> {
+  getPlantelPrivado(equipoId: number): Observable<JugadoraPublica[]> {
+    if (environment.mocks.admin) {
+      return of(MOCK_JUGADORAS.filter(j => j.equipo_id === equipoId)).pipe(delay(100));
+    }
+    return this.api.consulta<JugadoraPrivadaApi[]>('plantel_privado', { equipo_id: equipoId })
+      .pipe(map(rows => rows.map(mapJugadoraPrivada)));
+  }
+
+    getBolsaIndependientes(): Observable<JugadoraPublica[]> {
     if (environment.mocks.admin) {
       return of(MOCK_JUGADORAS.filter(j => j.es_independiente)).pipe(delay(120));
     }
-    return this.http.get<ApiResponse<JugadoraPublica[]>>(`${this.apiUrl}/jugadoras/independientes.php`)
-      .pipe(map(res => res.data));
+    return this.getJugadoras().pipe(map(lista => lista.filter(j => j.es_independiente)));
   }
 
   registrarIndependiente(dto: RegistroJugadoraIndependienteDTO): Observable<ApiResponse<{ folio_registro: string }>> {
@@ -110,7 +118,13 @@ export class JugadorasService {
         message: 'Cédula de jugadora registrada exitosamente.'
       }).pipe(delay(200));
     }
-    return this.http.post<ApiResponse<JugadoraPublica>>(`${this.apiUrl}/admin/jugadoras/crear.php`, payload);
+    return this.api.registrar<{ ok: true; id: number }>('jugadora', { ...payload }).pipe(
+      map(res => ({
+        success: true,
+        data: { ...payload, id: res.id, activo: true, es_independiente: payload.equipo_id == null } as JugadoraPublica,
+        message: 'Cédula de jugadora registrada exitosamente.'
+      }))
+    );
   }
 
   actualizarJugadora(id: number, payload: Partial<JugadoraPublica>): Observable<ApiResponse<JugadoraPublica>> {
@@ -133,7 +147,9 @@ export class JugadorasService {
         message: 'Jugadora no encontrada.'
       });
     }
-    return this.http.put<ApiResponse<JugadoraPublica>>(`${this.apiUrl}/admin/jugadoras/actualizar.php?id=${id}`, payload);
+    return this.api.modificar<{ ok: true }>('jugadora', { ...payload, id }).pipe(
+      map(() => ({ success: true, data: { ...payload, id } as JugadoraPublica, message: 'Cédula deportiva actualizada con éxito.' }))
+    );
   }
 
   asignarEquipo(jugadoraId: number, equipoId: number, dorsal: number, nombreEquipo: string): Observable<ApiResponse<JugadoraPublica>> {
@@ -159,11 +175,13 @@ export class JugadorasService {
         message: 'Jugadora no encontrada.'
       });
     }
-    return this.http.post<ApiResponse<JugadoraPublica>>(`${this.apiUrl}/admin/jugadoras/asignar-equipo.php`, {
-      jugadora_id: jugadoraId,
-      equipo_id: equipoId,
-      dorsal
-    });
+    return this.api.modificar<{ ok: true }>('jugadora', { id: jugadoraId, equipo_id: equipoId, dorsal }).pipe(
+      map(() => ({
+        success: true,
+        data: { id: jugadoraId, equipo_id: equipoId, dorsal, nombre_equipo: nombreEquipo, es_independiente: false } as JugadoraPublica,
+        message: `Jugadora asignada al club ${nombreEquipo} con dorsal #${dorsal}.`
+      }))
+    );
   }
 
   desvincularEquipo(jugadoraId: number): Observable<ApiResponse<JugadoraPublica>> {
@@ -189,9 +207,13 @@ export class JugadorasService {
         message: 'Jugadora no encontrada.'
       });
     }
-    return this.http.post<ApiResponse<JugadoraPublica>>(`${this.apiUrl}/admin/jugadoras/desvincular.php`, {
-      jugadora_id: jugadoraId
-    });
+    return this.api.modificar<{ ok: true }>('jugadora', { id: jugadoraId, equipo_id: null }).pipe(
+      map(() => ({
+        success: true,
+        data: { id: jugadoraId, equipo_id: null, dorsal: null, nombre_equipo: 'Bolsa Independiente', es_independiente: true } as JugadoraPublica,
+        message: 'Jugadora transferida a la Bolsa Independiente.'
+      }))
+    );
   }
 
   eliminarJugadora(id: number): Observable<ApiResponse<{ eliminada: boolean }>> {
@@ -206,6 +228,8 @@ export class JugadorasService {
         message: 'Registro de jugadora dado de baja.'
       }).pipe(delay(200));
     }
-    return this.http.delete<ApiResponse<{ eliminada: boolean }>>(`${this.apiUrl}/admin/jugadoras/eliminar.php?id=${id}`);
+    return this.api.modificar<{ ok: true }>('baja_jugadora', { id }).pipe(
+      map(() => ({ success: true, data: { eliminada: true }, message: 'Registro de jugadora dado de baja.' }))
+    );
   }
 }

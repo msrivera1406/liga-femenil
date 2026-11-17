@@ -11,7 +11,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { take } from 'rxjs';
-import { EquiposService } from '../../../../core/services';
+import { EquiposService, BackendApiService } from '../../../../core/services';
 import { Equipo, PosicionTabla } from '../../../../core/models';
 
 export interface ColorPreset {
@@ -28,6 +28,7 @@ export interface ColorPreset {
 })
 export class RepClubComponent implements OnInit {
   private equiposService = inject(EquiposService);
+  private backendApi = inject(BackendApiService);
 
   @Input() equipoId!: number;
   @Input() initialEquipo: Equipo | null = null;
@@ -127,13 +128,14 @@ export class RepClubComponent implements OnInit {
         return;
       }
 
-      const reader = new FileReader();
-      reader.onload = (e: ProgressEvent<FileReader>) => {
-        if (e.target?.result) {
-          this.escudoUrl = e.target.result as string;
+      // Se sube al servidor y se guarda su URL (la base de datos no almacena la imagen)
+      this.backendApi.subirImagen(file, 'escudo').pipe(take(1)).subscribe({
+        next: url => this.escudoUrl = url,
+        error: (err: Error) => {
+          this.errorMessage.set(err.message);
+          setTimeout(() => this.errorMessage.set(null), 4000);
         }
-      };
-      reader.readAsDataURL(file);
+      });
     }
   }
 
@@ -174,9 +176,9 @@ export class RepClubComponent implements OnInit {
           this.successMessage.set(null);
         }, 3500);
       },
-      error: () => {
+      error: (err: Error) => {
         this.isSaving.set(false);
-        this.errorMessage.set('Hubo un error al guardar los cambios. Intenta nuevamente.');
+        this.errorMessage.set(err?.message || 'Hubo un error al guardar los cambios. Intenta nuevamente.');
         setTimeout(() => this.errorMessage.set(null), 4000);
       }
     });

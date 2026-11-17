@@ -11,9 +11,9 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { take } from 'rxjs';
+import { forkJoin, switchMap, take } from 'rxjs';
 import { TorneoService, JugadorasService, AiScannerService, VoiceRecognitionService } from '../../../../core/services';
-import { Jornada, Partido, EstadoPartido, AiCedulaScanResponse, JugadoraPublica, AiVoiceIncidentData } from '../../../../core/models';
+import { Jornada, Partido, EstadoPartido, AiCedulaScanResponse, JugadoraPublica, AiVoiceIncidentData, GuardarActaPartidoDTO, RegistrarIncidenciaDTO } from '../../../../core/models';
 
 export interface IncidenciaLocal {
   id: string;
@@ -23,6 +23,7 @@ export interface IncidenciaLocal {
   minuto: number;
   dorsal?: string | number;
   jugadora?: string;
+  jugadora_id?: number; // presente cuando la incidencia viene de un acta ya guardada
   detalle?: string;
 }
 
@@ -201,35 +202,15 @@ export class AdminRegistrarPartidoComponent implements OnInit {
           equipo: esLocal ? 'local' : 'visitante',
           equipoNombre: esLocal ? partido.equipo_local?.nombre || 'Local' : partido.equipo_visitante?.nombre || 'Visitante',
           minuto: inc.minuto,
-          dorsal: inc.jugadora_id,
-          jugadora: `Jugadora #${inc.jugadora_id || ''}`,
-          detalle: (inc as any).comentario || ''
+          dorsal: inc.dorsal ?? undefined,
+          jugadora: inc.nombre_jugadora || `Jugadora #${inc.jugadora_id}`,
+          jugadora_id: inc.jugadora_id,
+          detalle: ''
         };
       });
       this.regIncidencias.set(parsed);
     } else {
-      this.regIncidencias.set([
-        {
-          id: 'inc-demo-1',
-          tipo: 'gol',
-          equipo: 'local',
-          equipoNombre: partido.equipo_local?.nombre || 'Local',
-          minuto: 14,
-          dorsal: 10,
-          jugadora: 'Valeria "La Rusa"',
-          detalle: 'Gol de jugada individual por banda derecha'
-        },
-        {
-          id: 'inc-demo-2',
-          tipo: 'tarjeta_amarilla',
-          equipo: 'visitante',
-          equipoNombre: partido.equipo_visitante?.nombre || 'Visitante',
-          minuto: 22,
-          dorsal: 4,
-          jugadora: 'Mariana P.',
-          detalle: 'Corte de avance prometedor'
-        }
-      ]);
+      this.regIncidencias.set([]);
     }
   }
 
@@ -847,17 +828,79 @@ export class AdminRegistrarPartidoComponent implements OnInit {
 
   guardarActaOficial(): void {
     const match = this.activeRegistrationMatch();
-    if (!match) return;
-
+    if (!match || this.isSavingActa()) return;
     this.isSavingActa.set(true);
-    setTimeout(() => {
-      this.isSavingActa.set(false);
-      this.saveSuccessToast.set(`¡Acta del partido ${match.equipo_local?.nombre} vs ${match.equipo_visitante?.nombre} guardada exitosamente!`);
-      this.actaGuardada.emit(match);
-      setTimeout(() => {
-        this.saveSuccessToast.set(null);
-      }, 4000);
-    }, 800);
+    // Se necesitan los planteles para traducir cada dorsal a la jugadora real
+    forkJoin([
+      this.jugadorasService.getJugadorasByEquipo(match.equipo_local_id),
+      this.jugadorasService.getJugadorasByEquipo(match.equipo_visitante_id)
+    ]).pipe(
+      take(1),
+      switchMap(([rosterLocal, rosterVisitante]) =>
+        this.torneoService.guardarActaPartido(this.construirActa(match, rosterLocal, rosterVisitante)))
+    ).subscribe({
+      next: () => {
+        this.isSavingActa.set(false);
+        this.saveSuccessToast.set(`¡Acta del partido ${match.equipo_local?.nombre} vs ${match.equipo_visitante?.nombre} guardada exitosamente!`);
+        this.actaGuardada.emit(match);
+        this.cargarTodasLasJornadas(); // refleja el marcador y el ganador calculados por el servidor
+        setTimeout(() => this.saveSuccessToast.set(null), 4000);
+      },
+      error: (err: Error) => {
+        this.isSavingActa.set(false);
+        alert(err?.message || 'No se pudo guardar el acta. Inténtalo de nuevo.');
+      }
+    });
+  }
+
+  /**
+   * Arma el acta para el backend. Goles y tarjetas se guardan como incidencias;
+   * fueras de juego y sustituciones no existen en la base de datos, así que se
+   * anotan en las notas de mesa para no perderlos. Lanza error si una incidencia
+   * no corresponde a ninguna jugadora del plantel.
+   */
+  private construirActa(match: Partido, rosterLocal: JugadoraPublica[], rosterVisitante: JugadoraPublica[]): GuardarActaPartidoDTO {
+    const incidencias: RegistrarIncidenciaDTO[] = [];
+    const enNotas: string[] = [];
+    const sinJugadora: string[] = [];
+
+    for (const inc of [...this.regIncidencias()].reverse()) { // en orden de captura
+      const equipoId = inc.equipo === 'local' ? match.equipo_local_id : match.equipo_visitante_id;
+      if (inc.tipo === 'fuera_juego' || inc.tipo === 'sustitucion') {
+        enNotas.push(`${inc.minuto}' ${inc.equipoNombre}: ${inc.detalle || inc.tipo}${inc.dorsal ? ` (#${inc.dorsal})` : ''}`);
+        continue;
+      }
+      const roster = inc.equipo === 'local' ? rosterLocal : rosterVisitante;
+      const jugadora = inc.jugadora_id
+        ? roster.find(j => j.id === inc.jugadora_id)
+        : roster.find(j => j.dorsal !== null && j.dorsal === Number(inc.dorsal));
+      if (!jugadora) {
+        sinJugadora.push(`${inc.minuto}' ${inc.equipoNombre}${inc.dorsal ? ` dorsal #${inc.dorsal}` : ' sin dorsal'}`);
+        continue;
+      }
+      incidencias.push({ jugadora_id: jugadora.id, equipo_id: equipoId, tipo: inc.tipo, minuto: inc.minuto });
+    }
+
+    if (sinJugadora.length > 0) {
+      throw new Error(`Estas incidencias no coinciden con ninguna jugadora del plantel. Corrige el dorsal:\n• ${sinJugadora.join('\n• ')}`);
+    }
+
+    let notas = this.regNotasMesa().trim();
+    if (enNotas.length > 0) {
+      notas += `${notas ? '\n' : ''}Otras incidencias: ${enNotas.join(' | ')}`;
+    }
+
+    return {
+      partido_id: match.id,
+      goles_local: this.regGolesLocal(),
+      goles_visitante: this.regGolesVisitante(),
+      empate_minuto_18: this.regEmpatePenales(),
+      penales_local: this.regPenalesLocal(),
+      penales_visitante: this.regPenalesVisitante(),
+      estado: this.regEstado(),
+      notas_mesa: notas || null,
+      incidencias
+    };
   }
 
   @HostListener('window:keydown', ['$event'])

@@ -11,7 +11,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { take } from 'rxjs';
-import { JugadorasService } from '../../../../core/services';
+import { JugadorasService, BackendApiService } from '../../../../core/services';
 import { JugadoraPublica, PosicionJugadora } from '../../../../core/models';
 
 @Component({
@@ -23,6 +23,7 @@ import { JugadoraPublica, PosicionJugadora } from '../../../../core/models';
 })
 export class RepJugadorasComponent implements OnInit {
   private jugadorasService = inject(JugadorasService);
+  private backendApi = inject(BackendApiService);
 
   @Input() equipoId!: number;
   @Input() equipoNombre: string = 'Tu Club';
@@ -111,7 +112,7 @@ export class RepJugadorasComponent implements OnInit {
     this.isLoading.set(true);
     const targetId = this.equipoId || 1;
 
-    this.jugadorasService.getJugadorasByEquipo(targetId).pipe(take(1)).subscribe({
+    this.jugadorasService.getPlantelPrivado(targetId).pipe(take(1)).subscribe({
       next: (data) => {
         const list = data || [];
         this.jugadorasList.set(list.map(j => ({ ...j })));
@@ -174,13 +175,15 @@ export class RepJugadorasComponent implements OnInit {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
       const file = input.files[0];
-      const reader = new FileReader();
-      reader.onload = (e: ProgressEvent<FileReader>) => {
-        if (e.target?.result) {
-          this.formFotoUrl = e.target.result as string;
-        }
-      };
-      reader.readAsDataURL(file);
+      if (file.size > 3 * 1024 * 1024) {
+        alert('La foto supera el límite de 3 MB.');
+        return;
+      }
+      // Se sube al servidor y se guarda su URL (la base de datos no almacena la imagen)
+      this.backendApi.subirImagen(file, 'jugadora').pipe(take(1)).subscribe({
+        next: url => this.formFotoUrl = url,
+        error: (err: Error) => alert(err.message)
+      });
     }
   }
 
@@ -220,7 +223,7 @@ export class RepJugadorasComponent implements OnInit {
           this.closeFormModal();
           this.mostrarToast(`Datos de ${payload.nombre_deportivo} actualizados.`);
         },
-        error: () => this.isSaving.set(false)
+        error: (err: Error) => { this.isSaving.set(false); alert(err?.message || 'No se pudo guardar.'); }
       });
     } else {
       this.jugadorasService.crearJugadora(payload).pipe(take(1)).subscribe({
@@ -233,7 +236,7 @@ export class RepJugadorasComponent implements OnInit {
           this.closeFormModal();
           this.mostrarToast(`¡${payload.nombre_deportivo} inscrita con el dorsal #${payload.dorsal}!`);
         },
-        error: () => this.isSaving.set(false)
+        error: (err: Error) => { this.isSaving.set(false); alert(err?.message || 'No se pudo guardar.'); }
       });
     }
   }
@@ -270,7 +273,8 @@ export class RepJugadorasComponent implements OnInit {
         this.totalJugadorasChange.emit(this.jugadorasList().length);
         this.closeDeleteModal();
         this.mostrarToast(`${jug.nombre_deportivo} ha sido retirada del plantel.`);
-      }
+      },
+      error: (err: Error) => alert(err?.message || 'No se pudo completar la acción.')
     });
   }
 

@@ -9,6 +9,17 @@
 
     $conn = conectar();
 
+    // Ficha completa de jugadora, con datos privados y médicos. Solo para filtros con sesión.
+    const SQL_JUGADORA_PRIVADA =
+        "SELECT j.id, j.equipo_id, e.nombre AS nombre_equipo, j.nombre_deportivo, j.dorsal, j.posicion,
+                j.nivel_experiencia, j.edad, j.foto_url, j.autoriza_imagen, j.nombre_legal, j.telefono_contacto,
+                j.contacto_emergencia_nombre, j.contacto_emergencia_telefono, j.contacto_emergencia_parentesco,
+                j.aviso_privacidad_aceptado, j.es_independiente, j.activo, j.creado_en,
+                m.tipo_sangre, m.alergias_condiciones
+         FROM jugadoras j
+         LEFT JOIN equipos e ON e.id = j.equipo_id
+         LEFT JOIN jugadoras_datos_medicos m ON m.jugadora_id = j.id";
+
     function consulta($conn, $sql, $params) {
         $stmt = $conn->prepare($sql);
         if (count($params) > 0) {
@@ -36,11 +47,12 @@
             $sql = $sql . " ORDER BY numero_jornada";
 
             $jornadas = consulta($conn, $sql, $params);
+            $es_directora = (usuario_actual()['rol'] ?? null) === 'superadmin';
 
             foreach ($jornadas as $i => $j) {
                 $jornadas[$i]['partidos'] = consulta($conn,
                     "SELECT p.id, p.jornada_id, p.horario, p.cancha, p.estado,
-                            p.goles_local, p.goles_visitante, p.empate_minuto_18,
+                            p.goles_local, p.goles_visitante, p.empate_minuto_18, p.notas_mesa,
                             p.penales_local, p.penales_visitante, p.ganador_id,
                             p.equipo_local_id, el.nombre AS equipo_local, el.escudo_url AS escudo_local,
                             p.equipo_visitante_id, ev.nombre AS equipo_visitante, ev.escudo_url AS escudo_visitante
@@ -50,6 +62,13 @@
                        AND p.jornada_id = ?
                      ORDER BY p.horario",
                     [$j['jornada_id']]);
+
+                // Las notas de mesa son internas: solo las ve la Directora
+                if (!$es_directora) {
+                    foreach ($jornadas[$i]['partidos'] as $k => $p) {
+                        unset($jornadas[$i]['partidos'][$k]['notas_mesa']);
+                    }
+                }
 
                 // Incidencias públicas de cada partido (solo nombre deportivo y dorsal)
                 foreach ($jornadas[$i]['partidos'] as $k => $p) {
@@ -74,6 +93,7 @@
                         (SELECT u.nombre_contacto FROM usuarios u WHERE u.id = e.capitana_id) AS capitana,
                         (SELECT COUNT(*) FROM jugadoras j WHERE j.equipo_id = e.id AND j.activo = 1) AS total_jugadoras
                  FROM equipos e
+                 WHERE e.activo = 1
                  ORDER BY e.nombre", []);
 
             echo json_encode($equipos);
@@ -81,7 +101,7 @@
 
         case 'equipo_detalle':
             $equipo = consulta($conn,
-                "SELECT id, capitana_id, nombre, escudo_url, video_url FROM equipos WHERE id = ?",
+                "SELECT id, capitana_id, nombre, escudo_url, video_url FROM equipos WHERE id = ? AND activo = 1",
                 [$data['id'] ?? 0]);
 
             if (count($equipo) === 0) {
@@ -132,6 +152,33 @@
                  ORDER BY nombre_completo", []);
 
             echo json_encode($entrenadores);
+            break;
+
+        // ---------- Consultas privadas (requieren sesión) ----------
+
+        case 'jugadoras_admin':
+            requerir_rol(['superadmin']);
+            echo json_encode(consulta($conn,
+                SQL_JUGADORA_PRIVADA . " WHERE j.activo = 1 ORDER BY e.nombre IS NULL, e.nombre, j.dorsal, j.nombre_deportivo", []));
+            break;
+
+        case 'plantel_privado':
+            $usuario = requerir_rol(['superadmin', 'capitana']);
+            $equipo_id = (int) ($data['equipo_id'] ?? 0);
+            if ($usuario['rol'] === 'capitana' && $equipo_id !== (int) $usuario['equipo_id']) {
+                responder_error(403, 'Solo puedes consultar el plantel de tu equipo');
+            }
+            echo json_encode(consulta($conn,
+                SQL_JUGADORA_PRIVADA . " WHERE j.equipo_id = ? AND j.activo = 1 ORDER BY j.dorsal, j.nombre_deportivo", [$equipo_id]));
+            break;
+
+        case 'entrenadores_admin':
+            requerir_rol(['superadmin']);
+            echo json_encode(consulta($conn,
+                "SELECT id, nombre_completo, disciplinas, zonas_cobertura, bio,
+                        precio_sesion, telefono_publico, disponibilidad_json, foto_url, activo
+                 FROM entrenadores
+                 ORDER BY nombre_completo", []));
             break;
 
         default:
