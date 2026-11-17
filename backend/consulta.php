@@ -126,7 +126,7 @@
         case 'entrenadores':
             $entrenadores = consulta($conn,
                 "SELECT id, nombre_completo, disciplinas, zonas_cobertura, bio,
-                        precio_sesion, telefono_publico, disponibilidad_json
+                        precio_sesion, telefono_publico, disponibilidad_json, foto_url, activo
                  FROM entrenadores
                  WHERE activo = 1
                  ORDER BY nombre_completo", []);

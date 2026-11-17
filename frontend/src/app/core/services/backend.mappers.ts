@@ -4,6 +4,8 @@
  * convierten aquí a boolean y number.
  */
 import {
+  DisponibilidadEntrenador,
+  Entrenador,
   Equipo,
   EstadoPartido,
   IncidenciaPartido,
@@ -197,4 +199,43 @@ export function mapEquipoDetalle(r: EquipoDetalleApi): Equipo {
   const equipo = mapEquipo(r);
   const jugadoras = (r.jugadoras || []).map(j => mapJugadoraPublica(j, equipo));
   return { ...equipo, jugadoras, total_jugadoras: jugadoras.length };
+}
+
+// ---------- Entrenadores ----------
+export interface EntrenadorApi {
+  id: Num;
+  nombre_completo: string;
+  disciplinas: string;
+  zonas_cobertura: string;
+  bio: string;
+  precio_sesion: Num;
+  telefono_publico: string;
+  disponibilidad_json: string | DisponibilidadEntrenador | null; // MySQL lo entrega como texto JSON
+  foto_url: string | null;
+  activo: Bool;
+}
+
+function parseDisponibilidad(v: EntrenadorApi['disponibilidad_json']): DisponibilidadEntrenador | null {
+  if (!v) return null;
+  if (typeof v !== 'string') return v;
+  try {
+    return JSON.parse(v) as DisponibilidadEntrenador;
+  } catch {
+    return null;
+  }
+}
+
+export function mapEntrenador(r: EntrenadorApi): Entrenador {
+  return {
+    id: num(r.id),
+    nombre_completo: r.nombre_completo,
+    disciplinas: r.disciplinas,
+    zonas_cobertura: r.zonas_cobertura,
+    bio: r.bio,
+    precio_sesion: num(r.precio_sesion),
+    telefono_publico: r.telefono_publico,
+    disponibilidad_json: parseDisponibilidad(r.disponibilidad_json),
+    foto_url: r.foto_url,
+    activo: bool(r.activo)
+  };
 }

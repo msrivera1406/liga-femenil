@@ -9,7 +9,7 @@ export const environment = {
     torneo: false,        // posiciones, jornadas, partidos
     equipos: false,       // lista y ficha pública de equipos
     jugadoras: false,     // planteles públicos y registro de independientes
-    entrenadores: true,   // pendiente: definir entrenadores.usuario_id con el backend
+    entrenadores: false,  // catálogo público
     instagram: true,      // pendiente: token de Meta
     admin: true           // lecturas privadas y escrituras de admin/representante (hasta tener login real)
   }

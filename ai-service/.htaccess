@@ -1,0 +1,3 @@
+# El servicio de IA corre con Flask (puerto 5000); Apache no debe servir nada de aquí
+# (código, venv ni el .env con la API key de Gemini).
+Require all denied

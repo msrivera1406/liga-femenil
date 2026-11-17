@@ -1,0 +1,3 @@
+# Apache sirve esta carpeta (htdocs). Bloquea archivos y carpetas ocultos:
+# .git (código e historial), .env (API keys), .gitignore, etc. Responde 404.
+RedirectMatch 404 "/\."

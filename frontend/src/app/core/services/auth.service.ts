@@ -51,6 +51,11 @@ export class AuthService {
     );
   }
 
+  /** Olvida la sesión en el navegador sin llamar al servidor (la del servidor ya venció). */
+  cerrarSesionLocal(): void {
+    this.currentUser.set(null);
+  }
+
   logout(): void {
     this.api.auth<{ ok: true }>('logout').pipe(
       catchError(() => of(null)),

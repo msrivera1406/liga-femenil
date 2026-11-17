@@ -1,9 +1,10 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { take } from 'rxjs';
 import { AuthService } from '../../../core/services';
+import { Usuario } from '../../../core/models';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +16,7 @@ import { AuthService } from '../../../core/services';
 export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
 
   // Modelos del formulario
   identificador: string = '';
@@ -24,6 +26,20 @@ export class LoginComponent {
   showPassword = signal<boolean>(false);
   isLoading = signal<boolean>(false);
   errorMessage = signal<string | null>(null);
+
+  constructor() {
+    if (this.route.snapshot.queryParamMap.get('motivo') === 'sesion') {
+      this.errorMessage.set('Tu sesión expiró. Inicia sesión para continuar.');
+    }
+  }
+
+  // Regresa a la pantalla pedida solo si pertenece al panel del rol; si no, va al panel por defecto
+  private destinoTrasLogin(user: Usuario): string {
+    const panel = user.rol === 'superadmin' ? '/admin' : '/representante';
+    const volver = this.route.snapshot.queryParamMap.get('volver') || '';
+    const esDelPanel = volver === panel || volver.startsWith(panel + '/') || volver.startsWith(panel + '?');
+    return esDelPanel ? volver : panel;
+  }
 
   // Enlace directo a WhatsApp de la Directora con número configurable y mensaje pre-llenado
   private directoraWhatsApp = '525598765432';
@@ -53,12 +69,7 @@ export class LoginComponent {
       .subscribe({
         next: (user) => {
           this.isLoading.set(false);
-          // Redirección condicional según rol
-          if (user.rol === 'superadmin') {
-            this.router.navigate(['/admin']);
-          } else {
-            this.router.navigate(['/representante']);
-          }
+          this.router.navigateByUrl(this.destinoTrasLogin(user));
         },
         error: (err) => {
           this.isLoading.set(false);

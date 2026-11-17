@@ -2,6 +2,8 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, delay } from 'rxjs/operators';
+import { BackendApiService } from './backend-api.service';
+import { EntrenadorApi, mapEntrenador } from './backend.mappers';
 import { environment } from '../../../environments/environment';
 import { Entrenador, ApiResponse } from '../models';
 import { MOCK_ENTRENADORES } from '../mocks';
@@ -12,13 +14,15 @@ import { MOCK_ENTRENADORES } from '../mocks';
 export class EntrenadoresService {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
+  private api = inject(BackendApiService);
 
   getEntrenadores(): Observable<Entrenador[]> {
     if (environment.mocks.entrenadores) {
       return of(MOCK_ENTRENADORES).pipe(delay(150));
     }
-    return this.http.get<ApiResponse<Entrenador[]>>(`${this.apiUrl}/entrenadores.php`)
-      .pipe(map(res => res.data));
+    // consulta.php solo devuelve entrenadores activos (catálogo público)
+    return this.api.consulta<EntrenadorApi[]>('entrenadores')
+      .pipe(map(rows => rows.map(mapEntrenador)));
   }
 
   getEntrenadorById(id: number): Observable<Entrenador | undefined> {
@@ -26,8 +30,7 @@ export class EntrenadoresService {
       const entrenador = MOCK_ENTRENADORES.find(e => e.id === id);
       return of(entrenador).pipe(delay(100));
     }
-    return this.http.get<ApiResponse<Entrenador>>(`${this.apiUrl}/entrenadores.php?id=${id}`)
-      .pipe(map(res => res.data));
+    return this.getEntrenadores().pipe(map(lista => lista.find(e => e.id === id)));
   }
 
   generarEnlaceWhatsApp(entrenador: Entrenador, dia?: string, hora?: string): string {

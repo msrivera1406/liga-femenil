@@ -30,7 +30,6 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `entrenadores` (
   `id` int(11) NOT NULL,
-  `usuario_id` int(11) NOT NULL,
   `nombre_completo` varchar(100) NOT NULL,
   `disciplinas` varchar(150) NOT NULL,
   `zonas_cobertura` varchar(200) NOT NULL,
@@ -38,8 +37,21 @@ CREATE TABLE `entrenadores` (
   `precio_sesion` decimal(8,2) NOT NULL,
   `telefono_publico` varchar(20) NOT NULL,
   `disponibilidad_json` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`disponibilidad_json`)),
+  `foto_url` varchar(255) DEFAULT NULL,
   `activo` tinyint(1) NOT NULL DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `entrenadores`
+--
+
+INSERT INTO `entrenadores` (`id`, `nombre_completo`, `disciplinas`, `zonas_cobertura`, `bio`, `precio_sesion`, `telefono_publico`, `disponibilidad_json`, `foto_url`, `activo`) VALUES
+(1, 'Mariana "Ronda" Estrada', 'Boxeo Defensivo, Acondicionamiento Funcional, Kickboxing', 'Cuauhtémoc, Juárez, Roma-Condesa, San Rafael', 'Ex-pugilista profesional y entrenadora certificada en autodefensa feminista. Especialista en resistencia cardiovascular, técnica de golpeo y empoderamiento a través del deporte.', 450, '+52 55 1234 5678', '{"lunes":{"activo":true,"horas":["07:00 - 08:30","18:00 - 19:30","19:30 - 21:00"]},"martes":{"activo":true,"horas":["07:00 - 08:30","18:00 - 19:30"]},"miercoles":{"activo":true,"horas":["07:00 - 08:30","18:00 - 19:30","19:30 - 21:00"]},"jueves":{"activo":true,"horas":["07:00 - 08:30","18:00 - 19:30"]},"viernes":{"activo":true,"horas":["07:00 - 08:30","16:00 - 17:30"]},"sabado":{"activo":true,"horas":["08:00 - 10:00","10:30 - 12:30"]},"domingo":{"activo":false,"horas":[]}}', 'https://images.unsplash.com/photo-1594381898411-846e7d193883?w=300&auto=format&fit=crop&q=80', 1),
+(2, 'Renato "Koke" Domínguez', 'Karate-Do, Movilidad Articular, Prevención de Lesiones en Fútbol', 'Coyoacán, Benito Juárez, Del Valle, Narvarte', 'Cinta negra 3er Dan en Karate-Do y fisioterapeuta deportivo. Enfocado en estabilidad neuromuscular para futbolistas, fortalecimiento de rodilla y tobillo, y disciplina marcial.', 500, '+52 55 2345 6789', '{"lunes":{"activo":true,"horas":["06:30 - 08:00","19:00 - 20:30"]},"martes":{"activo":true,"horas":["06:30 - 08:00","17:00 - 18:30","19:00 - 20:30"]},"miercoles":{"activo":true,"horas":["06:30 - 08:00","19:00 - 20:30"]},"jueves":{"activo":true,"horas":["06:30 - 08:00","17:00 - 18:30","19:00 - 20:30"]},"viernes":{"activo":true,"horas":["06:30 - 08:00","15:00 - 16:30"]},"sabado":{"activo":true,"horas":["09:00 - 11:00"]},"domingo":{"activo":false,"horas":[]}}', 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=300&auto=format&fit=crop&q=80', 1),
+(3, 'Ariadna "Ari" Silva', 'Fuerza & Potencia, HIIT, Preparación Física de Alto Rendimiento', 'Miguel Hidalgo, Polanco, Anzures, Escandón', 'Preparadora física de atletas de alto rendimiento en fútbol femenil. Especializada en pliometría, aceleración, cambios de ritmo y fortalecimiento de core.', 480, '+52 55 3456 7890', '{"lunes":{"activo":true,"horas":["07:00 - 09:00","17:00 - 19:00"]},"martes":{"activo":true,"horas":["07:00 - 09:00","17:00 - 19:00"]},"miercoles":{"activo":true,"horas":["07:00 - 09:00","17:00 - 19:00"]},"jueves":{"activo":true,"horas":["07:00 - 09:00","17:00 - 19:00"]},"viernes":{"activo":true,"horas":["07:00 - 09:00","16:00 - 18:00"]},"sabado":{"activo":true,"horas":["08:00 - 11:00"]},"domingo":{"activo":false,"horas":[]}}', 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=300&auto=format&fit=crop&q=80', 1),
+(4, 'Alex Morales (Elle)', 'Calistenia, Flexibilidad, Yoga Deportivo y Meditación de Competencia', 'Tlalpan, Xochimilco, Coyoacán Sur', 'Instructor/e certificado/a en acondicionamiento funcional y calistenia. Enfoque holístico que une resistencia física, respiración consciente y mentalidad deportiva en espacios seguros.', 420, '+52 55 4567 8901', '{"lunes":{"activo":true,"horas":["08:00 - 10:00","16:00 - 18:00"]},"martes":{"activo":true,"horas":["08:00 - 10:00","16:00 - 18:00"]},"miercoles":{"activo":true,"horas":["08:00 - 10:00","16:00 - 18:00"]},"jueves":{"activo":true,"horas":["08:00 - 10:00","16:00 - 18:00"]},"viernes":{"activo":true,"horas":["08:00 - 10:00","15:00 - 17:00"]},"sabado":{"activo":true,"horas":["10:00 - 13:00"]},"domingo":{"activo":false,"horas":[]}}', 'https://images.unsplash.com/photo-1540420773420-3366772f4999?w=300&auto=format&fit=crop&q=80', 1),
+(5, 'Camila "Cami" Valenzuela', 'Fútbol Femenil, Velocidad & Agilidad, Prevención de Lesiones', 'Coyoacán, Tlalpan, Benito Juárez, San Ángel', 'Directora técnica y preparadora con experiencia en torneos universitarios femeniles. Especialista en fundamentos de golpeo, velocidad de reacción y calentamiento preventivo.', 420, '+52 55 5678 9012', '{"lunes":{"activo":true,"horas":["07:00 - 09:00","18:00 - 20:00"]},"martes":{"activo":true,"horas":["07:00 - 09:00","18:00 - 20:00"]},"miercoles":{"activo":true,"horas":["07:00 - 09:00","18:00 - 20:00"]},"jueves":{"activo":true,"horas":["07:00 - 09:00","18:00 - 20:00"]},"viernes":{"activo":true,"horas":["07:00 - 09:00","17:00 - 19:00"]},"sabado":{"activo":true,"horas":["09:00 - 12:00"]},"domingo":{"activo":false,"horas":[]}}', 'https://images.unsplash.com/photo-1517838277536-f5f99be501cd?w=600&auto=format&fit=crop&q=80', 1),
+(6, 'Daniela "Dani" Orozco', 'Autodefensa Urbana, Muay Thai, Fuerza & Resistencia', 'Cuauhtémoc, Roma Norte, Condesa, Tabacalera', 'Instructora de artes marciales mixtas y defensa personal integral. Talleres dinámicos para construir confianza, técnica efectiva de desvío y acondicionamiento cardiovascular.', 460, '+52 55 6789 0123', '{"lunes":{"activo":true,"horas":["06:30 - 08:30","19:00 - 21:00"]},"martes":{"activo":true,"horas":["06:30 - 08:30","19:00 - 21:00"]},"miercoles":{"activo":true,"horas":["06:30 - 08:30","19:00 - 21:00"]},"jueves":{"activo":true,"horas":["06:30 - 08:30","19:00 - 21:00"]},"viernes":{"activo":true,"horas":["06:30 - 08:30","18:00 - 20:00"]},"sabado":{"activo":true,"horas":["08:30 - 11:30"]},"domingo":{"activo":false,"horas":[]}}', 'https://images.unsplash.com/photo-1548690312-e3b507d8c110?w=600&auto=format&fit=crop&q=80', 1);
 
 -- --------------------------------------------------------
 
@@ -534,8 +546,7 @@ INSERT INTO `usuarios` (`id`, `email`, `password_hash`, `rol`, `nombre_contacto`
 -- Indexes for table `entrenadores`
 --
 ALTER TABLE `entrenadores`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `usuario_id` (`usuario_id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `equipos`
@@ -652,12 +663,6 @@ ALTER TABLE `usuarios`
 --
 -- Constraints for dumped tables
 --
-
---
--- Constraints for table `entrenadores`
---
-ALTER TABLE `entrenadores`
-  ADD CONSTRAINT `fk_entrenador_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `equipos`
