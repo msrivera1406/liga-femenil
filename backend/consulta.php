@@ -34,6 +34,25 @@
 
         case 'posiciones':
             $posiciones = consulta($conn, "SELECT * FROM vista_posiciones", []);
+
+            // Racha: resultado de los últimos 4 partidos finalizados de cada equipo,
+            // del más antiguo al más reciente ('G' ganado, 'P' perdido; no hay empates)
+            $resultados = consulta($conn,
+                "SELECT p.equipo_local_id, p.equipo_visitante_id, p.ganador_id
+                 FROM partidos p
+                 JOIN jornadas jo ON jo.id = p.jornada_id
+                 WHERE p.estado = 'finalizado' AND p.ganador_id IS NOT NULL
+                 ORDER BY jo.numero_jornada, p.horario, p.id", []);
+            $rachas = [];
+            foreach ($resultados as $r) {
+                foreach ([$r['equipo_local_id'], $r['equipo_visitante_id']] as $equipo) {
+                    $rachas[$equipo][] = (int) $r['ganador_id'] === (int) $equipo ? 'G' : 'P';
+                }
+            }
+            foreach ($posiciones as $i => $fila) {
+                $posiciones[$i]['racha'] = implode('', array_slice($rachas[$fila['equipo_id']] ?? [], -4));
+            }
+
             echo json_encode($posiciones);
             break;
 

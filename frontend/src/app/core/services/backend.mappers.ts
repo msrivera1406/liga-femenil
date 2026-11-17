@@ -36,6 +36,7 @@ export interface PosicionApi {
   equipo: string;
   escudo_url: string | null;
   PJ: Num; PG: Num; PE: Num; PP: Num; GF: Num; GC: Num; DG: Num; Pts: Num;
+  racha?: string; // ej. 'GGPG', del partido más antiguo al más reciente
 }
 
 export function mapPosicion(r: PosicionApi): PosicionTabla {
@@ -51,7 +52,8 @@ export function mapPosicion(r: PosicionApi): PosicionTabla {
     gf: num(r.GF),
     gc: num(r.GC),
     dg: num(r.DG),
-    pts: num(r.Pts)
+    pts: num(r.Pts),
+    forma_reciente: (r.racha || '').split('').filter((c): c is 'G' | 'P' => c === 'G' || c === 'P')
   };
 }
 

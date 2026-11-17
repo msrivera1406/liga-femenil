@@ -12,5 +12,5 @@ export interface PosicionTabla {
   dg: number; // Diferencia de Goles (gf - gc)
   pts: number; // 3 pts al ganador, 0 al perdedor
   penales_ganados?: number;
-  forma_reciente?: ('G' | 'P')[];
+  forma_reciente?: ('G' | 'P')[]; // últimos 4 resultados, del más antiguo al más reciente
 }
