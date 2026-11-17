@@ -89,6 +89,64 @@ CREATE TABLE `incidencias_partido` (
   `minuto` tinyint(3) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `incidencias_partido`
+--
+
+INSERT INTO `incidencias_partido` (`id`, `partido_id`, `jugadora_id`, `equipo_id`, `tipo`, `minuto`) VALUES
+(100, 1, 160, 11, 'gol', 18),
+(101, 1, 161, 11, 'gol', 40),
+(102, 2, 40, 3, 'gol', 12),
+(103, 2, 41, 3, 'gol', 32),
+(104, 2, 42, 3, 'gol', 52),
+(105, 2, 145, 10, 'gol', 18),
+(106, 3, 55, 4, 'gol', 12),
+(107, 3, 56, 4, 'gol', 32),
+(108, 4, 70, 5, 'gol', 12),
+(109, 4, 115, 8, 'gol', 18),
+(110, 4, 116, 8, 'gol', 40),
+(111, 5, 100, 7, 'gol', 18),
+(112, 6, 160, 11, 'gol', 12),
+(113, 6, 161, 11, 'gol', 32),
+(114, 6, 162, 11, 'gol', 52),
+(115, 6, 10, 1, 'gol', 18),
+(116, 7, 25, 2, 'gol', 18),
+(117, 7, 26, 2, 'gol', 40),
+(118, 8, 115, 8, 'gol', 12),
+(119, 8, 116, 8, 'gol', 32),
+(120, 8, 117, 8, 'gol', 52),
+(121, 9, 100, 7, 'gol', 12),
+(122, 9, 101, 7, 'gol', 32),
+(123, 9, 55, 4, 'gol', 18),
+(124, 10, 85, 6, 'gol', 12),
+(125, 10, 70, 5, 'gol', 18),
+(126, 10, 71, 5, 'gol', 40),
+(127, 11, 145, 10, 'gol', 18),
+(128, 12, 160, 11, 'gol', 12),
+(129, 13, 100, 7, 'gol', 18),
+(130, 14, 40, 3, 'gol', 12),
+(131, 14, 41, 3, 'gol', 32),
+(132, 14, 42, 3, 'gol', 52),
+(133, 15, 55, 4, 'gol', 12),
+(134, 15, 56, 4, 'gol', 32),
+(135, 15, 70, 5, 'gol', 18),
+(136, 15, 71, 5, 'gol', 40),
+(137, 16, 130, 9, 'gol', 12),
+(138, 16, 10, 1, 'gol', 18),
+(139, 17, 145, 10, 'gol', 18),
+(140, 18, 100, 7, 'gol', 12),
+(141, 18, 101, 7, 'gol', 32),
+(142, 18, 102, 7, 'gol', 52),
+(143, 18, 160, 11, 'gol', 18),
+(144, 18, 161, 11, 'gol', 40),
+(145, 19, 25, 2, 'gol', 18),
+(146, 19, 26, 2, 'gol', 40),
+(147, 20, 55, 4, 'gol', 12),
+(148, 20, 56, 4, 'gol', 32),
+(149, 20, 57, 4, 'gol', 52),
+(150, 21, 10, 1, 'gol', 14),
+(151, 21, 115, 8, 'gol', 27);
+
 -- --------------------------------------------------------
 
 --
@@ -101,6 +159,23 @@ CREATE TABLE `jornadas` (
   `numero_jornada` tinyint(3) UNSIGNED NOT NULL,
   `fecha_domingo` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `jornadas`
+--
+
+INSERT INTO `jornadas` (`id`, `torneo_id`, `numero_jornada`, `fecha_domingo`) VALUES
+(1, 1, 1, '2026-10-04'),
+(2, 1, 2, '2026-10-11'),
+(3, 1, 3, '2026-10-18'),
+(4, 1, 4, '2026-10-25'),
+(5, 1, 5, '2026-11-01'),
+(6, 1, 6, '2026-11-08'),
+(7, 1, 7, '2026-11-15'),
+(8, 1, 8, '2026-11-22'),
+(9, 1, 9, '2026-11-29'),
+(10, 1, 10, '2026-12-06'),
+(11, 1, 11, '2026-12-13');
 
 -- --------------------------------------------------------
 
@@ -336,6 +411,67 @@ CREATE TABLE `partidos` (
   `cancha` varchar(50) DEFAULT 'Cancha 1',
   `notas_mesa` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `partidos`
+--
+
+INSERT INTO `partidos` (`id`, `jornada_id`, `equipo_local_id`, `equipo_visitante_id`, `horario`, `goles_local`, `goles_visitante`, `empate_minuto_18`, `penales_local`, `penales_visitante`, `ganador_id`, `estado`, `cancha`, `notas_mesa`) VALUES
+(1, 1, 2, 11, '09:00:00', 0, 2, 0, NULL, NULL, 11, 'finalizado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 1'),
+(2, 1, 3, 10, '10:15:00', 3, 1, 0, NULL, NULL, 3, 'finalizado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 1'),
+(3, 1, 4, 9, '11:30:00', 2, 0, 0, NULL, NULL, 4, 'finalizado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 1'),
+(4, 1, 5, 8, '12:45:00', 1, 2, 0, NULL, NULL, 8, 'finalizado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 1'),
+(5, 1, 6, 7, '14:00:00', 0, 1, 0, NULL, NULL, 7, 'finalizado', 'Cancha Principal', 'Partido de la 4.ª Edición - Jornada 1'),
+(6, 2, 11, 1, '09:00:00', 3, 1, 0, NULL, NULL, 11, 'finalizado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 2'),
+(7, 2, 9, 2, '10:15:00', 0, 2, 0, NULL, NULL, 2, 'finalizado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 2'),
+(8, 2, 8, 3, '11:30:00', 3, 0, 0, NULL, NULL, 8, 'finalizado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 2'),
+(9, 2, 7, 4, '12:45:00', 2, 1, 0, NULL, NULL, 7, 'finalizado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 2'),
+(10, 2, 6, 5, '14:00:00', 1, 2, 0, NULL, NULL, 5, 'finalizado', 'Cancha Principal', 'Partido de la 4.ª Edición - Jornada 2'),
+(11, 3, 1, 10, '09:00:00', 0, 1, 0, NULL, NULL, 10, 'finalizado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 3'),
+(12, 3, 11, 9, '10:15:00', 1, 0, 0, NULL, NULL, 11, 'finalizado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 3'),
+(13, 3, 2, 7, '11:30:00', 0, 1, 0, NULL, NULL, 7, 'finalizado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 3'),
+(14, 3, 3, 6, '12:45:00', 3, 0, 0, NULL, NULL, 3, 'finalizado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 3'),
+(15, 3, 4, 5, '14:00:00', 2, 2, 1, 4, 3, 4, 'finalizado', 'Cancha Principal', 'Partido de la 4.ª Edición - Jornada 3'),
+(16, 4, 9, 1, '09:00:00', 1, 1, 1, 3, 4, 1, 'finalizado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 4'),
+(17, 4, 8, 10, '10:15:00', 0, 1, 0, NULL, NULL, 10, 'finalizado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 4'),
+(18, 4, 7, 11, '11:30:00', 3, 2, 0, NULL, NULL, 7, 'finalizado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 4'),
+(19, 4, 5, 2, '12:45:00', 0, 2, 0, NULL, NULL, 2, 'finalizado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 4'),
+(20, 4, 4, 3, '14:00:00', 3, 0, 0, NULL, NULL, 4, 'finalizado', 'Cancha Principal', 'Partido de la 4.ª Edición - Jornada 4'),
+(21, 5, 1, 8, '09:00:00', 1, 1, 0, NULL, NULL, NULL, 'en_juego', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 5'),
+(22, 5, 9, 7, '10:15:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 5'),
+(23, 5, 10, 6, '11:30:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 5'),
+(24, 5, 11, 5, '12:45:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 5'),
+(25, 5, 2, 3, '14:00:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha Principal', 'Partido de la 4.ª Edición - Jornada 5'),
+(26, 6, 7, 1, '09:00:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 6'),
+(27, 6, 6, 8, '10:15:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 6'),
+(28, 6, 5, 9, '11:30:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 6'),
+(29, 6, 4, 10, '12:45:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 6'),
+(30, 6, 3, 11, '14:00:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha Principal', 'Partido de la 4.ª Edición - Jornada 6'),
+(31, 7, 1, 6, '09:00:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 7'),
+(32, 7, 7, 5, '10:15:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 7'),
+(33, 7, 8, 4, '11:30:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 7'),
+(34, 7, 9, 3, '12:45:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 7'),
+(35, 7, 10, 2, '14:00:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha Principal', 'Partido de la 4.ª Edición - Jornada 7'),
+(36, 8, 5, 1, '09:00:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 8'),
+(37, 8, 4, 6, '10:15:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 8'),
+(38, 8, 3, 7, '11:30:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 8'),
+(39, 8, 2, 8, '12:45:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 8'),
+(40, 8, 11, 10, '14:00:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha Principal', 'Partido de la 4.ª Edición - Jornada 8'),
+(41, 9, 1, 4, '09:00:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 9'),
+(42, 9, 5, 3, '10:15:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 9'),
+(43, 9, 6, 2, '11:30:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 9'),
+(44, 9, 8, 11, '12:45:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 9'),
+(45, 9, 9, 10, '14:00:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha Principal', 'Partido de la 4.ª Edición - Jornada 9'),
+(46, 10, 3, 1, '09:00:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 10'),
+(47, 10, 2, 4, '10:15:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 10'),
+(48, 10, 11, 6, '11:30:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 10'),
+(49, 10, 10, 7, '12:45:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 10'),
+(50, 10, 9, 8, '14:00:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha Principal', 'Partido de la 4.ª Edición - Jornada 10'),
+(51, 11, 1, 2, '09:00:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 11'),
+(52, 11, 4, 11, '10:15:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 11'),
+(53, 11, 5, 10, '11:30:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 1', 'Partido de la 4.ª Edición - Jornada 11'),
+(54, 11, 6, 9, '12:45:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha 2', 'Partido de la 4.ª Edición - Jornada 11'),
+(55, 11, 7, 8, '14:00:00', 0, 0, 0, NULL, NULL, NULL, 'programado', 'Cancha Principal', 'Partido de la 4.ª Edición - Jornada 11');
 
 -- --------------------------------------------------------
 

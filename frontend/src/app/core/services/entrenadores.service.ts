@@ -14,7 +14,7 @@ export class EntrenadoresService {
   private apiUrl = environment.apiUrl;
 
   getEntrenadores(): Observable<Entrenador[]> {
-    if (environment.useMock) {
+    if (environment.mocks.entrenadores) {
       return of(MOCK_ENTRENADORES).pipe(delay(150));
     }
     return this.http.get<ApiResponse<Entrenador[]>>(`${this.apiUrl}/entrenadores.php`)
@@ -22,7 +22,7 @@ export class EntrenadoresService {
   }
 
   getEntrenadorById(id: number): Observable<Entrenador | undefined> {
-    if (environment.useMock) {
+    if (environment.mocks.entrenadores) {
       const entrenador = MOCK_ENTRENADORES.find(e => e.id === id);
       return of(entrenador).pipe(delay(100));
     }
@@ -40,7 +40,7 @@ export class EntrenadoresService {
   }
 
   crearEntrenador(payload: Partial<Entrenador>): Observable<ApiResponse<Entrenador>> {
-    if (environment.useMock) {
+    if (environment.mocks.admin) {
       const nuevoId = Math.max(...MOCK_ENTRENADORES.map(e => e.id), 0) + 1;
       const nuevo: Entrenador = {
         id: nuevoId,
@@ -65,7 +65,7 @@ export class EntrenadoresService {
   }
 
   actualizarEntrenador(id: number, payload: Partial<Entrenador>): Observable<ApiResponse<Entrenador>> {
-    if (environment.useMock) {
+    if (environment.mocks.admin) {
       const index = MOCK_ENTRENADORES.findIndex(e => e.id === id);
       if (index !== -1) {
         MOCK_ENTRENADORES[index] = { ...MOCK_ENTRENADORES[index], ...payload };
@@ -85,7 +85,7 @@ export class EntrenadoresService {
   }
 
   eliminarEntrenador(id: number): Observable<ApiResponse<void>> {
-    if (environment.useMock) {
+    if (environment.mocks.admin) {
       const index = MOCK_ENTRENADORES.findIndex(e => e.id === id);
       if (index !== -1) {
         MOCK_ENTRENADORES.splice(index, 1);
@@ -100,7 +100,7 @@ export class EntrenadoresService {
   }
 
   toggleActivo(id: number, activo: boolean): Observable<ApiResponse<void>> {
-    if (environment.useMock) {
+    if (environment.mocks.admin) {
       const entrenador = MOCK_ENTRENADORES.find(e => e.id === id);
       if (entrenador) {
         entrenador.activo = activo;

@@ -1,5 +1,14 @@
 <?php
 
+    header('Content-Type: application/json; charset=UTF-8');
+    header('Access-Control-Allow-Origin: http://localhost:4200');
+    header('Access-Control-Allow-Methods: POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        http_response_code(204);
+        exit();
+    }
+
     $data = file_get_contents("php://input");
     $data = json_decode($data, true);
 
@@ -13,6 +22,11 @@
             $stmt->execute();
         }
         return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
+    if (!is_array($data) || empty($data['filtro'])) {
+        echo json_encode(['ok' => false, 'error' => 'Falta el filtro de la consulta']);
+        exit();
     }
 
     switch ($data['filtro']) {
@@ -35,8 +49,8 @@
 
             foreach ($jornadas as $i => $j) {
                 $jornadas[$i]['partidos'] = consulta($conn,
-                    "SELECT p.id, p.horario, p.cancha, p.estado,
-                            p.goles_local, p.goles_visitante,
+                    "SELECT p.id, p.jornada_id, p.horario, p.cancha, p.estado,
+                            p.goles_local, p.goles_visitante, p.empate_minuto_18,
                             p.penales_local, p.penales_visitante, p.ganador_id,
                             p.equipo_local_id, el.nombre AS equipo_local, el.escudo_url AS escudo_local,
                             p.equipo_visitante_id, ev.nombre AS equipo_visitante, ev.escudo_url AS escudo_visitante
@@ -46,6 +60,19 @@
                        AND p.jornada_id = ?
                      ORDER BY p.horario",
                     [$j['jornada_id']]);
+
+                // Incidencias públicas de cada partido (solo nombre deportivo y dorsal)
+                foreach ($jornadas[$i]['partidos'] as $k => $p) {
+                    $jornadas[$i]['partidos'][$k]['incidencias'] = consulta($conn,
+                        "SELECT i.id, i.partido_id, i.jugadora_id, i.equipo_id, i.tipo, i.minuto,
+                                j.nombre_deportivo AS nombre_jugadora, j.dorsal, e.nombre AS nombre_equipo
+                         FROM incidencias_partido i, jugadoras j, equipos e
+                         WHERE i.jugadora_id = j.id
+                           AND i.equipo_id = e.id
+                           AND i.partido_id = ?
+                         ORDER BY i.minuto",
+                        [$p['id']]);
+                }
             }
 
             echo json_encode($jornadas);
@@ -53,8 +80,9 @@
 
         case 'equipos':
             $equipos = consulta($conn,
-                "SELECT e.id, e.nombre, e.escudo_url, e.video_url,
-                        (SELECT u.nombre_contacto FROM usuarios u WHERE u.id = e.capitana_id) AS capitana
+                "SELECT e.id, e.capitana_id, e.nombre, e.escudo_url, e.video_url, e.activo,
+                        (SELECT u.nombre_contacto FROM usuarios u WHERE u.id = e.capitana_id) AS capitana,
+                        (SELECT COUNT(*) FROM jugadoras j WHERE j.equipo_id = e.id AND j.activo = 1) AS total_jugadoras
                  FROM equipos e
                  ORDER BY e.nombre", []);
 
@@ -63,8 +91,13 @@
 
         case 'equipo_detalle':
             $equipo = consulta($conn,
-                "SELECT id, nombre, escudo_url, video_url FROM equipos WHERE id = ?",
-                [$data['id']]);
+                "SELECT id, capitana_id, nombre, escudo_url, video_url FROM equipos WHERE id = ?",
+                [$data['id'] ?? 0]);
+
+            if (count($equipo) === 0) {
+                echo json_encode(['ok' => false, 'error' => 'Equipo no encontrado']);
+                break;
+            }
 
             $jugadoras = consulta($conn,
                 "SELECT id, nombre_deportivo, dorsal, posicion, foto_url, autoriza_imagen
@@ -109,6 +142,10 @@
                  ORDER BY nombre_completo", []);
 
             echo json_encode($entrenadores);
+            break;
+
+        default:
+            echo json_encode(['ok' => false, 'error' => 'Filtro de consulta no válido']);
             break;
     }
 

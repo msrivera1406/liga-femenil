@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
-import { map, delay, catchError } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, delay } from 'rxjs/operators';
+import { BackendApiService } from './backend-api.service';
+import { EquipoDetalleApi, mapEquipoDetalle } from './backend.mappers';
 import { environment } from '../../../environments/environment';
 import { JugadoraPublica, RegistroJugadoraIndependienteDTO, ApiResponse } from '../models';
 import { MOCK_JUGADORAS } from '../mocks';
@@ -12,9 +14,10 @@ import { MOCK_JUGADORAS } from '../mocks';
 export class JugadorasService {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
+  private api = inject(BackendApiService);
 
   getJugadoras(): Observable<JugadoraPublica[]> {
-    if (environment.useMock) {
+    if (environment.mocks.admin) {
       return of(MOCK_JUGADORAS).pipe(delay(150));
     }
     return this.http.get<ApiResponse<JugadoraPublica[]>>(`${this.apiUrl}/jugadoras.php`)
@@ -22,15 +25,16 @@ export class JugadorasService {
   }
 
   getJugadorasByEquipo(equipoId: number): Observable<JugadoraPublica[]> {
-    if (environment.useMock) {
+    if (environment.mocks.jugadoras) {
       return of(MOCK_JUGADORAS.filter(j => j.equipo_id === equipoId)).pipe(delay(100));
     }
-    return this.http.get<ApiResponse<JugadoraPublica[]>>(`${this.apiUrl}/jugadoras.php?equipo_id=${equipoId}`)
-      .pipe(map(res => res.data));
+    // Plantel público (sin datos privados) desde la ficha del equipo
+    return this.api.consulta<EquipoDetalleApi>('equipo_detalle', { id: equipoId })
+      .pipe(map(r => mapEquipoDetalle(r).jugadoras ?? []));
   }
 
   getBolsaIndependientes(): Observable<JugadoraPublica[]> {
-    if (environment.useMock) {
+    if (environment.mocks.admin) {
       return of(MOCK_JUGADORAS.filter(j => j.es_independiente)).pipe(delay(120));
     }
     return this.http.get<ApiResponse<JugadoraPublica[]>>(`${this.apiUrl}/jugadoras/independientes.php`)
@@ -38,7 +42,7 @@ export class JugadorasService {
   }
 
   registrarIndependiente(dto: RegistroJugadoraIndependienteDTO): Observable<ApiResponse<{ folio_registro: string }>> {
-    if (environment.useMock) {
+    if (environment.mocks.jugadoras) {
       const folio = 'IND-' + Math.random().toString(36).substring(2, 7).toUpperCase();
       const nuevoId = Math.max(...MOCK_JUGADORAS.map(j => j.id), 0) + 1;
       const nueva: JugadoraPublica = {
@@ -70,23 +74,13 @@ export class JugadorasService {
         message: '¡Registro completado! La Directora del Programa revisará tu perfil para asignarte un equipo afín.'
       }).pipe(delay(350));
     }
-    // backend/registrar.php responde { ok, folio_registro } o { ok: false, error }
-    return this.http.post<{ ok: boolean; id?: number; folio_registro?: string; error?: string }>(
-      `${environment.backendUrl}/registrar.php`,
-      { filtro: 'jugadora_independiente', ...dto }
-    ).pipe(
-      catchError(() => throwError(() => new Error('No pudimos conectar con el servidor. Inténtalo de nuevo en unos minutos.'))),
-      map(res => {
-        if (!res.ok || !res.folio_registro) {
-          throw new Error(res.error || 'No se pudo completar el registro.');
-        }
-        return { success: true, data: { folio_registro: res.folio_registro }, message: null };
-      })
-    );
+    // backend/registrar.php responde { ok: true, id, folio_registro } o { ok: false, error }
+    return this.api.registrar<{ ok: true; id: number; folio_registro: string }>('jugadora_independiente', { ...dto })
+      .pipe(map(res => ({ success: true, data: { folio_registro: res.folio_registro }, message: null })));
   }
 
   crearJugadora(payload: Partial<JugadoraPublica>): Observable<ApiResponse<JugadoraPublica>> {
-    if (environment.useMock) {
+    if (environment.mocks.admin) {
       const nuevoId = Math.max(...MOCK_JUGADORAS.map(j => j.id), 0) + 1;
       const nueva: JugadoraPublica = {
         id: nuevoId,
@@ -120,7 +114,7 @@ export class JugadorasService {
   }
 
   actualizarJugadora(id: number, payload: Partial<JugadoraPublica>): Observable<ApiResponse<JugadoraPublica>> {
-    if (environment.useMock) {
+    if (environment.mocks.admin) {
       const idx = MOCK_JUGADORAS.findIndex(j => j.id === id);
       if (idx !== -1) {
         MOCK_JUGADORAS[idx] = {
@@ -143,7 +137,7 @@ export class JugadorasService {
   }
 
   asignarEquipo(jugadoraId: number, equipoId: number, dorsal: number, nombreEquipo: string): Observable<ApiResponse<JugadoraPublica>> {
-    if (environment.useMock) {
+    if (environment.mocks.admin) {
       const idx = MOCK_JUGADORAS.findIndex(j => j.id === jugadoraId);
       if (idx !== -1) {
         MOCK_JUGADORAS[idx] = {
@@ -173,7 +167,7 @@ export class JugadorasService {
   }
 
   desvincularEquipo(jugadoraId: number): Observable<ApiResponse<JugadoraPublica>> {
-    if (environment.useMock) {
+    if (environment.mocks.admin) {
       const idx = MOCK_JUGADORAS.findIndex(j => j.id === jugadoraId);
       if (idx !== -1) {
         MOCK_JUGADORAS[idx] = {
@@ -201,7 +195,7 @@ export class JugadorasService {
   }
 
   eliminarJugadora(id: number): Observable<ApiResponse<{ eliminada: boolean }>> {
-    if (environment.useMock) {
+    if (environment.mocks.admin) {
       const idx = MOCK_JUGADORAS.findIndex(j => j.id === id);
       if (idx !== -1) {
         MOCK_JUGADORAS.splice(idx, 1);

@@ -7,3 +7,4 @@ export * from './auth.service';
 export * from './ai-scanner.service';
 export * from './voice-recognition.service';
 export * from './ai-ig.service';
+export * from './backend-api.service';

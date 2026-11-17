@@ -18,7 +18,7 @@ export class InstagramService {
    * Si está en modo mock o la API de Meta no responde, devuelve los posts mockeados.
    */
   getLatestPosts(): Observable<InstagramPost[]> {
-    if (environment.useMock) {
+    if (environment.mocks.instagram) {
       return of(MOCK_INSTAGRAM_POSTS).pipe(delay(200));
     }
     return this.http.get<ApiResponse<InstagramPost[]>>(`${this.apiUrl}/instagram/posts.php`)

@@ -1,0 +1,56 @@
+import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
+
+/** El backend respondió, pero rechazó la operación ({ ok: false, error }). */
+export class BackendRespuestaError extends Error {}
+
+type ArchivoBackend = 'consulta.php' | 'registrar.php' | 'modificar.php';
+
+interface RespuestaError {
+  ok: false;
+  error?: string;
+}
+
+function esRespuestaError(res: unknown): res is RespuestaError {
+  return !!res && typeof res === 'object' && !Array.isArray(res) && (res as { ok?: unknown }).ok === false;
+}
+
+/**
+ * Cliente de los PHP del backend. Cada archivo recibe un POST con un campo `filtro`
+ * que elige la operación. Las consultas responden los datos tal cual; las escrituras
+ * responden { ok: true, ... }. Cualquier { ok: false, error } se convierte en error.
+ */
+@Injectable({
+  providedIn: 'root'
+})
+export class BackendApiService {
+  private http = inject(HttpClient);
+  private baseUrl = environment.backendUrl;
+
+  consulta<T>(filtro: string, params: Record<string, unknown> = {}): Observable<T> {
+    return this.enviar<T>('consulta.php', filtro, params);
+  }
+
+  registrar<T>(filtro: string, params: Record<string, unknown> = {}): Observable<T> {
+    return this.enviar<T>('registrar.php', filtro, params);
+  }
+
+  modificar<T>(filtro: string, params: Record<string, unknown> = {}): Observable<T> {
+    return this.enviar<T>('modificar.php', filtro, params);
+  }
+
+  private enviar<T>(archivo: ArchivoBackend, filtro: string, params: Record<string, unknown>): Observable<T> {
+    return this.http.post<T | RespuestaError>(`${this.baseUrl}/${archivo}`, { filtro, ...params }).pipe(
+      catchError(() => throwError(() => new Error('No pudimos conectar con el servidor. Inténtalo de nuevo en unos minutos.'))),
+      map(res => {
+        if (esRespuestaError(res)) {
+          throw new BackendRespuestaError(res.error || 'El servidor rechazó la operación.');
+        }
+        return res as T;
+      })
+    );
+  }
+}

@@ -1,7 +1,9 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map, delay } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { map, delay, catchError } from 'rxjs/operators';
+import { BackendApiService, BackendRespuestaError } from './backend-api.service';
+import { EquipoApi, EquipoDetalleApi, mapEquipo, mapEquipoDetalle } from './backend.mappers';
 import { environment } from '../../../environments/environment';
 import { Equipo, ApiResponse } from '../models';
 import { MOCK_EQUIPOS } from '../mocks';
@@ -12,26 +14,30 @@ import { MOCK_EQUIPOS } from '../mocks';
 export class EquiposService {
   private http = inject(HttpClient);
   private apiUrl = environment.apiUrl;
+  private api = inject(BackendApiService);
 
   getEquipos(): Observable<Equipo[]> {
-    if (environment.useMock) {
+    if (environment.mocks.equipos) {
       return of(MOCK_EQUIPOS).pipe(delay(150));
     }
-    return this.http.get<ApiResponse<Equipo[]>>(`${this.apiUrl}/equipos.php`)
-      .pipe(map(res => res.data));
+    return this.api.consulta<EquipoApi[]>('equipos')
+      .pipe(map(rows => rows.map(mapEquipo)));
   }
 
   getEquipoById(id: number): Observable<Equipo | undefined> {
-    if (environment.useMock) {
+    if (environment.mocks.equipos) {
       const equipo = MOCK_EQUIPOS.find(e => e.id === id);
       return of(equipo).pipe(delay(100));
     }
-    return this.http.get<ApiResponse<Equipo>>(`${this.apiUrl}/equipos.php?id=${id}`)
-      .pipe(map(res => res.data));
+    // Incluye el plantel público. Si el equipo no existe se devuelve undefined, como en el mock.
+    return this.api.consulta<EquipoDetalleApi>('equipo_detalle', { id }).pipe(
+      map(mapEquipoDetalle),
+      catchError(err => err instanceof BackendRespuestaError ? of(undefined) : throwError(() => err))
+    );
   }
 
   crearEquipo(payload: Partial<Equipo>): Observable<ApiResponse<Equipo>> {
-    if (environment.useMock) {
+    if (environment.mocks.admin) {
       const nuevoId = Math.max(...MOCK_EQUIPOS.map(e => e.id), 0) + 1;
       const nuevo: Equipo = {
         id: nuevoId,
@@ -52,7 +58,7 @@ export class EquiposService {
   }
 
   actualizarEquipo(id: number, payload: Partial<Equipo>): Observable<ApiResponse<Equipo>> {
-    if (environment.useMock) {
+    if (environment.mocks.admin) {
       const idx = MOCK_EQUIPOS.findIndex(e => e.id === id);
       if (idx !== -1) {
         MOCK_EQUIPOS[idx] = {
@@ -75,7 +81,7 @@ export class EquiposService {
   }
 
   eliminarEquipo(id: number): Observable<ApiResponse<{ eliminado: boolean }>> {
-    if (environment.useMock) {
+    if (environment.mocks.admin) {
       const idx = MOCK_EQUIPOS.findIndex(e => e.id === id);
       if (idx !== -1) {
         MOCK_EQUIPOS.splice(idx, 1);
