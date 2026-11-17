@@ -24,7 +24,7 @@ export class HeroStageComponent implements AfterViewInit, OnDestroy {
   @ViewChild('scrollTrack') scrollTrack!: ElementRef<HTMLElement>;
   @ViewChild('scrollCanvas') scrollCanvas!: ElementRef<HTMLCanvasElement>;
 
-  readonly TOTAL = 120;
+  readonly TOTAL = 85;
   private frames: HTMLImageElement[] = [];
   private current = -1;
   private canvasW = 1920;

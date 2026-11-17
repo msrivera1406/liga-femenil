@@ -1,10 +1,11 @@
 export type PosicionJugadora = 'Portera' | 'Defensa' | 'Medio' | 'Delantera';
+export type NivelExperiencia = 'Iniciación' | 'Intermedio' | 'Avanzado';
+export type TipoSangre = 'O+' | 'O-' | 'A+' | 'A-' | 'B+' | 'B-' | 'AB+' | 'AB-' | 'Desconocido';
 
 export interface JugadoraPublica {
   id: number;
   equipo_id: number | null;
   nombre_deportivo: string;
-  pronombres: string;
   dorsal: number | null;
   posicion: PosicionJugadora;
   foto_url: string | null;
@@ -34,19 +35,20 @@ export interface JugadoraCompleta extends JugadoraPublica {
 
 export type Jugadora = JugadoraPublica | JugadoraCompleta;
 
+// Coincide con lo que valida backend/registrar.php (filtro 'jugadora_independiente').
+// tipo_sangre y alergias_condiciones se guardan en la tabla jugadoras_datos_medicos.
 export interface RegistroJugadoraIndependienteDTO {
   nombre_deportivo: string;
-  pronombres?: string;
   posicion: PosicionJugadora;
+  nivel_experiencia: NivelExperiencia;
   nombre_legal: string;
-  edad?: number | null;
+  edad: number;
   telefono_contacto: string;
-  tipo_sangre?: string;
+  tipo_sangre: TipoSangre;
   contacto_emergencia_nombre: string;
   contacto_emergencia_telefono: string;
-  contacto_emergencia_parentesco?: string;
+  contacto_emergencia_parentesco: string;
   alergias_condiciones?: string;
   autoriza_imagen: boolean;
   aviso_privacidad_aceptado: boolean;
-  nivel_experiencia?: string;
 }

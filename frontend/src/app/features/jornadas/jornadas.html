@@ -4,10 +4,6 @@
     <div class="container">
       <div class="hero-top-row">
         <div>
-          <div class="hero-badge">
-            <span class="badge-icon">⚽</span>
-            <span>CALENDARIO OFICIAL · APERTURA 2026</span>
-          </div>
           <h1 class="jornadas-main-title">
             Jornadas & <span class="gradient-text">Resultados</span>
           </h1>
@@ -396,10 +392,7 @@
     </div>
   </div>
 
-  <!-- 4. FOOTER EDITORIAL (Lazy loading al entrar en viewport) -->
-  @defer (on viewport) {
-    <app-landing-footer></app-landing-footer>
-  } @placeholder {
-    <div class="footer-lazy-placeholder"></div>
-  }
+  <!-- 4. FOOTER EDITORIAL -->
+  <app-landing-footer></app-landing-footer>
+  
 </div>

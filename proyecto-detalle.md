@@ -33,7 +33,7 @@
 > El Buzón Seguro Anónimo se descartó del alcance.
 
 1. **Doble Capa de Identidad:**
-   * *Datos públicos:* Nombre deportivo, pronombres y dorsal.
+   * *Datos públicos:* Nombre deportivo y dorsal.
    * *Datos sensibles/privados:* Nombre legal, teléfono y contactos de emergencia (cifrados y visibles solo para la Directora para responsivas o seguros).
 2. **Modo "Ghost Player" (Protección de Imagen):**
    * Campo booleano `autoriza_imagen`. Si es `false`, la interfaz renderiza un avatar con silueta y dorsal en lugar de su fotografía para proteger su identidad laboral/personal.
@@ -71,7 +71,7 @@
 El backend tiene acordadas las siguientes tablas principales:
 1. `usuarios`: `id`, `email`, `password_hash`, `rol` ('superadmin', 'capitana'), `nombre_contacto`.
 2. `equipos`: `id`, `capitana_id`, `nombre`, `escudo_url`, `video_url`.
-3. `jugadoras`: `id`, `equipo_id`, `nombre_deportivo`, `pronombres`, `dorsal`, `posicion`, `foto_url`, `autoriza_imagen`, `nombre_legal`, `telefono_contacto`, `contacto_emergencia_nombre`, `contacto_emergencia_telefono`, `aviso_privacidad_aceptado`, `es_independiente`, `activo`.
+3. `jugadoras`: `id`, `equipo_id`, `nombre_deportivo`, `dorsal`, `posicion`, `foto_url`, `autoriza_imagen`, `nombre_legal`, `telefono_contacto`, `contacto_emergencia_nombre`, `contacto_emergencia_telefono`, `aviso_privacidad_aceptado`, `es_independiente`, `activo`.
 4. `torneos`: `id`, `nombre`, `fecha_inicio`, `activo`.
 5. `jornadas`: `id`, `torneo_id`, `numero_jornada`, `fecha_domingo`.
 6. `partidos`: `id`, `jornada_id`, `equipo_local_id`, `equipo_visitante_id`, `horario`, `goles_local`, `goles_visitante`, `empate_minuto_18`, `penales_local`, `penales_visitante`, `ganador_id`, `estado`, `cancha`, `notas_mesa`.

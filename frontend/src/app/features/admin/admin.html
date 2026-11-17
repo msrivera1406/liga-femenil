@@ -382,7 +382,7 @@
   </nav>
 
   <!-- ========================================== -->
-  <!-- MODAL DINÁMICO DE SERVICIOS                -->
+  <!-- MODAL DINÁMICO DE SERVICIOS -->
   <!-- ========================================== -->
   <div class="admin-modal-backdrop" *ngIf="activeModal()" (click)="closeModal()">
     <div class="admin-modal-card" [class.modal-wide-split]="activeModal() === 'registrar-partido' || activeModal() === 'programar-calendario' || activeModal() === 'equipos' || activeModal() === 'jugadoras' || activeModal() === 'entrenadores'" (click)="$event.stopPropagation()">
@@ -439,75 +439,45 @@
       <!-- Cuerpo del modal interactivo -->
       <div class="modal-workspace-body">
         
-        <!-- Vista Servicio 1: Registrar Partido (Lazy loaded) -->
-        @defer (when activeModal() === 'registrar-partido') {
-          @if (activeModal() === 'registrar-partido') {
-            <app-admin-registrar-partido 
-              [initialMatchId]="selectedInitialMatchId()" 
-              (cerrar)="closeModal()" 
-              (actaGuardada)="cargarDatosDashboard()">
-            </app-admin-registrar-partido>
-          }
-        } @loading (minimum 150ms) {
-          <div class="service-pane-loading" *ngIf="activeModal() === 'registrar-partido'">
-            <div class="loading-spinner"></div>
-            <span>Cargando mesa de control...</span>
-          </div>
+        <!-- Vista Servicio 1: Registrar Partido -->
+        @if (activeModal() === 'registrar-partido') {
+          <app-admin-registrar-partido 
+            [initialMatchId]="selectedInitialMatchId()" 
+            (cerrar)="closeModal()" 
+            (actaGuardada)="cargarDatosDashboard()">
+          </app-admin-registrar-partido>
         }
+        
 
-        <!-- Vista Servicio 2: Programar Calendario (Lazy loaded) -->
-        @defer (when activeModal() === 'programar-calendario') {
-          @if (activeModal() === 'programar-calendario') {
-            <app-admin-programar-calendario 
-              (cerrar)="closeModal()" 
-              (calendarioGuardado)="cargarDatosDashboard()">
-            </app-admin-programar-calendario>
-          }
-        } @loading (minimum 150ms) {
-          <div class="service-pane-loading" *ngIf="activeModal() === 'programar-calendario'">
-            <div class="loading-spinner"></div>
-            <span>Cargando fixture del torneo...</span>
-          </div>
+        <!-- Vista Servicio 2: Programar Calendario -->
+        @if (activeModal() === 'programar-calendario') {
+          <app-admin-programar-calendario 
+            (cerrar)="closeModal()" 
+            (calendarioGuardado)="cargarDatosDashboard()">
+          </app-admin-programar-calendario>
         }
+        
 
-        <!-- Vista Servicio 3: Equipos (Lazy loaded) -->
-        @defer (when activeModal() === 'equipos') {
-          @if (activeModal() === 'equipos') {
-            <app-admin-equipos 
-              (cerrar)="closeModal()" 
-              (irAJugadoras)="openModal('jugadoras')">
-            </app-admin-equipos>
-          }
-        } @loading (minimum 150ms) {
-          <div class="service-pane-loading" *ngIf="activeModal() === 'equipos'">
-            <div class="loading-spinner"></div>
-            <span>Cargando clubes oficiales...</span>
-          </div>
+        <!-- Vista Servicio 3: Equipos -->
+        @if (activeModal() === 'equipos') {
+          <app-admin-equipos 
+            (cerrar)="closeModal()" 
+            (irAJugadoras)="openModal('jugadoras')">
+          </app-admin-equipos>
         }
+        
 
-        <!-- Vista Servicio 4: Jugadoras (Lazy loaded) -->
-        @defer (when activeModal() === 'jugadoras') {
-          @if (activeModal() === 'jugadoras') {
-            <app-admin-jugadoras 
-              (cerrar)="closeModal()">
-            </app-admin-jugadoras>
-          }
-        } @loading (minimum 150ms) {
-          <div class="service-pane-loading" *ngIf="activeModal() === 'jugadoras'">
-            <div class="loading-spinner"></div>
-            <span>Cargando padrón de jugadoras...</span>
-          </div>
+        <!-- Vista Servicio 4: Jugadoras -->
+        @if (activeModal() === 'jugadoras') {
+          <app-admin-jugadoras 
+            (cerrar)="closeModal()">
+          </app-admin-jugadoras>
         }
+        
 
         <!-- Vista Servicio 5: Entrenadores -->
-        @defer (when activeModal() === 'entrenadores') {
-          <app-admin-entrenadores *ngIf="activeModal() === 'entrenadores'"></app-admin-entrenadores>
-        } @loading (minimum 150ms) {
-          <div class="service-pane-loading" *ngIf="activeModal() === 'entrenadores'">
-            <div class="loading-spinner"></div>
-            <span>Cargando catálogo de entrenadores...</span>
-          </div>
-        }
+        <app-admin-entrenadores *ngIf="activeModal() === 'entrenadores'"></app-admin-entrenadores>
+        
 
         <!-- Vista Servicio 6: Generador de Contenido IG -->
         <app-admin-generador-ig

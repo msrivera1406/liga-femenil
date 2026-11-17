@@ -4,10 +4,6 @@
     <div class="container">
       <div class="hero-top-row">
         <div class="hero-text-block">
-          <div class="hero-badge">
-            <span class="badge-icon">🏆</span>
-            <span>TABLA GENERAL · CLASIFICACIÓN OFICIAL</span>
-          </div>
           <h1 class="posiciones-main-title">
             Tabla de <span class="gradient-text">Posiciones</span>
           </h1>
@@ -122,7 +118,9 @@
                   class="rank-badge" 
                   [ngClass]="{
                     'rank-first': idx === 0,
-                    'rank-playoff': idx > 0 && idx < 4,
+                    'rank-second': idx === 1,
+                    'rank-third': idx === 2,
+                    'rank-playoff': idx === 3,
                     'rank-regular': idx >= 4
                   }"
                 >
@@ -193,10 +191,7 @@
     </section>
   </main>
 
-  <!-- 3. FOOTER EDITORIAL (Lazy loading al entrar en viewport) -->
-  @defer (on viewport) {
-    <app-landing-footer></app-landing-footer>
-  } @placeholder {
-    <div class="footer-lazy-placeholder"></div>
-  }
+  <!-- 3. FOOTER EDITORIAL -->
+  <app-landing-footer></app-landing-footer>
+  
 </div>

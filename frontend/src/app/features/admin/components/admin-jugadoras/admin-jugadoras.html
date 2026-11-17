@@ -213,7 +213,6 @@
               <div class="cedula-info-block">
                 <h4 class="player-sport-name" [title]="j.nombre_deportivo">{{ j.nombre_deportivo }}</h4>
                 <div class="player-sub-meta">
-                  <span class="pronoun-tag">{{ j.pronombres || 'Ella' }}</span>
                   <span class="legal-name-sub" [title]="j.nombre_legal || 'Nombre legal reservado'">{{ j.nombre_legal || 'Cédula Oficial' }}</span>
                 </div>
 
@@ -308,7 +307,6 @@
               <div class="cedula-info-block">
                 <h4 class="player-sport-name">{{ j.nombre_deportivo }}</h4>
                 <div class="player-sub-meta">
-                  <span class="pronoun-tag">{{ j.pronombres || 'Ella' }}</span>
                   <span class="legal-name-sub">{{ j.nombre_legal || 'Nombre reservado' }}</span>
                 </div>
 
@@ -394,7 +392,7 @@
                   <span>1. Identidad Deportiva & Privacidad</span>
                 </div>
 
-                <div class="form-grid-2cols">
+                <div>
                   <div class="form-field-group">
                     <label class="field-label">Nombre Deportivo (o Apodo): *</label>
                     <input 
@@ -402,15 +400,6 @@
                       [(ngModel)]="formJNombreDeportivo" 
                       placeholder="Ej. Valeria 'La Rusa'" 
                       class="styled-text-input" />
-                  </div>
-
-                  <div class="form-field-group">
-                    <label class="field-label">Pronombres:</label>
-                    <select [(ngModel)]="formJPronombres" class="styled-text-input">
-                      <option value="Ella">Ella</option>
-                      <option value="Ella/Elle">Ella/Elle</option>
-                      <option value="Elle">Elle</option>
-                    </select>
                   </div>
                 </div>
 
@@ -523,9 +512,9 @@
                   <div class="form-field-group">
                     <label class="field-label">Nivel de Experiencia:</label>
                     <select [(ngModel)]="formJNivelExperiencia" class="styled-text-input">
-                      <option value="Principiante (Inicio en fútbol 7/11)">Principiante (Inicio en fútbol 7/11)</option>
-                      <option value="Intermedio (Juego recreativo y regular)">Intermedio (Juego recreativo y regular)</option>
-                      <option value="Avanzado (Ligas competitivas anteriores)">Avanzado (Ligas competitivas anteriores)</option>
+                      <option value="Iniciación">Principiante (Inicio en fútbol 7/11)</option>
+                      <option value="Intermedio">Intermedio (Juego recreativo y regular)</option>
+                      <option value="Avanzado">Avanzado (Ligas competitivas anteriores)</option>
                     </select>
                   </div>
                 </div>
@@ -674,7 +663,7 @@
                   <div class="sheet-hero-info">
                     <div class="sheet-dorsal-tag">#{{ detailTargetJugadora()?.dorsal || 'LIBRE' }}</div>
                     <h3 class="sheet-name">{{ detailTargetJugadora()?.nombre_deportivo }}</h3>
-                    <p class="sheet-legal">{{ detailTargetJugadora()?.nombre_legal || 'Nombre legal reservado' }} · {{ detailTargetJugadora()?.pronombres || 'Ella' }}</p>
+                    <p class="sheet-legal">{{ detailTargetJugadora()?.nombre_legal || 'Nombre legal reservado' }}</p>
                     <div class="sheet-chips-line">
                       <span class="sheet-chip-pos">{{ detailTargetJugadora()?.posicion }}</span>
                       <span class="sheet-chip-club">{{ detailTargetJugadora()?.nombre_equipo || 'Bolsa Independiente' }}</span>

@@ -1,38 +1,20 @@
 <div class="comunidad-page">
-  <!-- 1. ENCABEZADO DE LA COMUNIDAD (Above the fold - carga inmediata sin defer) -->
+  <!-- 1. ENCABEZADO DE LA COMUNIDAD -->
   <app-comunidad-hero></app-comunidad-hero>
 
-  <!-- 2. NUESTROS EQUIPOS (Lazy loading al entrar en viewport) -->
-  @defer (on viewport) {
-    <app-comunidad-equipos></app-comunidad-equipos>
-  } @placeholder {
-    <div class="section-lazy-placeholder">
-      <div class="placeholder-pulse"></div>
-    </div>
-  }
+  <!-- 2. NUESTROS EQUIPOS -->
+  <app-comunidad-equipos></app-comunidad-equipos>
+  
 
-  <!-- 3. ÚNETE A NOSOTROS - FORMULARIO (Lazy loading al entrar en viewport) -->
-  @defer (on viewport) {
-    <app-comunidad-formulario></app-comunidad-formulario>
-  } @placeholder {
-    <div class="section-lazy-placeholder">
-      <div class="placeholder-pulse"></div>
-    </div>
-  }
+  <!-- 3. ÚNETE A NOSOTROS - FORMULARIO -->
+  <app-comunidad-formulario></app-comunidad-formulario>
+  
 
-  <!-- 4. JUGADORAS DESTACADAS (Lazy loading al entrar en viewport) -->
-  @defer (on viewport) {
-    <app-comunidad-destacadas></app-comunidad-destacadas>
-  } @placeholder {
-    <div class="section-lazy-placeholder">
-      <div class="placeholder-pulse"></div>
-    </div>
-  }
+  <!-- 4. JUGADORAS DESTACADAS -->
+  <app-comunidad-destacadas></app-comunidad-destacadas>
+  
 
-  <!-- 5. FOOTER DIFERIDO (Lazy loading al entrar en viewport) -->
-  @defer (on viewport) {
-    <app-landing-footer></app-landing-footer>
-  } @placeholder {
-    <div class="footer-lazy-placeholder"></div>
-  }
+  <!-- 5. FOOTER EDITORIAL -->
+  <app-landing-footer></app-landing-footer>
+  
 </div>

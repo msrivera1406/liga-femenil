@@ -67,7 +67,7 @@
                 [$data['id']]);
 
             $jugadoras = consulta($conn,
-                "SELECT id, nombre_deportivo, pronombres, dorsal, posicion, foto_url, autoriza_imagen
+                "SELECT id, nombre_deportivo, dorsal, posicion, foto_url, autoriza_imagen
                  FROM jugadoras
                  WHERE equipo_id = ? AND activo = 1
                  ORDER BY dorsal",

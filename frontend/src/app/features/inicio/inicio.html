@@ -1,47 +1,19 @@
 <div class="inicio-page">
-  <!-- 1. HERO STAGE (Above the fold - carga inmediata sin defer) -->
+  <!-- 1. HERO STAGE -->
   <app-hero-stage></app-hero-stage>
 
-  <!-- 2. PARTIDOS DE LA JORNADA (Lazy loading al entrar en viewport) -->
-  @defer (on viewport) {
-    <app-matches-carousel></app-matches-carousel>
-  } @placeholder {
-    <div class="section-lazy-placeholder">
-      <div class="placeholder-pulse"></div>
-    </div>
-  }
+  <!-- 2. PARTIDOS DE LA JORNADA -->
+  <app-matches-carousel></app-matches-carousel>
 
-  <!-- 3. TABLA DE POSICIONES (Lazy loading al entrar en viewport) -->
-  @defer (on viewport) {
-    <app-standings-preview></app-standings-preview>
-  } @placeholder {
-    <div class="section-lazy-placeholder">
-      <div class="placeholder-pulse"></div>
-    </div>
-  }
+  <!-- 3. TABLA DE POSICIONES -->
+  <app-standings-preview></app-standings-preview>
 
-  <!-- 4. INSTAGRAM FEED EN VIVO (Lazy loading al entrar en viewport) -->
-  @defer (on viewport) {
-    <app-instagram-feed></app-instagram-feed>
-  } @placeholder {
-    <div class="section-lazy-placeholder">
-      <div class="placeholder-pulse"></div>
-    </div>
-  }
+  <!-- 4. INSTAGRAM FEED EN VIVO -->
+  <app-instagram-feed></app-instagram-feed>
 
-  <!-- 5. NUESTROS SERVICIOS & STAFF DE ENTRENADORAS (Lazy loading al entrar en viewport) -->
-  @defer (on viewport) {
-    <app-trainers-carousel></app-trainers-carousel>
-  } @placeholder {
-    <div class="section-lazy-placeholder">
-      <div class="placeholder-pulse"></div>
-    </div>
-  }
+  <!-- 5. NUESTROS SERVICIOS & STAFF DE ENTRENADORAS -->
+  <app-trainers-carousel></app-trainers-carousel>
 
-  <!-- 6. FOOTER EDITORIAL (Lazy loading al entrar en viewport) -->
-  @defer (on viewport) {
-    <app-landing-footer></app-landing-footer>
-  } @placeholder {
-    <div class="footer-lazy-placeholder"></div>
-  }
+  <!-- 6. FOOTER EDITORIAL -->
+  <app-landing-footer></app-landing-footer>
 </div>

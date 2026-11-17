@@ -121,9 +121,6 @@
           <span class="position-tag" [ngClass]="'tag-' + jugadora.posicion.toLowerCase()">
             {{ jugadora.posicion }}
           </span>
-          <span class="pronombre-tag" *ngIf="jugadora.pronombres">
-            {{ jugadora.pronombres }}
-          </span>
         </div>
       </div>
 
@@ -265,22 +262,13 @@
           </div>
         </div>
 
-        <!-- Fila 2: Posición y Pronombres -->
+        <!-- Fila 2: Posición -->
         <div class="form-row-two">
-          <div class="form-field">
+          <div class="form-field flex-1">
             <label class="field-label">Posición en cancha</label>
             <select class="field-select" [(ngModel)]="formPosicion">
               <option *ngFor="let pos of posicionesCatalog" [value]="pos">{{ pos }}</option>
             </select>
-          </div>
-
-          <div class="form-field">
-            <label class="field-label">Pronombres</label>
-            <input 
-              type="text" 
-              class="field-input" 
-              [(ngModel)]="formPronombres" 
-              placeholder="Ella / Elle / Él" />
           </div>
         </div>
 

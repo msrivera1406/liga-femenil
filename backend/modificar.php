@@ -54,14 +54,13 @@
 
             ejecutar($conn,
                 "UPDATE jugadoras
-                 SET equipo_id = ?, nombre_deportivo = ?, pronombres = ?, dorsal = ?, posicion = ?,
+                 SET equipo_id = ?, nombre_deportivo = ?, dorsal = ?, posicion = ?,
                      foto_url = ?, autoriza_imagen = ?, nombre_legal = ?, telefono_contacto = ?,
                      contacto_emergencia_nombre = ?, contacto_emergencia_telefono = ?, activo = ?
                  WHERE id = ?",
                 [
                     $data['equipo_id'] ?? null,
                     $data['nombre_deportivo'],
-                    $data['pronombres'] ?? 'Ella',
                     $data['dorsal'] ?? null,
                     $data['posicion'],
                     $data['foto_url'] ?? null,

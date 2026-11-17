@@ -324,12 +324,12 @@ def generate_mysql_sql():
             dorsal = j["dorsal"]
             pos = j["posicion"]
             jugadora_values.append(
-                f"({jugadora_id_counter}, {team_id}, '{nom}', 'Ella', {dorsal}, '{pos}', NULL, 1, '{nom}', '55-0000-0000', 'Contacto Familiar', '55-1111-1111', 1, 0, 1)"
+                f"({jugadora_id_counter}, {team_id}, '{nom}', {dorsal}, '{pos}', NULL, 1, '{nom}', '55-0000-0000', 'Contacto Familiar', '55-1111-1111', 1, 0, 1)"
             )
             jugadora_id_counter += 1
 
         lines.append(
-            "INSERT INTO jugadoras (id, equipo_id, nombre_deportivo, pronombres, dorsal, posicion, foto_url, autoriza_imagen, nombre_legal, telefono_contacto, contacto_emergencia_nombre, contacto_emergencia_telefono, aviso_privacidad_aceptado, es_independiente, activo) VALUES\n"
+            "INSERT INTO jugadoras (id, equipo_id, nombre_deportivo, dorsal, posicion, foto_url, autoriza_imagen, nombre_legal, telefono_contacto, contacto_emergencia_nombre, contacto_emergencia_telefono, aviso_privacidad_aceptado, es_independiente, activo) VALUES\n"
             + ",\n".join(jugadora_values) + ";"
         )
         lines.append("")
@@ -372,7 +372,6 @@ def generate_frontend_mocks():
             jugadoras_ts.append(f"    id: {j_id},")
             jugadoras_ts.append(f"    equipo_id: {t['id']},")
             jugadoras_ts.append(f"    nombre_deportivo: '{nom}',")
-            jugadoras_ts.append("    pronombres: 'Ella',")
             jugadoras_ts.append(f"    dorsal: {dorsal},")
             jugadoras_ts.append(f"    posicion: '{pos}',")
             jugadoras_ts.append("    foto_url: null,")

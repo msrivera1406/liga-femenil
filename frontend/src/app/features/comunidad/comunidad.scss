@@ -6,31 +6,4 @@
   background: $bg-canvas;
 }
 
-.section-lazy-placeholder {
-  min-height: 280px;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
 
-  .placeholder-pulse {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    border: 3px solid rgba(155, 206, 193, 0.25);
-    border-top-color: #D96552;
-    animation: placeholderSpin 0.9s infinite linear;
-  }
-}
-
-.footer-lazy-placeholder {
-  min-height: 140px;
-  width: 100%;
-}
-
-@keyframes placeholderSpin {
-  to {
-    transform: rotate(360deg);
-  }
-}

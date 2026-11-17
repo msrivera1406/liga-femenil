@@ -1,5 +1,14 @@
 <?php
 
+    header('Content-Type: application/json; charset=UTF-8');
+    header('Access-Control-Allow-Origin: http://localhost:4200');
+    header('Access-Control-Allow-Methods: POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
+    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+        http_response_code(204);
+        exit();
+    }
+
     $data = file_get_contents("php://input");
     $data = json_decode($data, true);
 
@@ -14,9 +23,19 @@
     switch ($data['filtro']) {
 
         case 'jugadora_independiente':
-            if (empty($data['nombre_deportivo']) || empty($data['nombre_legal']) ||
-                empty($data['posicion']) || empty($data['telefono_contacto']) ||
-                empty($data['contacto_emergencia_nombre']) || empty($data['contacto_emergencia_telefono'])) {
+            // Limpiar textos
+            $campos_texto = ['nombre_deportivo', 'nombre_legal', 'telefono_contacto',
+                             'contacto_emergencia_nombre', 'contacto_emergencia_telefono',
+                             'contacto_emergencia_parentesco', 'alergias_condiciones'];
+            foreach ($campos_texto as $campo) {
+                $data[$campo] = isset($data[$campo]) ? trim((string) $data[$campo]) : '';
+            }
+
+            if ($data['nombre_deportivo'] === '' || $data['nombre_legal'] === '' ||
+                empty($data['posicion']) || $data['telefono_contacto'] === '' ||
+                $data['contacto_emergencia_nombre'] === '' || $data['contacto_emergencia_telefono'] === '' ||
+                $data['contacto_emergencia_parentesco'] === '' || empty($data['nivel_experiencia']) ||
+                empty($data['edad']) || empty($data['tipo_sangre'])) {
                 echo json_encode(['ok' => false, 'error' => 'Faltan datos obligatorios']);
                 break;
             }
@@ -25,27 +44,71 @@
                 break;
             }
 
-            ejecutar($conn,
-                "INSERT INTO jugadoras
-                    (equipo_id, nombre_deportivo, pronombres, dorsal, posicion, foto_url,
-                     autoriza_imagen, nombre_legal, telefono_contacto,
-                     contacto_emergencia_nombre, contacto_emergencia_telefono,
-                     aviso_privacidad_aceptado, es_independiente, activo)
-                 VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 1)",
-                [
-                    $data['nombre_deportivo'],
-                    $data['pronombres'] ?? 'Ella',
-                    $data['dorsal'] ?? null,
-                    $data['posicion'],
-                    $data['foto_url'] ?? null,
-                    $data['autoriza_imagen'] ?? 0,
-                    $data['nombre_legal'],
-                    $data['telefono_contacto'],
-                    $data['contacto_emergencia_nombre'],
-                    $data['contacto_emergencia_telefono']
-                ]);
+            // Validar valores contra los permitidos por la base de datos
+            $posiciones = ['Portera', 'Defensa', 'Medio', 'Delantera'];
+            $niveles    = ['Iniciación', 'Intermedio', 'Avanzado'];
+            $sangres    = ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'Desconocido'];
+            $edad       = filter_var($data['edad'], FILTER_VALIDATE_INT,
+                                     ['options' => ['min_range' => 16, 'max_range' => 65]]);
 
-            echo json_encode(['ok' => true, 'id' => $conn->insert_id]);
+            if (!in_array($data['posicion'], $posiciones, true) ||
+                !in_array($data['nivel_experiencia'], $niveles, true) ||
+                !in_array($data['tipo_sangre'], $sangres, true) ||
+                $edad === false) {
+                echo json_encode(['ok' => false, 'error' => 'Hay datos con un valor no válido']);
+                break;
+            }
+            if (mb_strlen($data['nombre_deportivo']) > 80 || mb_strlen($data['nombre_legal']) > 120 ||
+                mb_strlen($data['telefono_contacto']) > 20 || mb_strlen($data['contacto_emergencia_nombre']) > 100 ||
+                mb_strlen($data['contacto_emergencia_telefono']) > 20 || mb_strlen($data['contacto_emergencia_parentesco']) > 30 ||
+                mb_strlen($data['alergias_condiciones']) > 1000) {
+                echo json_encode(['ok' => false, 'error' => 'Algún dato excede la longitud permitida']);
+                break;
+            }
+
+            // Jugadora y datos médicos se guardan juntos o no se guarda nada
+            $conn->begin_transaction();
+            try {
+                ejecutar($conn,
+                    "INSERT INTO jugadoras
+                        (equipo_id, nombre_deportivo, posicion, nivel_experiencia, edad,
+                         autoriza_imagen, nombre_legal, telefono_contacto,
+                         contacto_emergencia_nombre, contacto_emergencia_telefono, contacto_emergencia_parentesco,
+                         aviso_privacidad_aceptado, es_independiente, activo)
+                     VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 1, 1)",
+                    [
+                        $data['nombre_deportivo'],
+                        $data['posicion'],
+                        $data['nivel_experiencia'],
+                        $edad,
+                        empty($data['autoriza_imagen']) ? 0 : 1,
+                        $data['nombre_legal'],
+                        $data['telefono_contacto'],
+                        $data['contacto_emergencia_nombre'],
+                        $data['contacto_emergencia_telefono'],
+                        $data['contacto_emergencia_parentesco']
+                    ]);
+                $jugadora_id = $conn->insert_id;
+
+                ejecutar($conn,
+                    "INSERT INTO jugadoras_datos_medicos (jugadora_id, tipo_sangre, alergias_condiciones)
+                     VALUES (?, ?, ?)",
+                    [
+                        $jugadora_id,
+                        $data['tipo_sangre'],
+                        $data['alergias_condiciones'] !== '' ? $data['alergias_condiciones'] : null
+                    ]);
+
+                $conn->commit();
+                echo json_encode([
+                    'ok' => true,
+                    'id' => $jugadora_id,
+                    'folio_registro' => 'IND-' . str_pad((string) $jugadora_id, 5, '0', STR_PAD_LEFT)
+                ]);
+            } catch (Exception $e) {
+                $conn->rollback();
+                echo json_encode(['ok' => false, 'error' => 'No se pudo completar el registro']);
+            }
             break;
 
         case 'equipo':

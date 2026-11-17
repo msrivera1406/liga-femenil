@@ -6,7 +6,7 @@
   <div class="rep-main-container relative-z">
     
     <!-- ============================================== -->
-    <!-- 1. NAVBAR FLOTANTE (Reciclada del admin)       -->
+    <!-- 1. NAVBAR FLOTANTE (Reciclada del admin) -->
     <!-- ============================================== -->
     <header class="rep-navbar-capsule">
       <div class="nav-brand-left">
@@ -56,7 +56,7 @@
     </header>
 
     <!-- ============================================== -->
-    <!-- 2. RESUMEN: TABLA ENFOCADA & PARTIDO DE FECHA   -->
+    <!-- 2. RESUMEN: TABLA ENFOCADA & PARTIDO DE FECHA -->
     <!-- ============================================== -->
     <section class="rep-overview-grid">
       
@@ -279,7 +279,7 @@
     </section>
 
     <!-- ============================================== -->
-    <!-- 2.5 ESTADÍSTICAS OFICIALES DEL CLUB            -->
+    <!-- 2.5 ESTADÍSTICAS OFICIALES DEL CLUB -->
     <!-- ============================================== -->
     <section class="rep-stats-section">
       <div class="stats-header-wrap">
@@ -478,7 +478,7 @@
     </section>
 
     <!-- ============================================== -->
-    <!-- 3. MÓDULOS DE ADMINISTRACIÓN DE TU EQUIPO       -->
+    <!-- 3. MÓDULOS DE ADMINISTRACIÓN DE TU EQUIPO -->
     <!-- ============================================== -->
     <section class="rep-services-section">
       <div class="services-header-wrap">
@@ -555,7 +555,7 @@
     </section>
 
     <!-- ============================================== -->
-    <!-- 4. MODAL DINÁMICO DE SERVICIOS (Lazy Loaded)   -->
+    <!-- 4. MODAL DINÁMICO DE SERVICIOS (Lazy Loaded) -->
     <!-- ============================================== -->
     <div class="rep-modal-backdrop" *ngIf="activeModal()" (click)="closeModal()">
       <div class="rep-modal-card modal-wide-split" (click)="$event.stopPropagation()">
@@ -593,44 +593,32 @@
         <!-- Cuerpo del modal interactivo con lazy loading -->
         <div class="modal-workspace-body">
           
-          <!-- Vista Servicio 1: Mi Club (Lazy Loaded con @defer) -->
-          @defer (when activeModal() === 'club') {
-            @if (activeModal() === 'club') {
-              <app-rep-club 
-                [equipoId]="miEquipoId()"
-                [initialEquipo]="miEquipo()"
-                [posicionTabla]="miPosicion()"
-                [totalJugadoras]="totalJugadoras()"
-                (cerrar)="closeModal()" 
-                (clubActualizado)="onClubActualizado($event)"
-                (irAJugadoras)="openService('jugadoras')">
-              </app-rep-club>
-            }
-          } @loading (minimum 150ms) {
-            <div class="service-pane-loading" *ngIf="activeModal() === 'club'">
-              <div class="loading-spinner"></div>
-              <span>Cargando identidad de tu club...</span>
-            </div>
+          <!-- Vista Servicio 1: Mi Club -->
+          @if (activeModal() === 'club') {
+            <app-rep-club 
+              [equipoId]="miEquipoId()"
+              [initialEquipo]="miEquipo()"
+              [posicionTabla]="miPosicion()"
+              [totalJugadoras]="totalJugadoras()"
+              (cerrar)="closeModal()" 
+              (clubActualizado)="onClubActualizado($event)"
+              (irAJugadoras)="openService('jugadoras')">
+            </app-rep-club>
           }
+          
 
-          <!-- Vista Servicio 2: Plantel de Jugadoras (Lazy Loaded con @defer) -->
-          @defer (when activeModal() === 'jugadoras') {
-            @if (activeModal() === 'jugadoras') {
-              <app-rep-jugadoras 
-                [equipoId]="miEquipoId()"
-                [equipoNombre]="miEquipo()?.nombre || 'Tu Club'"
-                [equipoEscudoUrl]="miEquipo()?.escudo_url || null"
-                (cerrar)="closeModal()"
-                (totalJugadorasChange)="totalJugadoras.set($event)"
-                (irAClub)="openService('club')">
-              </app-rep-jugadoras>
-            }
-          } @loading (minimum 150ms) {
-            <div class="service-pane-loading" *ngIf="activeModal() === 'jugadoras'">
-              <div class="loading-spinner"></div>
-              <span>Cargando nómina oficial de jugadoras...</span>
-            </div>
+          <!-- Vista Servicio 2: Plantel de Jugadoras -->
+          @if (activeModal() === 'jugadoras') {
+            <app-rep-jugadoras 
+              [equipoId]="miEquipoId()"
+              [equipoNombre]="miEquipo()?.nombre || 'Tu Club'"
+              [equipoEscudoUrl]="miEquipo()?.escudo_url || null"
+              (cerrar)="closeModal()"
+              (totalJugadorasChange)="totalJugadoras.set($event)"
+              (irAClub)="openService('club')">
+            </app-rep-jugadoras>
           }
+          
 
         </div>
       </div>

@@ -42,7 +42,6 @@ export class AdminJugadorasComponent implements OnInit {
   jugadoraIsSaving = signal<boolean>(false);
 
   formJNombreDeportivo: string = '';
-  formJPronombres: string = 'Ella';
   formJPosicion: PosicionJugadora = 'Medio';
   formJEquipoId: number | null = null;
   formJDorsal: number | null = null;
@@ -56,7 +55,7 @@ export class AdminJugadorasComponent implements OnInit {
   formJContactoEmergenciaTelefono: string = '';
   formJContactoEmergenciaParentesco: string = 'Madre';
   formJAlergiasCondiciones: string = '';
-  formJNivelExperiencia: string = 'Intermedio (Juego recreativo y regular)';
+  formJNivelExperiencia: string = 'Intermedio';
 
   showAssignJugadoraModal = signal<boolean>(false);
   assignTargetJugadora = signal<JugadoraPublica | null>(null);
@@ -161,7 +160,6 @@ export class AdminJugadorasComponent implements OnInit {
     this.isEditingJugadora.set(false);
     this.editingJugadoraId = null;
     this.formJNombreDeportivo = '';
-    this.formJPronombres = 'Ella';
     this.formJPosicion = 'Medio';
     this.formJEquipoId = eqId;
     this.formJDorsal = 10;
@@ -175,7 +173,7 @@ export class AdminJugadorasComponent implements OnInit {
     this.formJContactoEmergenciaTelefono = '';
     this.formJContactoEmergenciaParentesco = 'Madre';
     this.formJAlergiasCondiciones = '';
-    this.formJNivelExperiencia = 'Intermedio (Juego recreativo y regular)';
+    this.formJNivelExperiencia = 'Intermedio';
     this.showJugadoraFormModal.set(true);
   }
 
@@ -183,7 +181,6 @@ export class AdminJugadorasComponent implements OnInit {
     this.isEditingJugadora.set(true);
     this.editingJugadoraId = j.id;
     this.formJNombreDeportivo = j.nombre_deportivo;
-    this.formJPronombres = j.pronombres || 'Ella';
     this.formJPosicion = j.posicion;
     this.formJEquipoId = j.equipo_id;
     this.formJDorsal = j.dorsal;
@@ -197,7 +194,7 @@ export class AdminJugadorasComponent implements OnInit {
     this.formJContactoEmergenciaTelefono = j.contacto_emergencia_telefono || '';
     this.formJContactoEmergenciaParentesco = j.contacto_emergencia_parentesco || 'Madre';
     this.formJAlergiasCondiciones = j.alergias_condiciones || '';
-    this.formJNivelExperiencia = j.nivel_experiencia || 'Intermedio (Juego recreativo y regular)';
+    this.formJNivelExperiencia = j.nivel_experiencia || 'Intermedio';
     this.showJugadoraFormModal.set(true);
   }
 
@@ -213,7 +210,6 @@ export class AdminJugadorasComponent implements OnInit {
 
     const payload: Partial<JugadoraPublica> = {
       nombre_deportivo: this.formJNombreDeportivo.trim(),
-      pronombres: this.formJPronombres,
       posicion: this.formJPosicion,
       equipo_id: this.formJEquipoId,
       dorsal: this.formJEquipoId ? (this.formJDorsal || 1) : null,

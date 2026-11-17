@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, of } from 'rxjs';
-import { map, delay } from 'rxjs/operators';
+import { Observable, of, throwError } from 'rxjs';
+import { map, delay, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 import { JugadoraPublica, RegistroJugadoraIndependienteDTO, ApiResponse } from '../models';
 import { MOCK_JUGADORAS } from '../mocks';
@@ -45,7 +45,6 @@ export class JugadorasService {
         id: nuevoId,
         equipo_id: null,
         nombre_deportivo: dto.nombre_deportivo,
-        pronombres: dto.pronombres || 'Ella',
         dorsal: null,
         posicion: dto.posicion,
         foto_url: null,
@@ -55,14 +54,14 @@ export class JugadorasService {
         nombre_equipo: 'Bolsa Independiente',
         folio_registro: folio,
         nombre_legal: dto.nombre_legal,
-        edad: dto.edad || null,
+        edad: dto.edad,
         telefono_contacto: dto.telefono_contacto,
-        tipo_sangre: dto.tipo_sangre || 'O+',
+        tipo_sangre: dto.tipo_sangre,
         contacto_emergencia_nombre: dto.contacto_emergencia_nombre,
         contacto_emergencia_telefono: dto.contacto_emergencia_telefono,
-        contacto_emergencia_parentesco: dto.contacto_emergencia_parentesco || 'Familiar',
-        alergias_condiciones: dto.alergias_condiciones || 'Ninguna',
-        nivel_experiencia: dto.nivel_experiencia || 'Intermedio'
+        contacto_emergencia_parentesco: dto.contacto_emergencia_parentesco,
+        alergias_condiciones: dto.alergias_condiciones || '',
+        nivel_experiencia: dto.nivel_experiencia
       };
       MOCK_JUGADORAS.push(nueva);
       return of({
@@ -71,9 +70,18 @@ export class JugadorasService {
         message: '¡Registro completado! La Directora del Programa revisará tu perfil para asignarte un equipo afín.'
       }).pipe(delay(350));
     }
-    return this.http.post<ApiResponse<{ folio_registro: string }>>(
-      `${this.apiUrl}/jugadoras/independientes.php`,
-      dto
+    // backend/registrar.php responde { ok, folio_registro } o { ok: false, error }
+    return this.http.post<{ ok: boolean; id?: number; folio_registro?: string; error?: string }>(
+      `${environment.backendUrl}/registrar.php`,
+      { filtro: 'jugadora_independiente', ...dto }
+    ).pipe(
+      catchError(() => throwError(() => new Error('No pudimos conectar con el servidor. Inténtalo de nuevo en unos minutos.'))),
+      map(res => {
+        if (!res.ok || !res.folio_registro) {
+          throw new Error(res.error || 'No se pudo completar el registro.');
+        }
+        return { success: true, data: { folio_registro: res.folio_registro }, message: null };
+      })
     );
   }
 
@@ -84,7 +92,6 @@ export class JugadorasService {
         id: nuevoId,
         equipo_id: payload.equipo_id ?? null,
         nombre_deportivo: payload.nombre_deportivo || 'Nueva Jugadora',
-        pronombres: payload.pronombres || 'Ella',
         dorsal: payload.dorsal ?? null,
         posicion: payload.posicion || 'Medio',
         foto_url: payload.foto_url || null,

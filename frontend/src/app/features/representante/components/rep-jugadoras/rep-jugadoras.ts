@@ -56,7 +56,6 @@ export class RepJugadorasComponent implements OnInit {
   formDorsal: number | null = null;
   formPosicion: PosicionJugadora = 'Medio';
   formFotoUrl: string = '';
-  formPronombres: string = 'Ella';
   formNombreLegal: string = '';
   formEdad: number | null = null;
   formTelefonoContacto: string = '';
@@ -133,7 +132,6 @@ export class RepJugadorasComponent implements OnInit {
     this.formDorsal = this.sugerirSiguienteDorsal();
     this.formPosicion = 'Medio';
     this.formFotoUrl = '';
-    this.formPronombres = 'Ella';
     this.formNombreLegal = '';
     this.formEdad = 22;
     this.formTelefonoContacto = '';
@@ -154,7 +152,6 @@ export class RepJugadorasComponent implements OnInit {
     this.formDorsal = jugadora.dorsal;
     this.formPosicion = jugadora.posicion;
     this.formFotoUrl = jugadora.foto_url || '';
-    this.formPronombres = jugadora.pronombres || 'Ella';
     this.formNombreLegal = jugadora.nombre_legal || '';
     this.formEdad = jugadora.edad || null;
     this.formTelefonoContacto = jugadora.telefono_contacto || '';
@@ -200,7 +197,6 @@ export class RepJugadorasComponent implements OnInit {
       dorsal: this.formDorsal !== null ? Number(this.formDorsal) : null,
       posicion: this.formPosicion,
       foto_url: this.formFotoUrl.trim() || null,
-      pronombres: this.formPronombres || 'Ella',
       nombre_legal: this.formNombreLegal.trim() || this.formNombreDeportivo.trim(),
       edad: this.formEdad ? Number(this.formEdad) : null,
       telefono_contacto: this.formTelefonoContacto.trim() || '',

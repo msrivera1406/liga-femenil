@@ -1258,35 +1258,7 @@
   }
 }
 
-// ==========================================
-// ESTADO DE CARGA LAZY (@defer)
-// ==========================================
-.service-pane-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 320px;
-  gap: 16px;
-  color: #8F857D;
-  font-size: 14.5px;
-  font-weight: 700;
 
-  .loading-spinner {
-    width: 38px;
-    height: 38px;
-    border: 3.5px solid rgba(22, 86, 68, 0.15);
-    border-top-color: #165644;
-    border-radius: 50%;
-    animation: spinModal 0.8s linear infinite;
-  }
-}
-
-@keyframes spinModal {
-  to {
-    transform: rotate(360deg);
-  }
-}
 
 
 @media (max-width: 768px) {

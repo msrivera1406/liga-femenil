@@ -148,7 +148,6 @@ def sync_player_photos():
             jugadoras_ts.append(f"    id: {j_id},")
             jugadoras_ts.append(f"    equipo_id: {t['id']},")
             jugadoras_ts.append(f"    nombre_deportivo: '{nom}',")
-            jugadoras_ts.append("    pronombres: 'Ella',")
             jugadoras_ts.append(f"    dorsal: {dorsal},")
             jugadoras_ts.append(f"    posicion: '{pos}',")
             jugadoras_ts.append(f"    foto_url: '{foto_url}',")
