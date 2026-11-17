@@ -8,8 +8,13 @@
     </div>
 
     <!-- Cuadrícula con fotos circulares discretas en tamaño (Fiel al boceto del usuario) -->
-    <div class="destacadas-discreet-grid">
-      <article class="destacada-pedestal" *ngFor="let jd of jugadorasDestacadas">
+    <!-- Se calculan con los partidos finalizados; al inicio del torneo todavía no hay -->
+    <p class="destacadas-empty-msg" *ngIf="jugadorasDestacadas()?.length === 0">
+      Las jugadoras destacadas aparecerán en cuanto se jueguen los primeros partidos del torneo.
+    </p>
+
+    <div class="destacadas-discreet-grid" *ngIf="jugadorasDestacadas()?.length">
+      <article class="destacada-pedestal" *ngFor="let jd of jugadorasDestacadas()">
         <!-- 1. Píldora de distinción superior (Como en el boceto) -->
         <div class="award-pill-badge">
           <span class="award-icon">{{ jd.badgeIcon }}</span>
@@ -19,20 +24,30 @@
         <!-- 2. Foto circular discreta en tamaño -->
         <div class="avatar-circle-wrapper">
           <img 
+            *ngIf="jd.fotoUrl; else ghostAvatar"
             [src]="jd.fotoUrl" 
             [alt]="jd.jugadora" 
             class="avatar-circle-img" 
             loading="lazy" 
             decoding="async" 
           />
-          <span class="avatar-dorsal-chip" [title]="'Dorsal #' + jd.dorsal">#{{ jd.dorsal }}</span>
+          <!-- Modo Ghost Player: silueta en lugar de foto -->
+          <ng-template #ghostAvatar>
+            <div class="avatar-ghost" title="Modo Ghost Player: imagen protegida por privacidad">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                <circle cx="12" cy="7" r="4" />
+              </svg>
+            </div>
+          </ng-template>
+          <span class="avatar-dorsal-chip" *ngIf="jd.dorsal !== null" [title]="'Dorsal #' + jd.dorsal">#{{ jd.dorsal }}</span>
         </div>
 
         <!-- 3. Información legible y compacta de la jugadora -->
         <div class="player-compact-card">
           <h3 class="player-name">{{ jd.jugadora }}</h3>
           <div class="player-team-chip">
-            <img [src]="jd.escudoEquipo" [alt]="jd.equipo" class="mini-crest" loading="lazy" decoding="async" />
+            <img *ngIf="jd.escudoEquipo" [src]="jd.escudoEquipo" [alt]="jd.equipo" class="mini-crest" loading="lazy" decoding="async" />
             <span>{{ jd.equipo }}</span>
           </div>
 

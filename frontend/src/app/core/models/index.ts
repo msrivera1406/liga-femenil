@@ -12,3 +12,4 @@ export * from './instagram.model';
 export * from './ai-cedula.model';
 export * from './ai-voice.model';
 export * from './ai-ig.model';
+export * from './lideres.model';

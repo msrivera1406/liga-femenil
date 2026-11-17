@@ -1,18 +1,22 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { take } from 'rxjs';
+import { TorneoService } from '../../../../core/services';
+import { LideresTorneo } from '../../../../core/models';
 
 export interface JugadoraDestacada {
   premio: string;
-  subtitulo?: string;
   badgeIcon: string;
   jugadora: string;
-  dorsal: number;
+  dorsal: number | null;
   equipo: string;
-  escudoEquipo: string;
-  fotoUrl: string;
+  escudoEquipo: string | null;
+  fotoUrl: string | null; // null = Ghost Player (no autorizó su imagen) o sin foto
   metricaPrincipal: string;
   detalle: string;
 }
+
+const plural = (n: number, uno: string, varios: string) => `${n} ${n === 1 ? uno : varios}`;
 
 @Component({
   selector: 'app-comunidad-destacadas',
@@ -21,44 +25,71 @@ export interface JugadoraDestacada {
   templateUrl: './comunidad-destacadas.html',
   styleUrls: ['./comunidad-destacadas.scss']
 })
-export class ComunidadDestacadasComponent {
-  // Jugadoras destacadas (adaptado al boceto de tarjetas con foto circular discreta)
-  jugadorasDestacadas: JugadoraDestacada[] = [
-    {
-      premio: 'Líder Goleadora',
-      subtitulo: 'Bota de Oro',
-      badgeIcon: '⚽',
-      jugadora: 'Regina Morales León',
-      dorsal: 9,
-      equipo: 'TBD UNITED',
-      escudoEquipo: '/images/Escudos/TBD_united.jpeg',
-      fotoUrl: '/images/jugadoras/tbd-united/jugadora_10.jpg',
-      metricaPrincipal: '8 Goles anotados',
-      detalle: 'Promedio de 2.0 goles por encuentro en 4 jornadas disputadas.'
-    },
-    {
-      premio: 'Mejor Portera',
-      subtitulo: 'Guante de Oro',
-      badgeIcon: '🧤',
-      jugadora: 'Laura Martínez Silva',
-      dorsal: 1,
-      equipo: 'VALQUIRIAS',
-      escudoEquipo: '/images/Escudos/Valquirias.jpeg',
-      fotoUrl: '/images/jugadoras/valquirias/jugadora_01.jpg',
-      metricaPrincipal: '2 Goles recibidos',
-      detalle: '2 porterías imbatidas y 87% de efectividad en atajadas.'
-    },
-    {
-      premio: 'MVP de la Semana',
-      subtitulo: 'Figura Dominical',
-      badgeIcon: '★',
-      jugadora: 'Regina Torres Méndez',
-      dorsal: 15,
-      equipo: 'QUEER GOALS',
-      escudoEquipo: '/images/Escudos/Queer_goals.jpeg',
-      fotoUrl: '/images/jugadoras/queer-goals/jugadora_15.jpg',
-      metricaPrincipal: 'Hat-Trick & Asistencia',
-      detalle: 'Anotó 3 goles decisivos y dio el pase definitorio al min 18.'
+export class ComunidadDestacadasComponent implements OnInit {
+  private torneoService = inject(TorneoService);
+
+  // null mientras carga; [] si todavía no hay partidos finalizados con goles
+  jugadorasDestacadas = signal<JugadoraDestacada[] | null>(null);
+
+  ngOnInit(): void {
+    this.torneoService.getLideres().pipe(take(1)).subscribe({
+      next: lideres => this.jugadorasDestacadas.set(this.armarTarjetas(lideres)),
+      error: () => this.jugadorasDestacadas.set([])
+    });
+  }
+
+  private armarTarjetas({ goleadoras, porteras, figura_jornada }: LideresTorneo): JugadoraDestacada[] {
+    const tarjetas: JugadoraDestacada[] = [];
+
+    const lider = goleadoras[0];
+    if (lider) {
+      const empatadas = goleadoras.filter(g => g.goles === lider.goles).length - 1;
+      const promedio = lider.partidos_equipo > 0 ? (lider.goles / lider.partidos_equipo).toFixed(1) : '0';
+      tarjetas.push({
+        premio: 'Líder Goleadora',
+        badgeIcon: '⚽',
+        jugadora: lider.nombre_deportivo,
+        dorsal: lider.dorsal,
+        equipo: lider.equipo,
+        escudoEquipo: lider.escudo_url,
+        fotoUrl: lider.foto_url,
+        metricaPrincipal: plural(lider.goles, 'gol anotado', 'goles anotados'),
+        detalle: `Promedio de ${promedio} goles por partido en ${plural(lider.partidos_equipo, 'partido jugado', 'partidos jugados')}.`
+          + (empatadas > 0 ? ` Comparte el liderato con ${plural(empatadas, 'jugadora más', 'jugadoras más')}.` : '')
+      });
     }
-  ];
+
+    const portera = porteras[0];
+    if (portera) {
+      tarjetas.push({
+        premio: 'Mejor Portera',
+        badgeIcon: '🧤',
+        jugadora: portera.nombre_deportivo,
+        dorsal: portera.dorsal,
+        equipo: portera.equipo,
+        escudoEquipo: portera.escudo_url,
+        fotoUrl: portera.foto_url,
+        metricaPrincipal: plural(portera.goles_recibidos, 'gol recibido', 'goles recibidos'),
+        detalle: `${plural(portera.vallas_invictas, 'portería imbatida', 'porterías imbatidas')} en ${plural(portera.partidos_jugados, 'partido', 'partidos')}.`
+      });
+    }
+
+    const figura = figura_jornada;
+    if (figura) {
+      const resultado = figura.gano ? 'en la victoria' : 'en el partido';
+      tarjetas.push({
+        premio: `Figura de la Jornada ${figura.numero_jornada}`,
+        badgeIcon: '★',
+        jugadora: figura.nombre_deportivo,
+        dorsal: figura.dorsal,
+        equipo: figura.equipo,
+        escudoEquipo: figura.escudo_url,
+        fotoUrl: figura.foto_url,
+        metricaPrincipal: figura.goles >= 3 ? `Hat-trick: ${figura.goles} goles` : plural(figura.goles, 'gol', 'goles'),
+        detalle: `Anotó ${plural(figura.goles, 'gol', 'goles')} ${resultado} ${figura.marcador} contra ${figura.rival}.`
+      });
+    }
+
+    return tarjetas;
+  }
 }

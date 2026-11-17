@@ -3,9 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, of } from 'rxjs';
 import { map, delay } from 'rxjs/operators';
 import { BackendApiService } from './backend-api.service';
-import { JornadaApi, PosicionApi, mapJornada, mapPosicion } from './backend.mappers';
+import { JornadaApi, LideresApi, PosicionApi, mapJornada, mapLideres, mapPosicion } from './backend.mappers';
 import { environment } from '../../../environments/environment';
-import { PosicionTabla, Jornada, Partido, GuardarActaPartidoDTO, ApiResponse } from '../models';
+import { PosicionTabla, Jornada, Partido, GuardarActaPartidoDTO, ApiResponse, LideresTorneo } from '../models';
 import { MOCK_POSICIONES, MOCK_JORNADAS } from '../mocks';
 
 @Injectable({
@@ -22,6 +22,14 @@ export class TorneoService {
     }
     return this.api.consulta<PosicionApi[]>('posiciones')
       .pipe(map(rows => rows.map(mapPosicion)));
+  }
+
+  // Goleadoras, porteras y figura de la última jornada (solo partidos finalizados)
+  getLideres(): Observable<LideresTorneo> {
+    if (environment.mocks.torneo) {
+      return of({ goleadoras: [], porteras: [], figura_jornada: null }).pipe(delay(150));
+    }
+    return this.api.consulta<LideresApi>('lideres').pipe(map(mapLideres));
   }
 
   getJornadas(torneoId: number = 1): Observable<Jornada[]> {

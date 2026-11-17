@@ -110,7 +110,8 @@
             }
 
             $jugadoras = consulta($conn,
-                "SELECT id, nombre_deportivo, dorsal, posicion, foto_url, autoriza_imagen
+                "SELECT id, nombre_deportivo, dorsal, posicion,
+                        CASE WHEN autoriza_imagen = 1 THEN foto_url END AS foto_url, autoriza_imagen
                  FROM jugadoras
                  WHERE equipo_id = ? AND activo = 1
                  ORDER BY dorsal",
@@ -122,24 +123,70 @@
             echo json_encode($ficha);
             break;
 
+        // Jugadoras destacadas. Solo cuentan partidos finalizados, como la tabla de posiciones.
+        // Si una jugadora no autorizó su imagen, su foto no sale del servidor (modo Ghost Player).
         case 'lideres':
             $goleadoras = consulta($conn,
-                "SELECT j.id AS jugadora_id, j.nombre_deportivo, j.foto_url, j.autoriza_imagen,
+                "SELECT j.id AS jugadora_id, j.nombre_deportivo, j.dorsal,
+                        CASE WHEN j.autoriza_imagen = 1 THEN j.foto_url END AS foto_url, j.autoriza_imagen,
                         e.id AS equipo_id, e.nombre AS equipo, e.escudo_url,
-                        COUNT(*) AS goles
-                 FROM incidencias_partido i, jugadoras j, equipos e
-                 WHERE i.jugadora_id = j.id
-                   AND i.equipo_id = e.id
-                   AND i.tipo = 'gol'
-                 GROUP BY j.id, j.nombre_deportivo, j.foto_url, j.autoriza_imagen, e.id, e.nombre, e.escudo_url
-                 ORDER BY goles DESC, j.nombre_deportivo ASC
+                        COUNT(*) AS goles,
+                        COUNT(DISTINCT i.partido_id) AS partidos_con_gol,
+                        (SELECT vp.PJ FROM vista_posiciones vp WHERE vp.equipo_id = e.id) AS partidos_equipo
+                 FROM incidencias_partido i
+                 JOIN partidos p ON p.id = i.partido_id AND p.estado = 'finalizado'
+                 JOIN jugadoras j ON j.id = i.jugadora_id AND j.activo = 1
+                 JOIN equipos e ON e.id = i.equipo_id AND e.activo = 1
+                 WHERE i.tipo = 'gol'
+                 GROUP BY j.id, j.nombre_deportivo, j.dorsal, j.foto_url, j.autoriza_imagen, e.id, e.nombre, e.escudo_url
+                 ORDER BY goles DESC, partidos_con_gol ASC, j.nombre_deportivo ASC
                  LIMIT 10", []);
 
-            $porteria = consulta($conn, "SELECT * FROM vista_porteria LIMIT 10", []);
+            // Porteras: el equipo con más vallas invictas (desempata quien recibe menos goles por
+            // partido) y su portera titular (la portera activa con el dorsal más bajo)
+            $porteria = consulta($conn,
+                "SELECT vp.equipo_id, vp.equipo, vp.escudo_url, vp.PJ, vp.vallas_invictas, vp.promedio,
+                        pos.GC AS goles_recibidos,
+                        j.id AS jugadora_id, j.nombre_deportivo, j.dorsal,
+                        CASE WHEN j.autoriza_imagen = 1 THEN j.foto_url END AS foto_url, j.autoriza_imagen
+                 FROM vista_porteria vp
+                 JOIN vista_posiciones pos ON pos.equipo_id = vp.equipo_id
+                 LEFT JOIN jugadoras j ON j.id = (
+                     SELECT j2.id FROM jugadoras j2
+                     WHERE j2.equipo_id = vp.equipo_id AND j2.posicion = 'Portera' AND j2.activo = 1
+                     ORDER BY j2.dorsal IS NULL, j2.dorsal, j2.id LIMIT 1)
+                 WHERE vp.PJ > 0
+                 ORDER BY vp.vallas_invictas DESC, pos.GC / vp.PJ ASC, vp.equipo ASC
+                 LIMIT 10", []);
+
+            // Figura de la jornada: quien más goles anotó en la última jornada con partidos finalizados
+            $mvp = consulta($conn,
+                "SELECT jo.numero_jornada, j.id AS jugadora_id, j.nombre_deportivo, j.dorsal,
+                        CASE WHEN j.autoriza_imagen = 1 THEN j.foto_url END AS foto_url, j.autoriza_imagen,
+                        e.id AS equipo_id, e.nombre AS equipo, e.escudo_url,
+                        COUNT(*) AS goles,
+                        p.goles_local, p.goles_visitante,
+                        IF(p.equipo_local_id = e.id, ev.nombre, el.nombre) AS rival,
+                        p.ganador_id = e.id AS gano
+                 FROM incidencias_partido i
+                 JOIN partidos p ON p.id = i.partido_id AND p.estado = 'finalizado'
+                 JOIN jornadas jo ON jo.id = p.jornada_id
+                 JOIN jugadoras j ON j.id = i.jugadora_id AND j.activo = 1
+                 JOIN equipos e ON e.id = i.equipo_id AND e.activo = 1
+                 JOIN equipos el ON el.id = p.equipo_local_id
+                 JOIN equipos ev ON ev.id = p.equipo_visitante_id
+                 WHERE i.tipo = 'gol'
+                   AND jo.numero_jornada = (
+                       SELECT MAX(jo2.numero_jornada) FROM jornadas jo2
+                       JOIN partidos p2 ON p2.jornada_id = jo2.id AND p2.estado = 'finalizado')
+                 GROUP BY i.partido_id, j.id
+                 ORDER BY goles DESC, gano DESC, MIN(i.minuto) ASC
+                 LIMIT 1", []);
 
             echo json_encode([
-                'goleadoras' => $goleadoras,
-                'porteria'   => $porteria
+                'goleadoras'  => $goleadoras,
+                'porteria'    => $porteria,
+                'mvp_jornada' => $mvp[0] ?? null
             ]);
             break;
 

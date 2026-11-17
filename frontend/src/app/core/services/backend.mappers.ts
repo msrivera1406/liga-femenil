@@ -7,6 +7,10 @@ import {
   DisponibilidadEntrenador,
   Entrenador,
   Equipo,
+  FiguraJornada,
+  Goleadora,
+  LideresTorneo,
+  PorteraLider,
   EstadoPartido,
   IncidenciaPartido,
   Jornada,
@@ -286,4 +290,55 @@ export function mapJugadoraPrivada(r: JugadoraPrivadaApi): JugadoraPublica {
     alergias_condiciones: r.alergias_condiciones ?? '',
     nivel_experiencia: r.nivel_experiencia ?? undefined
   };
+}
+
+// ---------- Jugadoras destacadas (filtro 'lideres') ----------
+interface JugadoraLiderApi {
+  jugadora_id: Num;
+  nombre_deportivo: string;
+  dorsal: Num | null;
+  foto_url: string | null;
+  equipo_id: Num;
+  equipo: string;
+  escudo_url: string | null;
+}
+
+export interface LideresApi {
+  goleadoras: (JugadoraLiderApi & { goles: Num; partidos_equipo: Num | null })[];
+  porteria: (JugadoraLiderApi & { jugadora_id: Num | null; vallas_invictas: Num; goles_recibidos: Num; PJ: Num })[];
+  mvp_jornada: (JugadoraLiderApi & {
+    numero_jornada: Num; goles: Num; goles_local: Num; goles_visitante: Num; rival: string; gano: Bool;
+  }) | null;
+}
+
+function mapJugadoraLider(r: JugadoraLiderApi) {
+  return {
+    jugadora_id: num(r.jugadora_id),
+    nombre_deportivo: r.nombre_deportivo,
+    dorsal: numOrNull(r.dorsal),
+    foto_url: r.foto_url,
+    equipo_id: num(r.equipo_id),
+    equipo: r.equipo,
+    escudo_url: r.escudo_url
+  };
+}
+
+export function mapLideres(r: LideresApi): LideresTorneo {
+  const goleadoras: Goleadora[] = r.goleadoras.map(g => ({
+    ...mapJugadoraLider(g), goles: num(g.goles), partidos_equipo: num(g.partidos_equipo)
+  }));
+  // Equipos sin portera registrada no tienen a quién premiar
+  const porteras: PorteraLider[] = r.porteria.filter(p => p.jugadora_id !== null).map(p => ({
+    ...mapJugadoraLider(p), vallas_invictas: num(p.vallas_invictas), goles_recibidos: num(p.goles_recibidos), partidos_jugados: num(p.PJ)
+  }));
+  let figura_jornada: FiguraJornada | null = null;
+  if (r.mvp_jornada) {
+    const m = r.mvp_jornada;
+    const gano = bool(m.gano);
+    const [a, b] = [num(m.goles_local), num(m.goles_visitante)];
+    // Marcador visto desde su equipo: el mayor primero si ganó, el menor si perdió
+    const marcador = gano ? `${Math.max(a, b)}-${Math.min(a, b)}` : `${Math.min(a, b)}-${Math.max(a, b)}`;
+    figura_jornada = { ...mapJugadoraLider(m), numero_jornada: num(m.numero_jornada), goles: num(m.goles), rival: m.rival, marcador, gano };
+  }
+  return { goleadoras, porteras, figura_jornada };
 }
