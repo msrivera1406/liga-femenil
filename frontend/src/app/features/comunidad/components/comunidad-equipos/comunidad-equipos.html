@@ -60,16 +60,16 @@
       <!-- BLOQUE VIDEO INICIAL (Autoplay, Loop, Muted) -->
       <div class="modal-video-block">
         <div class="video-container">
+          <!-- attr.src: sin video_url no se pide ningún archivo y queda el póster -->
           <video 
             class="team-highlight-video"
+            [attr.src]="eq.video_url"
             autoplay 
             muted 
             loop 
             playsinline
             poster="images/fondo_equipos.jpeg"
-          >
-            <source src="/images/video-leona.mp4" type="video/mp4" *ngIf="eq.video_url">
-          </video>
+          ></video>
           <div class="video-overlay-badge">
             <span class="live-dot-pulse"></span>
             <span>Clip Oficial del Club</span>

@@ -3,7 +3,7 @@ import { Entrenador } from '../models';
 export const MOCK_ENTRENADORES: Entrenador[] = [
   {
     id: 1,
-    nombre_completo: 'Mariana "Ronda" Estrada',
+    nombre_completo: 'Mariana Estrada',
     disciplinas: 'Boxeo Defensivo, Acondicionamiento Funcional, Kickboxing',
     zonas_cobertura: 'Cuauhtémoc, Juárez, Roma-Condesa, San Rafael',
     bio: 'Ex-pugilista profesional y entrenadora certificada en autodefensa feminista. Especialista en resistencia cardiovascular, técnica de golpeo y empoderamiento a través del deporte.',
@@ -23,7 +23,7 @@ export const MOCK_ENTRENADORES: Entrenador[] = [
   },
   {
     id: 2,
-    nombre_completo: 'Renato "Koke" Domínguez',
+    nombre_completo: 'Renato Domínguez',
     disciplinas: 'Karate-Do, Movilidad Articular, Prevención de Lesiones en Fútbol',
     zonas_cobertura: 'Coyoacán, Benito Juárez, Del Valle, Narvarte',
     bio: 'Cinta negra 3er Dan en Karate-Do y fisioterapeuta deportivo. Enfocado en estabilidad neuromuscular para futbolistas, fortalecimiento de rodilla y tobillo, y disciplina marcial.',
@@ -43,7 +43,7 @@ export const MOCK_ENTRENADORES: Entrenador[] = [
   },
   {
     id: 3,
-    nombre_completo: 'Ariadna "Ari" Silva',
+    nombre_completo: 'Ariadna Silva',
     disciplinas: 'Fuerza & Potencia, HIIT, Preparación Física de Alto Rendimiento',
     zonas_cobertura: 'Miguel Hidalgo, Polanco, Anzures, Escandón',
     bio: 'Preparadora física de atletas de alto rendimiento en fútbol femenil. Especializada en pliometría, aceleración, cambios de ritmo y fortalecimiento de core.',
@@ -63,7 +63,7 @@ export const MOCK_ENTRENADORES: Entrenador[] = [
   },
   {
     id: 4,
-    nombre_completo: 'Alex Morales (Elle)',
+    nombre_completo: 'Alex Morales',
     disciplinas: 'Calistenia, Flexibilidad, Yoga Deportivo y Meditación de Competencia',
     zonas_cobertura: 'Tlalpan, Xochimilco, Coyoacán Sur',
     bio: 'Instructor/e certificado/a en acondicionamiento funcional y calistenia. Enfoque holístico que une resistencia física, respiración consciente y mentalidad deportiva en espacios seguros.',
@@ -83,7 +83,7 @@ export const MOCK_ENTRENADORES: Entrenador[] = [
   },
   {
     id: 5,
-    nombre_completo: 'Camila "Cami" Valenzuela',
+    nombre_completo: 'Camila Valenzuela',
     disciplinas: 'Fútbol Femenil, Velocidad & Agilidad, Prevención de Lesiones',
     zonas_cobertura: 'Coyoacán, Tlalpan, Benito Juárez, San Ángel',
     bio: 'Directora técnica y preparadora con experiencia en torneos universitarios femeniles. Especialista en fundamentos de golpeo, velocidad de reacción y calentamiento preventivo.',
@@ -103,7 +103,7 @@ export const MOCK_ENTRENADORES: Entrenador[] = [
   },
   {
     id: 6,
-    nombre_completo: 'Daniela "Dani" Orozco',
+    nombre_completo: 'Daniela Orozco',
     disciplinas: 'Autodefensa Urbana, Muay Thai, Fuerza & Resistencia',
     zonas_cobertura: 'Cuauhtémoc, Roma Norte, Condesa, Tabacalera',
     bio: 'Instructora de artes marciales mixtas y defensa personal integral. Talleres dinámicos para construir confianza, técnica efectiva de desvío y acondicionamiento cardiovascular.',

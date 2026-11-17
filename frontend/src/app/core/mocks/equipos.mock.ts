@@ -22,7 +22,7 @@ export const MOCK_EQUIPOS: Equipo[] = [
     capitana_id: 4,
     nombre: 'GOOD VIBES',
     escudo_url: '/images/Escudos/Good_vibes.jpeg',
-    video_url: null,
+    video_url: '/videos/good_vibes.mp4',
     total_jugadoras: 15
   },
   {
