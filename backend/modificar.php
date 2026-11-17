@@ -1,9 +1,13 @@
 <?php
+    require_once __DIR__ . '/comun.php';
+    preparar_respuesta();
 
-    $data = file_get_contents("php://input");
-    $data = json_decode($data, true);
+    $data = leer_json();
+    if (empty($data['filtro'])) {
+        responder_error(400, 'Falta el filtro de la petición');
+    }
 
-    $conn = new mysqli("localhost", "root", "", "liga_femenil_db");
+    $conn = conectar();
 
     function ejecutar($conn, $sql, $params) {
         $stmt = $conn->prepare($sql);
@@ -14,6 +18,13 @@
     switch ($data['filtro']) {
 
         case 'equipo':
+            $usuario = requerir_rol(['superadmin', 'capitana']);
+            if ($usuario['rol'] === 'capitana') {
+                if ((int) ($data['id'] ?? 0) !== (int) $usuario['equipo_id']) {
+                    responder_error(403, 'Solo puedes editar tu propio equipo');
+                }
+                $data['capitana_id'] = $usuario['id']; // una capitana no puede reasignar la capitanía
+            }
             if (empty($data['id'])) {
                 echo json_encode(['ok' => false, 'error' => 'Falta el id del equipo']);
                 break;
@@ -47,6 +58,15 @@
             break;
 
         case 'jugadora':
+            $usuario = requerir_rol(['superadmin', 'capitana']);
+            if ($usuario['rol'] === 'capitana') {
+                $actual = ejecutar($conn, "SELECT equipo_id FROM jugadoras WHERE id = ?", [$data['id'] ?? 0])
+                    ->get_result()->fetch_assoc();
+                if (!$actual || (int) $actual['equipo_id'] !== (int) $usuario['equipo_id']) {
+                    responder_error(403, 'Solo puedes editar jugadoras de tu equipo');
+                }
+                $data['equipo_id'] = $usuario['equipo_id']; // no puede moverla a otro equipo
+            }
             if (empty($data['id'])) {
                 echo json_encode(['ok' => false, 'error' => 'Falta el id de la jugadora']);
                 break;

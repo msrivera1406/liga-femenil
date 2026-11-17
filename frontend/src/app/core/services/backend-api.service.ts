@@ -1,13 +1,17 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
 
 /** El backend respondió, pero rechazó la operación ({ ok: false, error }). */
-export class BackendRespuestaError extends Error {}
+export class BackendRespuestaError extends Error {
+  constructor(message: string, readonly status = 200) {
+    super(message);
+  }
+}
 
-type ArchivoBackend = 'consulta.php' | 'registrar.php' | 'modificar.php';
+type ArchivoBackend = 'consulta.php' | 'registrar.php' | 'modificar.php' | 'auth.php';
 
 interface RespuestaError {
   ok: false;
@@ -22,6 +26,7 @@ function esRespuestaError(res: unknown): res is RespuestaError {
  * Cliente de los PHP del backend. Cada archivo recibe un POST con un campo `filtro`
  * que elige la operación. Las consultas responden los datos tal cual; las escrituras
  * responden { ok: true, ... }. Cualquier { ok: false, error } se convierte en error.
+ * Todas las peticiones envían la cookie de sesión (withCredentials).
  */
 @Injectable({
   providedIn: 'root'
@@ -42,9 +47,19 @@ export class BackendApiService {
     return this.enviar<T>('modificar.php', filtro, params);
   }
 
+  auth<T>(filtro: string, params: Record<string, unknown> = {}): Observable<T> {
+    return this.enviar<T>('auth.php', filtro, params);
+  }
+
   private enviar<T>(archivo: ArchivoBackend, filtro: string, params: Record<string, unknown>): Observable<T> {
-    return this.http.post<T | RespuestaError>(`${this.baseUrl}/${archivo}`, { filtro, ...params }).pipe(
-      catchError(() => throwError(() => new Error('No pudimos conectar con el servidor. Inténtalo de nuevo en unos minutos.'))),
+    return this.http.post<T | RespuestaError>(`${this.baseUrl}/${archivo}`, { filtro, ...params }, { withCredentials: true }).pipe(
+      catchError((err: HttpErrorResponse) => {
+        // 400/401/403 traen { ok: false, error } con un mensaje para la usuaria
+        if (esRespuestaError(err.error)) {
+          return throwError(() => new BackendRespuestaError(err.error.error || 'El servidor rechazó la operación.', err.status));
+        }
+        return throwError(() => new Error('No pudimos conectar con el servidor. Inténtalo de nuevo en unos minutos.'));
+      }),
       map(res => {
         if (esRespuestaError(res)) {
           throw new BackendRespuestaError(res.error || 'El servidor rechazó la operación.');

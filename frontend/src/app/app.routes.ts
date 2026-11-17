@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { rolGuard } from './core/guards/rol.guard';
 
 export const routes: Routes = [
   {
@@ -28,10 +29,12 @@ export const routes: Routes = [
   },
   {
     path: 'admin',
+    canActivate: [rolGuard('superadmin')],
     loadComponent: () => import('./features/admin/admin').then(m => m.AdminComponent)
   },
   {
     path: 'representante',
+    canActivate: [rolGuard('capitana')],
     loadComponent: () => import('./features/representante/representante').then(m => m.RepresentanteComponent)
   },
   {

@@ -1,18 +1,13 @@
 <?php
+    require_once __DIR__ . '/comun.php';
+    preparar_respuesta();
 
-    header('Content-Type: application/json; charset=UTF-8');
-    header('Access-Control-Allow-Origin: http://localhost:4200');
-    header('Access-Control-Allow-Methods: POST, OPTIONS');
-    header('Access-Control-Allow-Headers: Content-Type');
-    if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-        http_response_code(204);
-        exit();
+    $data = leer_json();
+    if (empty($data['filtro'])) {
+        responder_error(400, 'Falta el filtro de la petición');
     }
 
-    $data = file_get_contents("php://input");
-    $data = json_decode($data, true);
-
-    $conn = new mysqli("localhost", "root", "", "liga_femenil_db");
+    $conn = conectar();
 
     function ejecutar($conn, $sql, $params) {
         $stmt = $conn->prepare($sql);
@@ -112,6 +107,7 @@
             break;
 
         case 'equipo':
+            requerir_rol(['superadmin']);
             if (empty($data['nombre'])) {
                 echo json_encode(['ok' => false, 'error' => 'Falta el nombre del equipo']);
                 break;
@@ -137,6 +133,7 @@
             break;
 
         case 'guardar_acta':
+            requerir_rol(['superadmin']);
             $conn->begin_transaction();
             try {
                 ejecutar($conn,

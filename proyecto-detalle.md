@@ -105,7 +105,7 @@ Rutas clave a consumir por el frontend:
   * Público: inicio (hero, partidos, posiciones, Instagram, entrenadores), jornadas, posiciones y comunidad (equipos, destacadas, bolsa de independientes).
   * Login y portal de representante (capitana).
   * Panel de la Directora: registrar partido (con escaneo de cédula por IA y dictado por voz), programar calendario, equipos, jugadoras, entrenadores y generador de contenido para Instagram.
-  * El login es demostrativo (credenciales locales, sesión en `localStorage`). Faltan guards de ruta.
+  * Login real con `backend/auth.php` (sesión PHP, cookie HttpOnly) y guards por rol en `/admin` y `/representante`.
 * **Base de datos (`database/`):** `liga.sql` (esquema, datos y las vistas `vista_posiciones` y `vista_porteria`), más scripts de seed y scripts de sincronización de fotos y escudos.
 * **Servicio de IA (`ai-service/`):** Flask en el puerto 5000, con pruebas.
 * **Backend PHP (`backend/`):** solo existe `api/instagram/posts.php`.

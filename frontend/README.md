@@ -36,5 +36,17 @@ public/       imágenes, escudos y frames del hero
 ## Rutas
 `/inicio`, `/jornadas`, `/posiciones`, `/comunidad`, `/login`, `/admin` (Directora) y `/representante` (capitana).
 
-## Credenciales de demostración
-Mientras el login sea simulado: `admin` / `admin123` (Directora) y `capitana` / `equipo123` (representante). Se eliminan al integrar la autenticación real.
+## Inicio de sesión
+El login usa `backend/auth.php` con sesión de PHP (cookie `HttpOnly`). `/admin` y `/representante` están protegidas por rol y el backend vuelve a validar el rol en cada escritura.
+
+Credenciales de demostración (cámbialas antes de publicar):
+
+| Rol | Correo | Contraseña |
+|---|---|---|
+| Directora | `admin@ligafemenil.mx` | `Directora2026!` |
+| Capitana (ej. Queer Goals) | `capitana.queergoals@ligafemenil.mx` | `Capitana2026!` |
+
+Las 11 capitanas siguen el formato `capitana.<equipo>@ligafemenil.mx` (ver tabla `usuarios`). Para cambiar una contraseña:
+```bash
+/opt/lampp/bin/php database/cambiar_password.php correo@ligafemenil.mx
+```

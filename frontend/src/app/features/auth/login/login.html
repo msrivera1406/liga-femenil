@@ -32,9 +32,9 @@
           <span class="error-text">{{ errorMessage() }}</span>
         </div>
 
-        <!-- Campo Usuario (Estilo Cápsula/Pill como en el boceto) -->
+        <!-- Campo Correo (Estilo Cápsula/Pill como en el boceto) -->
         <div class="form-pill-group">
-          <label for="identificador" class="visually-hidden">Usuario o Correo</label>
+          <label for="identificador" class="visually-hidden">Correo electrónico</label>
           <div class="input-pill-wrapper">
             <span class="input-icon">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -42,8 +42,8 @@
                 <circle cx="12" cy="7" r="4" />
               </svg>
             </span>
-            <input type="text" id="identificador" name="identificador" [(ngModel)]="identificador"
-              placeholder="Usuario o correo electrónico" required autocomplete="username" class="pill-input" />
+            <input type="email" id="identificador" name="identificador" [(ngModel)]="identificador"
+              placeholder="Correo electrónico" required autocomplete="username" class="pill-input" />
           </div>
         </div>
 

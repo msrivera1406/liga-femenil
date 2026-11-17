@@ -513,18 +513,18 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `email`, `password_hash`, `rol`, `nombre_contacto`, `creado_en`) VALUES
-(1, 'admin@ligafemenil.mx', '$2y$10$eA35O2k5.Y6U2bV.6iY5A.a7m7k9c7Vb7r3.F0M9N1m8k7Y6U2bV.', 'superadmin', 'Directora de Liga', '2026-11-12 05:02:09'),
-(2, 'capitana.queergoals@ligafemenil.mx', '$2y$10$eA35O2k5.Y6U2bV.6iY5A.a7m7k9c7Vb7r3.F0M9N1m8k7Y6U2bV.', 'capitana', 'Capitana QUEER GOALS', '2026-11-12 05:02:09'),
-(3, 'capitana.valquirias@ligafemenil.mx', '$2y$10$eA35O2k5.Y6U2bV.6iY5A.a7m7k9c7Vb7r3.F0M9N1m8k7Y6U2bV.', 'capitana', 'Capitana VALQUIRIAS', '2026-11-12 05:02:09'),
-(4, 'capitana.goodvibes@ligafemenil.mx', '$2y$10$eA35O2k5.Y6U2bV.6iY5A.a7m7k9c7Vb7r3.F0M9N1m8k7Y6U2bV.', 'capitana', 'Capitana GOOD VIBES', '2026-11-12 05:02:09'),
-(5, 'capitana.allstars@ligafemenil.mx', '$2y$10$eA35O2k5.Y6U2bV.6iY5A.a7m7k9c7Vb7r3.F0M9N1m8k7Y6U2bV.', 'capitana', 'Capitana ALL STARS GV', '2026-11-12 05:02:09'),
-(6, 'capitana.tbd@ligafemenil.mx', '$2y$10$eA35O2k5.Y6U2bV.6iY5A.a7m7k9c7Vb7r3.F0M9N1m8k7Y6U2bV.', 'capitana', 'Capitana TBD UNITED', '2026-11-12 05:02:09'),
-(7, 'capitana.unknown@ligafemenil.mx', '$2y$10$eA35O2k5.Y6U2bV.6iY5A.a7m7k9c7Vb7r3.F0M9N1m8k7Y6U2bV.', 'capitana', 'Capitana UNKNOWN', '2026-11-12 05:02:09'),
-(8, 'capitana.lionesses@ligafemenil.mx', '$2y$10$eA35O2k5.Y6U2bV.6iY5A.a7m7k9c7Vb7r3.F0M9N1m8k7Y6U2bV.', 'capitana', 'Capitana F.C. LIONESSES', '2026-11-12 05:02:09'),
-(9, 'capitana.bandidas@ligafemenil.mx', '$2y$10$eA35O2k5.Y6U2bV.6iY5A.a7m7k9c7Vb7r3.F0M9N1m8k7Y6U2bV.', 'capitana', 'Capitana BANDIDAS F.C.', '2026-11-12 05:02:09'),
-(10, 'capitana.realmadrid@ligafemenil.mx', '$2y$10$eA35O2k5.Y6U2bV.6iY5A.a7m7k9c7Vb7r3.F0M9N1m8k7Y6U2bV.', 'capitana', 'Capitana REAL MADRID', '2026-11-12 05:02:09'),
-(11, 'capitana.fenix@ligafemenil.mx', '$2y$10$eA35O2k5.Y6U2bV.6iY5A.a7m7k9c7Vb7r3.F0M9N1m8k7Y6U2bV.', 'capitana', 'Capitana FÉNIX F.C.', '2026-11-12 05:02:09'),
-(12, 'capitana.lobas@ligafemenil.mx', '$2y$10$eA35O2k5.Y6U2bV.6iY5A.a7m7k9c7Vb7r3.F0M9N1m8k7Y6U2bV.', 'capitana', 'Capitana LOBAS MÉXICO', '2026-11-12 05:02:09');
+(1, 'admin@ligafemenil.mx', '$2y$10$u8aAA6AogPG46aPXK3mj3u.jShQ1Cyw8T4sRjGTmTn4lBDuYow6Dy', 'superadmin', 'Directora de Liga', '2026-11-12 05:02:09'),
+(2, 'capitana.queergoals@ligafemenil.mx', '$2y$10$Jfs0sL223/8qkKTXhIL9kueSgiH9xZQxysFAO7toSDXMWunHcRdFC', 'capitana', 'Capitana QUEER GOALS', '2026-11-12 05:02:09'),
+(3, 'capitana.valquirias@ligafemenil.mx', '$2y$10$Jfs0sL223/8qkKTXhIL9kueSgiH9xZQxysFAO7toSDXMWunHcRdFC', 'capitana', 'Capitana VALQUIRIAS', '2026-11-12 05:02:09'),
+(4, 'capitana.goodvibes@ligafemenil.mx', '$2y$10$Jfs0sL223/8qkKTXhIL9kueSgiH9xZQxysFAO7toSDXMWunHcRdFC', 'capitana', 'Capitana GOOD VIBES', '2026-11-12 05:02:09'),
+(5, 'capitana.allstars@ligafemenil.mx', '$2y$10$Jfs0sL223/8qkKTXhIL9kueSgiH9xZQxysFAO7toSDXMWunHcRdFC', 'capitana', 'Capitana ALL STARS GV', '2026-11-12 05:02:09'),
+(6, 'capitana.tbd@ligafemenil.mx', '$2y$10$Jfs0sL223/8qkKTXhIL9kueSgiH9xZQxysFAO7toSDXMWunHcRdFC', 'capitana', 'Capitana TBD UNITED', '2026-11-12 05:02:09'),
+(7, 'capitana.unknown@ligafemenil.mx', '$2y$10$Jfs0sL223/8qkKTXhIL9kueSgiH9xZQxysFAO7toSDXMWunHcRdFC', 'capitana', 'Capitana UNKNOWN', '2026-11-12 05:02:09'),
+(8, 'capitana.lionesses@ligafemenil.mx', '$2y$10$Jfs0sL223/8qkKTXhIL9kueSgiH9xZQxysFAO7toSDXMWunHcRdFC', 'capitana', 'Capitana F.C. LIONESSES', '2026-11-12 05:02:09'),
+(9, 'capitana.bandidas@ligafemenil.mx', '$2y$10$Jfs0sL223/8qkKTXhIL9kueSgiH9xZQxysFAO7toSDXMWunHcRdFC', 'capitana', 'Capitana BANDIDAS F.C.', '2026-11-12 05:02:09'),
+(10, 'capitana.realmadrid@ligafemenil.mx', '$2y$10$Jfs0sL223/8qkKTXhIL9kueSgiH9xZQxysFAO7toSDXMWunHcRdFC', 'capitana', 'Capitana REAL MADRID', '2026-11-12 05:02:09'),
+(11, 'capitana.fenix@ligafemenil.mx', '$2y$10$Jfs0sL223/8qkKTXhIL9kueSgiH9xZQxysFAO7toSDXMWunHcRdFC', 'capitana', 'Capitana FÉNIX F.C.', '2026-11-12 05:02:09'),
+(12, 'capitana.lobas@ligafemenil.mx', '$2y$10$Jfs0sL223/8qkKTXhIL9kueSgiH9xZQxysFAO7toSDXMWunHcRdFC', 'capitana', 'Capitana LOBAS MÉXICO', '2026-11-12 05:02:09');
 
 --
 -- Indexes for dumped tables

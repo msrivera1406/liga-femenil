@@ -41,7 +41,7 @@ export class LoginComponent {
 
   onSubmitLogin(): void {
     if (!this.identificador || !this.contrasena) {
-      this.errorMessage.set('Por favor ingresa tu usuario y contraseña.');
+      this.errorMessage.set('Por favor ingresa tu correo y contraseña.');
       return;
     }
 
