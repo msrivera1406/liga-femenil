@@ -25,7 +25,7 @@ export class RepJugadorasComponent implements OnInit {
   private jugadorasService = inject(JugadorasService);
   private backendApi = inject(BackendApiService);
 
-  @Input() equipoId!: number;
+  @Input() equipoId: number | null = null;
   @Input() equipoNombre: string = 'Tu Club';
   @Input() equipoEscudoUrl: string | null = null;
 
@@ -110,7 +110,8 @@ export class RepJugadorasComponent implements OnInit {
 
   cargarPlantel(): void {
     this.isLoading.set(true);
-    const targetId = this.equipoId || 1;
+    const targetId = this.equipoId;
+    if (!targetId) { this.isLoading.set(false); return; }
 
     this.jugadorasService.getPlantelPrivado(targetId).pipe(take(1)).subscribe({
       next: (data) => {
@@ -192,7 +193,8 @@ export class RepJugadorasComponent implements OnInit {
     if (!this.formNombreDeportivo.trim()) return;
 
     this.isSaving.set(true);
-    const targetTeamId = this.equipoId || 1;
+    const targetTeamId = this.equipoId;
+    if (!targetTeamId) { this.isSaving.set(false); return; }
 
     const payload: Partial<JugadoraPublica> = {
       equipo_id: targetTeamId,

@@ -92,7 +92,6 @@
               <th>Posición</th>
               <th>PJ</th>
               <th>PG</th>
-              <th>PE</th>
               <th>PP</th>
               <th>GF</th>
               <th>GC</th>
@@ -108,7 +107,6 @@
               </td>
               <td>{{ st.pj }}</td>
               <td class="stat-bold">{{ st.pg }}</td>
-              <td>{{ st.pe }}</td>
               <td>{{ st.pp }}</td>
               <td>{{ st.gf }}</td>
               <td>{{ st.gc }}</td>
@@ -134,7 +132,11 @@
         <span>Alineaciones del Equipo (Porteras, Defensas, Mediocampistas y Delanteras)</span>
       </h3>
 
-      <div class="roster-lines-grid" *ngIf="selectedEquipoRoster() as r">
+      <ng-container *ngIf="selectedEquipoRoster() as r">
+      <p class="roster-empty-msg" *ngIf="!r.porteras.length && !r.defensas.length && !r.medios.length && !r.delanteras.length">
+        Este club todavía no tiene jugadoras registradas.
+      </p>
+      <div class="roster-lines-grid" *ngIf="r.porteras.length || r.defensas.length || r.medios.length || r.delanteras.length">
         <!-- A) Porteras -->
         <div class="roster-line-card">
           <div class="line-header">
@@ -228,6 +230,7 @@
           </div>
         </div>
       </div>
+      </ng-container>
     </div>
   </div>
 </div>

@@ -629,3 +629,14 @@
     }
   }
 }
+
+// Club sin jugadoras registradas
+.roster-empty-msg {
+  padding: 18px;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #7A726B;
+  background: #FAF7F2;
+  border-radius: 16px;
+}

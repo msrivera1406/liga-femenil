@@ -3,14 +3,8 @@ export const environment = {
   apiUrl: 'http://localhost/liga-femenil/backend/api',
   backendUrl: 'http://localhost/liga-femenil/backend',
   aiApiUrl: 'http://localhost:5000/api',
-  // Qué partes de la app siguen usando datos simulados (true) en vez del backend (false).
-  // Se van apagando conforme se conecta cada parte; al final se eliminan junto con los mocks.
+  // Instagram usa sus publicaciones de muestra (true) mientras no haya token de Meta
   mocks: {
-    torneo: false,        // posiciones, jornadas, partidos
-    equipos: false,       // lista y ficha pública de equipos
-    jugadoras: false,     // planteles públicos y registro de independientes
-    entrenadores: false,  // catálogo público
-    instagram: true,      // pendiente: token de Meta
-    admin: false          // lecturas privadas y escrituras de admin/representante
+    instagram: true
   }
 };

@@ -30,7 +30,7 @@ export class RepClubComponent implements OnInit {
   private equiposService = inject(EquiposService);
   private backendApi = inject(BackendApiService);
 
-  @Input() equipoId!: number;
+  @Input() equipoId: number | null = null;
   @Input() initialEquipo: Equipo | null = null;
   @Input() posicionTabla: PosicionTabla | null = null;
   @Input() totalJugadoras: number = 0;
@@ -157,7 +157,8 @@ export class RepClubComponent implements OnInit {
       video_url: this.videoUrl.trim() || null
     };
 
-    const targetId = this.equipoId || (this.initialEquipo?.id ?? 1);
+    const targetId = this.equipoId || this.initialEquipo?.id;
+    if (!targetId) { this.isSaving.set(false); return; }
 
     this.equiposService.actualizarEquipo(targetId, payload).pipe(take(1)).subscribe({
       next: (res) => {

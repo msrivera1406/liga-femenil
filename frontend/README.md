@@ -21,12 +21,12 @@ npm test         # pruebas con Vitest
 | `apiUrl` | API PHP (`http://localhost/liga-femenil/backend/api`) |
 | `aiApiUrl` | Servicio de IA Flask (`http://localhost:5000/api`) |
 | `backendUrl` | PHP del backend (`consulta.php`, `registrar.php`, `modificar.php`) |
-| `mocks.*` | Por área (`torneo`, `equipos`, `jugadoras`, `entrenadores`, `instagram`, `admin`): `true` usa `src/app/core/mocks/`, `false` usa el backend |
+| `mocks.instagram` | `true` muestra las publicaciones de muestra de `src/app/core/mocks/instagram.mock.ts` |
 
 ## Estructura
 ```
 src/app/
-  core/       modelos, mocks y servicios (torneo, equipos, jugadoras, entrenadores, auth, IA)
+  core/       modelos, servicios (backend PHP, auth, IA), guards e interceptores
   shared/     header, bottom-nav y avatar Ghost Player
   features/   inicio, jornadas, posiciones, comunidad, auth, admin, representante
 src/styles/   variables SCSS del sistema de diseño

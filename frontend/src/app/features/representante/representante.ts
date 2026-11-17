@@ -46,10 +46,8 @@ export class RepresentanteComponent implements OnInit {
   private equiposService = inject(EquiposService);
   private jugadorasService = inject(JugadorasService);
 
-  // Identificador del club: de la sesión autenticada o 1 (Amazonas CDMX por defecto para demo)
-  miEquipoId = computed<number>(() => {
-    return this.authService.currentUser()?.equipo_id || 1;
-  });
+  // Club de la capitana en sesión; null si su cuenta todavía no tiene club asignado
+  miEquipoId = computed<number | null>(() => this.authService.currentUser()?.equipo_id ?? null);
 
   // Datos reactivos del club en sesión
   miEquipo = signal<Equipo | null>(null);
@@ -238,8 +236,12 @@ export class RepresentanteComponent implements OnInit {
   }
 
   cargarDatosDashboard(): void {
-    this.isLoading.set(true);
     const eqId = this.miEquipoId();
+    if (eqId === null) {
+      this.isLoading.set(false); // sin club no hay nada que cargar; la vista muestra un aviso
+      return;
+    }
+    this.isLoading.set(true);
 
     // 1. Cargar info del equipo
     this.equiposService.getEquipoById(eqId).subscribe({

@@ -55,6 +55,13 @@
       </div>
     </header>
 
+    @if (miEquipoId() === null) {
+      <!-- Cuenta de capitana sin club asignado -->
+      <section class="rep-sin-club">
+        <h2>Tu cuenta todavía no tiene un club asignado</h2>
+        <p>Pide a la Directora del Programa que te asigne como capitana de tu equipo para administrar su plantel.</p>
+      </section>
+    } @else {
     <!-- ============================================== -->
     <!-- 2. RESUMEN: TABLA ENFOCADA & PARTIDO DE FECHA -->
     <!-- ============================================== -->
@@ -101,7 +108,7 @@
           <div class="stat-divider"></div>
           <div class="stat-box">
             <span class="stat-label">PARTIDOS</span>
-            <span class="stat-value">{{ myPos.pj }} PJ ({{ myPos.pg }}G-{{ myPos.pe }}E-{{ myPos.pp }}P)</span>
+            <span class="stat-value">{{ myPos.pj }} PJ ({{ myPos.pg }}G-{{ myPos.pp }}P)</span>
           </div>
           <div class="stat-divider"></div>
           <div class="stat-box">
@@ -553,6 +560,8 @@
 
       </div>
     </section>
+
+    }
 
     <!-- ============================================== -->
     <!-- 4. MODAL DINÁMICO DE SERVICIOS (Lazy Loaded) -->

@@ -72,8 +72,7 @@ export class ComunidadEquiposComponent implements OnInit {
 
     // Cargar alineaciones/jugadoras del equipo
     this.jugadorasService.getJugadorasByEquipo(equipo.id).pipe(take(1)).subscribe(jugadoras => {
-      // Si el mock tiene pocas jugadoras para este equipo, generamos un plantel completo realista
-      const plantel = jugadoras.length >= 7 ? jugadoras : this.generarPlantelCompleto(equipo, jugadoras);
+      const plantel = jugadoras;
       
       this.selectedEquipoRoster.set({
         porteras: plantel.filter(j => j.posicion === 'Portera'),
@@ -97,89 +96,4 @@ export class ComunidadEquiposComponent implements OnInit {
     }
   }
 
-  // Generador de respaldo para asegurar que los 11 equipos tengan su alineación completa en 4 líneas
-  private generarPlantelCompleto(equipo: Equipo, existentes: JugadoraPublica[]): JugadoraPublica[] {
-    const defaultRoster: JugadoraPublica[] = [
-      {
-        id: equipo.id * 100 + 1,
-        equipo_id: equipo.id,
-        nombre_deportivo: `${equipo.nombre.split(' ')[0]} Guardiana`,
-        dorsal: 1,
-        posicion: 'Portera',
-        foto_url: null,
-        autoriza_imagen: false, // Ghost player
-        es_independiente: false,
-        activo: true
-      },
-      {
-        id: equipo.id * 100 + 2,
-        equipo_id: equipo.id,
-        nombre_deportivo: 'Marifer "Capi" R.',
-        dorsal: 4,
-        posicion: 'Defensa',
-        foto_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&auto=format&fit=crop&q=80',
-        autoriza_imagen: true,
-        es_independiente: false,
-        activo: true
-      },
-      {
-        id: equipo.id * 100 + 3,
-        equipo_id: equipo.id,
-        nombre_deportivo: 'Pau Morales',
-        dorsal: 3,
-        posicion: 'Defensa',
-        foto_url: null,
-        autoriza_imagen: false, // Ghost player
-        es_independiente: false,
-        activo: true
-      },
-      {
-        id: equipo.id * 100 + 4,
-        equipo_id: equipo.id,
-        nombre_deportivo: 'Alejandra "Maga" Silva',
-        dorsal: 8,
-        posicion: 'Medio',
-        foto_url: 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=200&auto=format&fit=crop&q=80',
-        autoriza_imagen: true,
-        es_independiente: false,
-        activo: true
-      },
-      {
-        id: equipo.id * 100 + 5,
-        equipo_id: equipo.id,
-        nombre_deportivo: 'Sam "Rayo" Cruz',
-        dorsal: 7,
-        posicion: 'Medio',
-        foto_url: null,
-        autoriza_imagen: false, // Ghost player
-        es_independiente: false,
-        activo: true
-      },
-      {
-        id: equipo.id * 100 + 6,
-        equipo_id: equipo.id,
-        nombre_deportivo: 'Lucía "Gol" Mendoza',
-        dorsal: 9,
-        posicion: 'Delantera',
-        foto_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80',
-        autoriza_imagen: true,
-        es_independiente: false,
-        activo: true
-      },
-      {
-        id: equipo.id * 100 + 7,
-        equipo_id: equipo.id,
-        nombre_deportivo: 'Andrea "Chispa" V.',
-        dorsal: 11,
-        posicion: 'Delantera',
-        foto_url: null,
-        autoriza_imagen: false, // Ghost player
-        es_independiente: false,
-        activo: true
-      }
-    ];
-
-    if (existentes.length === 0) return defaultRoster;
-    return [...existentes, ...defaultRoster.slice(existentes.length)];
-  }
 }
