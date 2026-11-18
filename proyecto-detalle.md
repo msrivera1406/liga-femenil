@@ -9,10 +9,10 @@
 
 ## 2. Decisiones de Arquitectura y Stack Tecnológico
 * **Frontend:** Angular (Standalone Components, TypeScript estricto, Mobile-First).
-* **Backend Core:** PHP 8.x servido en Apache (XAMPP local) con conexión PDO a MySQL 8.x (`liga_femenil_db`, cotejamiento `utf8mb4_unicode_ci`) y phpMyAdmin. **Sin contenedores Docker.**
+* **Backend Core:** PHP 8.2 servido en Apache (XAMPP local) con conexión `mysqli` y consultas preparadas a MariaDB 10.4 (`liga_femenil_db`, cotejamiento `utf8mb4_unicode_ci`) y phpMyAdmin. **Sin contenedores Docker.**
 * **Microservicio IA Satélite:** Python 3.10+ con Flask corriendo en `http://localhost:5000` (`ai-service/`). Ofrece OCR multimodal de cédulas manuscritas (Gemini) con matching difuso contra la plantilla, parser de incidencias por voz y generación de contenido para Instagram. Requiere `GEMINI_API_KEY` en `ai-service/.env` (no se versiona).
 * **Desacoplamiento del equipo (2 desarrolladores):**
-  * **Compañero (Backend):** Base de datos, API REST en PHP, transacciones de partidos y servicio Python.
+  * **Compañero (Backend):** Base de datos, API en PHP, transacciones de partidos y servicio Python.
   * **Usuario (Frontend):** UI/UX en Angular, maquetación, animaciones, servicios reactivos y consumo de la API.
 
 ---
@@ -24,7 +24,8 @@
 * **Puntuación oficial:** 
   * Ganador (tiempo regular o penales): **3 puntos**.
   * Perdedor (tiempo regular o penales): **0 puntos**.
-* **Gestión y Captura:** Centralizada exclusivamente en la **Directora del Programa (Superadmin)**. Los equipos no editan marcadores ni tablas.
+* **Gestión y Captura:** Centralizada exclusivamente en la **Directora del Programa (Superadmin)**. Los equipos no editan marcadores ni tablas; cada capitana solo administra los datos de su club y su plantel.
+* **Validación en el servidor:** el backend calcula el ganador a partir del marcador (o de los penales si hubo empate) y rechaza un partido finalizado empatado sin tanda de penales.
 * **Disciplina:** Objetiva mediante registro de tarjetas amarillas y rojas (se descartó cualquier métrica subjetiva de Fair Play).
 
 ---
@@ -34,18 +35,22 @@
 
 1. **Doble Capa de Identidad:**
    * *Datos públicos:* Nombre deportivo y dorsal.
-   * *Datos sensibles/privados:* Nombre legal, teléfono y contactos de emergencia (cifrados y visibles solo para la Directora para responsivas o seguros).
+   * *Datos sensibles/privados:* Nombre legal, edad, teléfono y contacto de emergencia (con parentesco). Solo los ven la Directora y la capitana del equipo de la jugadora; las consultas públicas no los devuelven.
+   * *Datos de salud:* Tipo de sangre y alergias/condiciones se guardan aparte, en `jugadoras_datos_medicos`, por ser datos personales sensibles (LFPDPPP). Mismo acceso que los datos privados.
 2. **Modo "Ghost Player" (Protección de Imagen):**
    * Campo booleano `autoriza_imagen`. Si es `false`, la interfaz renderiza un avatar con silueta y dorsal en lugar de su fotografía para proteger su identidad laboral/personal.
+   * El servidor tampoco envía la foto en las consultas públicas (ficha del equipo y jugadoras destacadas), así que no se puede obtener inspeccionando el navegador.
 3. **Bolsa de Jugadoras Independientes:**
-   * Formulario reactivo para chicas sin equipo, con match por nivel deportivo y afinidad de convivencia para su asignación por parte de la Directora.
+   * Formulario público para chicas sin equipo: posición, nivel de experiencia (Iniciación, Intermedio o Avanzado), datos personales y de salud. Genera un folio (`IND-00000`).
+   * La Directora ve la bolsa en su panel y asigna a cada jugadora a un equipo con su dorsal.
 
 ---
 
 ## 5. Staff Oficial de Entrenadores
 * Servicio oficial de acondicionamiento físico personalizado a domicilio (boxeo, karate, funcional, etc.).
 * Perfil mixto (entrenadoras y entrenadores avalados por la liga).
-* Cada perfil cuenta con bio, zonas de cobertura en la CDMX, tarifas por sesión y disponibilidad horaria semanal estructurada en formato JSON para facilitar solicitudes vía web y canalización a WhatsApp.
+* Cada perfil cuenta con bio, foto, zonas de cobertura en la CDMX, tarifas por sesión y disponibilidad horaria semanal estructurada en formato JSON para facilitar solicitudes vía web y canalización a WhatsApp.
+* Los entrenadores no tienen cuenta de usuario: los da de alta, edita y pausa la Directora. El catálogo público solo muestra los activos.
 
 ---
 
@@ -62,54 +67,94 @@
 * **Navegación Móvil:**
   * Experiencia de aplicación nativa mediante **Bottom Navigation Bar fija** en forma de cápsula (*pill floating nav*) con efecto vidrio translúcido (*backdrop-filter: blur*):
     * 🏠 Inicio | 📅 Jornadas | 🏆 Posiciones | 🤝 Comunidad
-* **Animaciones Planificadas:**
+* **Animaciones:**
   * Animaciones implementadas sin GSAP ni ScrollTrigger (textos que emergen con desenfoque suave, tarjetas de partidos en cascada, parallax sutil, hero con secuencia de frames en `public/frames2/`).
 
 ---
 
-## 7. Esquema de Base de Datos MySQL (Referencia DDL)
-El backend tiene acordadas las siguientes tablas principales:
-1. `usuarios`: `id`, `email`, `password_hash`, `rol` ('superadmin', 'capitana'), `nombre_contacto`.
-2. `equipos`: `id`, `capitana_id`, `nombre`, `escudo_url`, `video_url`.
-3. `jugadoras`: `id`, `equipo_id`, `nombre_deportivo`, `dorsal`, `posicion`, `foto_url`, `autoriza_imagen`, `nombre_legal`, `telefono_contacto`, `contacto_emergencia_nombre`, `contacto_emergencia_telefono`, `aviso_privacidad_aceptado`, `es_independiente`, `activo`.
-4. `torneos`: `id`, `nombre`, `fecha_inicio`, `activo`.
-5. `jornadas`: `id`, `torneo_id`, `numero_jornada`, `fecha_domingo`.
-6. `partidos`: `id`, `jornada_id`, `equipo_local_id`, `equipo_visitante_id`, `horario`, `goles_local`, `goles_visitante`, `empate_minuto_18`, `penales_local`, `penales_visitante`, `ganador_id`, `estado`, `cancha`, `notas_mesa`.
-7. `incidencias_partido`: `id`, `partido_id`, `jugadora_id`, `equipo_id`, `tipo` ('gol', 'autogol', 'tarjeta_amarilla', 'tarjeta_roja', 'falta'), `minuto`.
-8. `entrenadores`: `id`, `nombre_completo`, `disciplinas`, `zonas_cobertura`, `bio`, `precio_sesion`, `telefono_publico`, `disponibilidad_json`, `activo` (Catálogo público gestionado por la liga).
+## 7. Esquema de Base de Datos
+`database/liga.sql` crea las tablas, las vistas y los datos iniciales: 12 usuarios, 11 equipos, 165 jugadoras, 1 torneo, 11 jornadas, 55 partidos, 52 incidencias y 6 entrenadores.
+
+1. `usuarios`: `id`, `email`, `password_hash` (bcrypt), `rol` ('superadmin', 'capitana'), `nombre_contacto`, `creado_en`.
+2. `equipos`: `id`, `capitana_id`, `nombre`, `escudo_url`, `video_url`, `activo`, `creado_en`.
+3. `jugadoras`: `id`, `equipo_id` (NULL = bolsa de independientes), `nombre_deportivo`, `dorsal`, `posicion`, `nivel_experiencia`, `edad`, `foto_url`, `autoriza_imagen`, `nombre_legal`, `telefono_contacto`, `contacto_emergencia_nombre`, `contacto_emergencia_telefono`, `contacto_emergencia_parentesco`, `aviso_privacidad_aceptado`, `es_independiente`, `activo`, `creado_en`.
+4. `jugadoras_datos_medicos`: `jugadora_id` (llave y FK con borrado en cascada), `tipo_sangre`, `alergias_condiciones`, `actualizado_en`.
+5. `torneos`: `id`, `nombre`, `fecha_inicio`, `activo`.
+6. `jornadas`: `id`, `torneo_id`, `numero_jornada`, `fecha_domingo`.
+7. `partidos`: `id`, `jornada_id`, `equipo_local_id`, `equipo_visitante_id`, `horario`, `goles_local`, `goles_visitante`, `empate_minuto_18`, `penales_local`, `penales_visitante`, `ganador_id`, `estado` ('programado', 'en_juego', 'finalizado', 'suspendido'), `cancha`, `notas_mesa`.
+8. `incidencias_partido`: `id`, `partido_id`, `jugadora_id`, `equipo_id`, `tipo` ('gol', 'autogol', 'tarjeta_amarilla', 'tarjeta_roja', 'falta'), `minuto`.
+9. `entrenadores`: `id`, `nombre_completo`, `disciplinas`, `zonas_cobertura`, `bio`, `precio_sesion`, `telefono_publico`, `disponibilidad_json`, `foto_url`, `activo`.
+
+**Vistas:**
+* `vista_posiciones`: PJ, PG, PP, GF, GC, DG y Pts de cada equipo activo (3 puntos por victoria), ordenada por Pts, DG, GF y nombre. También calcula PE, que siempre es 0 porque no hay empates; el frontend no lo muestra.
+* `vista_porteria`: vallas invictas y promedio por equipo.
+
+**Reglas de datos:**
+* Las bajas de equipos y jugadoras son lógicas (`activo = 0`) para conservar sus goles y tarjetas en las actas.
+* Fueras de juego y sustituciones no tienen tipo de incidencia; el acta las guarda como texto en `notas_mesa`.
 
 ---
 
-## 8. Contrato de API Acordado (JSON Global)
-Todas las respuestas de PHP responden con la firma:
+## 8. API del Backend (`backend/`)
+Cada archivo PHP recibe un `POST` con cuerpo JSON y un campo `filtro` que elige la operación:
 ```json
-{
-  "success": true,
-  "data": {},
-  "message": null
-}
+{ "filtro": "jornadas", "torneo_id": 1 }
 ```
+* Las consultas responden los datos directamente (un arreglo o un objeto).
+* Las escrituras responden `{ "ok": true, ... }`.
+* Los errores responden `{ "ok": false, "error": "mensaje" }`, con código 400 (datos inválidos), 401 (sin sesión), 403 (rol no permitido) o 404 (no existe).
 
-Rutas clave a consumir por el frontend:
-* `GET /api/torneo/posiciones.php` (Tabla con PJ, PG, PE, PP, GF, GC, DG, Pts calculados).
-* `GET /api/torneo/jornadas.php?torneo_id=1` (Calendario de las 11 fechas con partidos).
-* `GET /api/equipos.php` (11 equipos y fichas con jugadoras públicas).
-* `POST /api/jugadoras/independientes.php` (Alta en bolsa).
-* `GET /api/entrenadores.php` (Catálogo con matriz horaria).
-* `POST /api/admin/partidos/guardar-acta.php` (Captura transaccional de la Directora).
+La sesión es una cookie `HttpOnly` de PHP; el frontend la envía con `withCredentials`. El backend valida el rol en cada operación protegida.
+
+| Archivo | Filtro | Acceso | Qué hace |
+|---|---|---|---|
+| `auth.php` | `login`, `sesion`, `logout` | Público | Inicia, consulta y cierra la sesión |
+| `consulta.php` | `posiciones` | Público | Tabla con racha de los últimos 4 partidos |
+| | `jornadas` | Público | 11 jornadas con partidos e incidencias (las notas de mesa solo para la Directora) |
+| | `equipos`, `equipo_detalle` | Público | Equipos activos y ficha con plantel público |
+| | `lideres` | Público | Goleadoras, porteras y figura de la última jornada |
+| | `entrenadores` | Público | Catálogo de entrenadores activos |
+| | `jugadoras_admin` | Directora | Padrón completo con datos privados y médicos |
+| | `plantel_privado` | Directora o capitana del equipo | Plantel con datos privados y médicos |
+| | `entrenadores_admin` | Directora | Catálogo completo, incluidos los pausados |
+| `registrar.php` | `jugadora_independiente` | Público | Alta en la bolsa; devuelve el folio |
+| | `jugadora` | Directora o capitana (solo en su equipo) | Alta de jugadora |
+| | `equipo`, `entrenador` | Directora | Alta de equipo o entrenador |
+| | `guardar_acta` | Directora | Marcador, penales, estado, notas e incidencias en una transacción |
+| `modificar.php` | `equipo` | Directora o capitana (solo su club) | Editar club |
+| | `jugadora`, `baja_jugadora` | Directora o capitana (solo su plantel) | Editar ficha (incluye asignar equipo o mandar a la bolsa) y dar de baja |
+| | `baja_equipo` | Directora | Baja lógica del club |
+| | `entrenador`, `entrenador_estado`, `baja_entrenador` | Directora | Editar, pausar o eliminar entrenador |
+| | `calendario` | Directora | Fecha de la jornada y horario, cancha, localía y suspensión de cada partido no jugado |
+| `subir_imagen.php` | (multipart: `tipo`, `imagen`) | Directora o capitana | Sube escudo o foto (JPG, PNG o WebP, máx. 3 MB) y devuelve su URL |
+| `api/instagram/posts.php` | (GET) | Público | Publicaciones de Instagram |
+
+Archivos de apoyo: `comun.php` (CORS, conexión, sesión y roles) y `validaciones.php` (reglas de jugadoras y entrenadores).
+
+**Servicio de IA (`ai-service/`, Flask, `http://localhost:5000/api`):** `GET /health`, `POST /cedula/scan`, `POST /voice/parse-incident`, `POST /voice/process-audio` y `POST /ig/generate-content`.
 
 ---
 
-## 9. Estado Actual y Siguientes Pasos
-* **Frontend (Angular 22):** implementado con datos simulados (`environment.useMock: true`).
-  * Público: inicio (hero, partidos, posiciones, Instagram, entrenadores), jornadas, posiciones y comunidad (equipos, destacadas, bolsa de independientes).
-  * Login y portal de representante (capitana).
+## 9. Estado Actual
+* **Frontend (Angular 22):** conectado al backend real en todas las pantallas. Solo Instagram usa publicaciones de muestra (`environment.mocks.instagram`).
+  * Público: inicio, jornadas, posiciones (con podio y racha), comunidad (equipos con video, jugadoras destacadas y registro a la bolsa).
   * Panel de la Directora: registrar partido (con escaneo de cédula por IA y dictado por voz), programar calendario, equipos, jugadoras, entrenadores y generador de contenido para Instagram.
-  * Login real con `backend/auth.php` (sesión PHP, cookie HttpOnly) y guards por rol en `/admin` y `/representante`.
-* **Base de datos (`database/`):** `liga.sql` (esquema, datos y las vistas `vista_posiciones` y `vista_porteria`), más scripts de seed y scripts de sincronización de fotos y escudos.
-* **Servicio de IA (`ai-service/`):** Flask en el puerto 5000, con pruebas.
-* **Backend PHP (`backend/`):** solo existe `api/instagram/posts.php`.
+  * Portal de la capitana: datos de su club y su plantel.
+  * Login real, guards por rol y redirección al login con aviso si la sesión expira.
+* **Base de datos:** `database/liga.sql` es la única fuente; `database/cambiar_password.php` cambia contraseñas desde la terminal.
+* **Seguridad local:** `.htaccess` bloquea el acceso web a `.git`, `.env`, `ai-service/` y `database/`; `backend/uploads/` no ejecuta scripts.
 * **Pendiente:**
-  1. Endpoints PHP del contrato (sección 8) y autenticación real.
-  2. Cambiar `useMock` a `false` e integrar con la API real.
-  3. Guards de rutas y protección de datos sensibles.
+  1. Probar desde la pantalla el escaneo de cédula y el dictado por voz guardando actas reales.
+  2. Apagar el modo debug de Flask y limitarlo a `127.0.0.1` (hoy escucha en toda la red).
+  3. Sustituir los datos de relleno de las jugadoras (nombre legal, teléfonos y tipo de sangre) y dar una contraseña propia a cada capitana.
+  4. Si se publica en internet: URLs, CORS, cookies seguras y permisos de `backend/uploads/` para el servidor.
+
+---
+
+## 10. Puesta en Marcha Local
+1. Iniciar Apache y MySQL de XAMPP (`sudo /opt/lampp/lampp start`).
+2. Crear la base `liga_femenil_db` (`utf8mb4_unicode_ci`) e importar `database/liga.sql`.
+3. Servicio de IA: crear `ai-service/.env` con `GEMINI_API_KEY=...` y ejecutar `cd ai-service && venv/bin/python app.py`. No arranca solo al reiniciar la máquina.
+4. Frontend: `cd frontend && npm install && npm start` y abrir `http://localhost:4200`.
+
+Credenciales de demostración en `frontend/README.md`.
