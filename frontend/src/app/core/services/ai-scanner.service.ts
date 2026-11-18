@@ -1,8 +1,16 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, throwError } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { AiCedulaScanResponse, AiVoiceIncidentResponse } from '../models';
+
+// Status 0 = el navegador no pudo conectarse (el servicio Flask no está corriendo o no hay red)
+function mensajeErrorIa(err: HttpErrorResponse, porDefecto: string): string {
+  if (err?.status === 0) {
+    return 'El servicio de inteligencia artificial no está disponible. Verifica que esté encendido e inténtalo de nuevo.';
+  }
+  return err?.error?.error || porDefecto;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -37,8 +45,8 @@ export class AiScannerService {
     }
 
     return this.http.post<AiCedulaScanResponse>(`${this.aiBaseUrl}/cedula/scan`, formData).pipe(
-      catchError(err => {
-        const errorMsg = err?.error?.error || err?.message || 'Error al conectar con el microservicio de IA.';
+      catchError((err: HttpErrorResponse) => {
+        const errorMsg = mensajeErrorIa(err, 'Error al conectar con el microservicio de IA.');
         return throwError(() => new Error(errorMsg));
       })
     );
@@ -58,8 +66,8 @@ export class AiScannerService {
     };
 
     return this.http.post<AiVoiceIncidentResponse>(`${this.aiBaseUrl}/voice/parse-incident`, payload).pipe(
-      catchError(err => {
-        const errorMsg = err?.error?.error || err?.message || 'Error al interpretar el dictado por voz.';
+      catchError((err: HttpErrorResponse) => {
+        const errorMsg = mensajeErrorIa(err, 'Error al interpretar el dictado por voz.');
         return throwError(() => new Error(errorMsg));
       })
     );
@@ -83,8 +91,8 @@ export class AiScannerService {
     formData.append('minuto_actual', minutoActual.toString());
 
     return this.http.post<AiVoiceIncidentResponse>(`${this.aiBaseUrl}/voice/process-audio`, formData).pipe(
-      catchError(err => {
-        const errorMsg = err?.error?.error || err?.message || 'Error al procesar el audio con Gemini.';
+      catchError((err: HttpErrorResponse) => {
+        const errorMsg = mensajeErrorIa(err, 'Error al procesar el audio con Gemini.');
         return throwError(() => new Error(errorMsg));
       })
     );
