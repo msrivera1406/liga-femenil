@@ -706,6 +706,13 @@ app-landing-footer {
               transform: translateX(3px);
             }
           }
+          .footer-note {
+            display: block;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #A39A92;
+          }
         }
       }
     }

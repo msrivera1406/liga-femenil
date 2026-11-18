@@ -246,12 +246,18 @@
                 </div>
               </div>
 
-              <!-- Footer de la tarjeta con botón de incidencias si existen -->
-              <div class="card-footer" *ngIf="match.incidencias && match.incidencias.length > 0">
-                <span class="view-incidences-link">
-                  <span>Ver goles e incidencias ({{ match.incidencias.length }})</span>
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </span>
+              <!-- Footer siempre presente para que todas las tarjetas de una fila tengan la misma estructura -->
+              <div class="card-footer">
+                @if (match.incidencias && match.incidencias.length > 0) {
+                  <span class="view-incidences-link">
+                    <span>Ver goles e incidencias ({{ match.incidencias.length }})</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                  </span>
+                } @else if (match.estado === 'finalizado') {
+                  <span class="footer-note">Sin goles ni tarjetas registradas</span>
+                } @else {
+                  <span class="footer-note">Incidencias al finalizar el partido</span>
+                }
               </div>
             </article>
           </div>
